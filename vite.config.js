@@ -22,12 +22,20 @@ export default defineConfig({
     },
     // 开发服务器配置
     server: {
-        // 配置代理，将 ' /proxy' 请求转发到本地运行的 Cloudflare Worker
+        // 配置代理，将 API 请求转发到本地运行的 Cloudflare Worker (wrangler dev)
         proxy: {
             '/proxy': {
-                target: 'http://127.0.0.1:8787', // 默认的 wrangler dev 端口
-                changeOrigin: true, // 改变源，以匹配目标 URL
-            }
+                target: 'http://127.0.0.1:8787',
+                changeOrigin: true,
+            },
+            '/models': {
+                target: 'http://127.0.0.1:8787',
+                changeOrigin: true,
+            },
+            '/check': {
+                target: 'ws://127.0.0.1:8787',
+                ws: true,
+            },
         }
     }
 });

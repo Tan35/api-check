@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useConfigStore } from './config';
 import { useResultsStore } from './results';
+import { useKeyManagerStore } from './keyManager';
 import { categorizeTokenError } from '@/api';
 import {
     MAX_KEYS_LIMIT,
@@ -333,6 +334,14 @@ export const useCheckerStore = defineStore('checker', () => {
 
         // 使用缓冲区而非直接添加
         bufferResult(res, res.order);
+
+        // 自动同步到 Key Manager（如果该 token 已保存）
+        try {
+            const keyManager = useKeyManagerStore();
+            if (keyManager.keys.length > 0) {
+                keyManager.updateKeyFromCheck(res.token, res);
+            }
+        } catch (_) { /* keyManager store 可能尚未初始化 */ }
     }
 
     /**

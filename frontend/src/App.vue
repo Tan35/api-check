@@ -2,6 +2,7 @@
 import { onMounted, onBeforeUnmount, watch, ref, computed } from 'vue';
 import { useUiStore } from '@/stores/ui';
 import { useCheckerStore } from '@/stores/checker';
+import { useKeyManagerStore } from '@/stores/keyManager';
 import { RESULT_TAB_CONFIG } from '@/constants';
 
 // 导入组件
@@ -13,6 +14,7 @@ import ResultsTabs from './components/ResultsTabs.vue';
 import ResultPanel from './components/ResultPanel.vue';
 import ToastContainer from './components/ToastContainer.vue';
 import ModalContainer from './components/ModalContainer.vue';
+import KeyManager from './components/KeyManager.vue';
 
 /**
  * @description 结果标签页的配置数组。
@@ -21,6 +23,7 @@ const resultTabsConfig = RESULT_TAB_CONFIG;
 
 const uiStore = useUiStore();
 const checkerStore = useCheckerStore();
+const keyManager = useKeyManagerStore();
 const scrollPosition = ref(0);
 
 /**
@@ -100,8 +103,24 @@ onBeforeUnmount(() => {
     <div class="page-wrapper">
         <div class="header">
             <h1>API KEY 检测工具</h1>
+            <div class="view-tabs">
+                <button
+                    :class="['view-tab', { active: !keyManager.showManager }]"
+                    @click="keyManager.showManager = false"
+                >
+                    🔍 检测工具
+                </button>
+                <button
+                    :class="['view-tab', { active: keyManager.showManager }]"
+                    @click="keyManager.showManager = true"
+                >
+                    🔑 我的 Key ({{ keyManager.keys.length }})
+                </button>
+            </div>
         </div>
-        <div class="main-grid">
+
+        <!-- 检测工具视图 -->
+        <div v-if="!keyManager.showManager" class="main-grid">
             <div class="main-content">
                 <div class="input-section">
                     <ProviderSelector />
@@ -122,6 +141,12 @@ onBeforeUnmount(() => {
                 </div>
             </div>
         </div>
+
+        <!-- Key 管理视图 -->
+        <div v-else class="manager-grid">
+            <KeyManager />
+        </div>
+
         <div class="footer">
             <p>© {{ currentYear }} LLM API KEY 检测工具 | <a href="https://github.com/ssfun/llm-api-key-checker" target="_blank"
                     rel="noopener noreferrer">@SFUN</a></p>
@@ -135,6 +160,44 @@ onBeforeUnmount(() => {
     /* 防止 Vue 渲染时闪烁未编译内容 */
     [v-cloak] {
         display: none;
+    }
+
+    /* 视图切换 Tab */
+    .view-tabs {
+        display: flex;
+        gap: 4px;
+    }
+
+    .view-tab {
+        padding: 6px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background: transparent;
+        font-size: 13px;
+        font-family: var(--font-sans);
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--text-secondary);
+    }
+
+    .view-tab:hover {
+        background: var(--bg-tertiary);
+    }
+
+    .view-tab.active {
+        background: var(--accent-primary);
+        color: white;
+        border-color: var(--accent-primary);
+    }
+
+    /* Key 管理视图 */
+    .manager-grid {
+        flex: 1;
+        min-height: 0;
+        background: var(--bg-paper);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
     }
 
     /* 结果面板的通用样式 - 使用绝对定位填满容器 */
