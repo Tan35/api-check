@@ -1,67 +1,122 @@
 /**
  * Vercel Design System — 精确、极简、科技感
- * 参考：getdesign.md/vercel/design-md
+ * 参考：getdesign.md/vercel/design-md (完整 DESIGN.md)
+ *
+ * 核心原则：
+ * - Shadow-as-border 替代 CSS border
+ * - 极端负字间距 (-2.4px at 48px)
+ * - 多层阴影堆叠 (border + elevation + ambient + inner glow)
+ * - 三字重系统：400 (body), 500 (UI), 600 (headings)
+ * - 色彩功能化，绝不装饰化
  */
 
 /* ========================================
    1. CSS Root Variables — 设计令牌
    ======================================== */
 :root {
-    /* === 颜色系统 — Vercel === */
-    /* 背景色 - 层级递进 */
-    --bg-paper: #ffffff;              /* 主背景：纯白 */
-    --bg-surface: #ffffff;            /* 卡片/面板背景 */
-    --bg-secondary: #fafafa;          /* 次要背景：微灰 */
-    --bg-tertiary: #f5f5f5;           /* 第三层背景 */
-    --bg-input: #ffffff;              /* 输入框背景 */
+    /* === 颜色系统 === */
+    /* 主色 */
+    --ds-gray-900: #171717;       /* 主文字、标题、深色背景 — 非纯黑，微暖 */
+    --ds-gray-600: #4d4d4d;       /* 次要文字、描述 */
+    --ds-gray-500: #666666;       /* 第三级文字、弱链接 */
+    --ds-gray-400: #808080;       /* 占位符、禁用态 */
+    --ds-gray-100: #ebebeb;       /* 边框、卡片轮廓、分割线 */
+    --ds-gray-50: #fafafa;        /* 微妙表面色调、内环高光 */
+    --ds-white: #ffffff;          /* 页面背景、卡片表面、按钮文字 */
 
-    /* 文字颜色 */
-    --text-primary: #171717;          /* 主文字：Vercel 黑 */
-    --text-secondary: #666666;        /* 次要文字 */
-    --text-tertiary: #808080;         /* 辅助文字 */
+    /* 工作流强调色 */
+    --ds-develop-blue: #0a72ef;   /* 开发流程 */
+    --ds-preview-pink: #de1d8d;   /* 预览部署 */
+    --ds-ship-red: #ff5b4f;       /* 生产部署 */
 
-    /* 边框颜色 */
-    --border-color: #ebebeb;          /* 默认边框 */
-    --border-color-light: #f5f5f5;    /* 浅边框 */
-    --border-color-focus: #0070f3;    /* 焦点边框：Vercel 蓝 */
+    /* 控制台色 */
+    --ds-console-blue: #0070f3;
+    --ds-console-purple: #7928ca;
+    --ds-console-pink: #eb367f;
 
-    /* 强调色 */
-    --accent-primary: #0070f3;        /* Vercel 蓝 — 主要操作 */
+    /* 交互色 */
+    --ds-link-blue: #0072f5;
+    --ds-focus-color: hsla(212, 100%, 48%, 1);
+    --ds-badge-blue-bg: #ebf5ff;
+    --ds-badge-blue-text: #0068d6;
+
+    /* 语义化颜色 — 向后兼容旧变量名 */
+    --bg-paper: var(--ds-white);
+    --bg-surface: var(--ds-white);
+    --bg-secondary: var(--ds-gray-50);
+    --bg-tertiary: #f0f0f0;
+    --bg-input: var(--ds-white);
+
+    --text-primary: var(--ds-gray-900);
+    --text-secondary: var(--ds-gray-600);
+    --text-tertiary: var(--ds-gray-500);
+
+    --border-color: var(--ds-gray-100);
+    --border-color-light: #f5f5f5;
+    --border-color-focus: var(--ds-focus-color);
+
+    --accent-primary: var(--ds-console-blue);
     --accent-primary-hover: #0060df;
-    --accent-dark: #171717;           /* 深色按钮 */
+    --accent-dark: var(--ds-gray-900);
     --accent-dark-hover: #000000;
-    --accent-success: #0070f3;        /* 成功：Vercel 蓝 */
+    --accent-success: var(--ds-console-blue);
     --accent-success-hover: #0060df;
-    --accent-warning: #f5a623;        /* 警告 */
-    --accent-error: #ee0000;          /* 错误 */
-    --accent-error-hover: #cc0000;
-    --accent-info: #0070f3;           /* 信息 */
+    --accent-warning: #f5a623;
+    --accent-error: var(--ds-ship-red);
+    --accent-error-hover: #e04a3e;
+    --accent-info: var(--ds-console-blue);
 
-    /* 状态颜色 */
-    --bg-selected: #f5f5f5;           /* 选中状态背景 */
-    --bg-disabled: #ebebeb;           /* 禁用状态背景 */
-    --text-secondary-hover: #333333;  /* 次要文字悬停 */
+    --bg-selected: var(--ds-gray-50);
+    --bg-disabled: var(--ds-gray-100);
+    --text-secondary-hover: var(--ds-gray-900);
 
-    /* 阴影 — Vercel ring + card 系统 */
-    --shadow-subtle: 0 0 0 1px rgba(0, 0, 0, 0.05);
-    --shadow-soft: 0 0 0 1px #ebebeb, 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-medium: 0 0 0 1px #ebebeb, 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 4px 12px 0 rgba(0, 0, 0, 0.05);
-    --shadow-focus: 0 0 0 2px #ffffff, 0 0 0 4px #0070f3;
+    /* === 阴影系统 — Shadow-as-Border 哲学 === */
+    /* Level 0: Flat — 无阴影 */
+    --shadow-flat: none;
 
-    /* 圆角 — Vercel 系统 */
-    --radius-sm: 4px;
-    --radius-md: 6px;
-    --radius-lg: 8px;
-    --radius-xl: 12px;
+    /* Level 1: Ring — 阴影作为边框 (Vercel 签名技术) */
+    --shadow-ring: rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 
-    /* === 字体系统 — Vercel Geist === */
+    /* Level 1b: Light Ring — 更轻的环 */
+    --shadow-light-ring: rgb(235, 235, 235) 0px 0px 0px 1px;
+
+    /* Level 2: Subtle Card — Ring + 微提升 */
+    --shadow-card: rgba(0, 0, 0, 0.08) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 2px 2px;
+
+    /* Level 3: Full Card — Ring + 提升 + 环境光 + 内环高光 */
+    --shadow-full-card: rgba(0, 0, 0, 0.08) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 2px 2px, rgba(0, 0, 0, 0.04) 0px 8px 8px -8px, #fafafa 0px 0px 0px 1px;
+
+    /* Focus: 无障碍焦点环 */
+    --shadow-focus: 0 0 0 2px var(--ds-white), 0 0 0 4px var(--ds-focus-color);
+
+    /* 语义化阴影 — 向后兼容 */
+    --shadow-subtle: var(--shadow-light-ring);
+    --shadow-soft: var(--shadow-card);
+    --shadow-medium: var(--shadow-full-card);
+
+    /* === 圆角系统 === */
+    --radius-xs: 2px;       /* 微：内联代码 */
+    --radius-sm: 4px;       /* 小：小容器 */
+    --radius-md: 6px;       /* 标准：按钮、功能元素 */
+    --radius-lg: 8px;       /* 舒适：卡片、列表项 */
+    --radius-xl: 12px;      /* 图片：特色卡片、图片容器 */
+    --radius-tabs: 64px;    /* 标签页导航药丸 */
+    --radius-badge: 9999px; /* 徽章、状态药丸 */
+    --radius-full: 9999px;
+    --radius-pill: 9999px;
+
+    /* === 字体系统 === */
     --font-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-mono: "Fira Code", "Fira Mono", "Roboto Mono", "Cascadia Code", monospace;
+    --font-mono: "Fira Code", "Fira Mono", ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace;
 
     /* 行高 */
     --line-height-tight: 1.2;
     --line-height-relaxed: 1.5;
+
+    /* 过渡 */
+    --transition-fast: 0.15s ease-in-out;
+    --transition-normal: 0.2s ease-in-out;
 }
 
 /* ========================================
@@ -73,19 +128,18 @@
     padding: 0;
 }
 
-/* 页面主体 */
 body {
-    background: var(--bg-secondary);
+    background: var(--ds-white);
     font-family: var(--font-sans);
+    font-feature-settings: "liga";
     color: var(--text-primary);
-    line-height: var(--line-height-relaxed);
+    line-height: 1.5;
     padding: 24px;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* 应用根容器 */
 #app {
     max-width: 1200px;
     margin: 0 auto;
@@ -99,19 +153,20 @@ body {
     margin: 0 auto;
 }
 
-/* 头部 */
 .header {
     text-align: center;
     margin-bottom: 32px;
 }
 
-/* 标题 — 无衬线、紧凑字间距 */
+/* 标题 — Vercel 压缩字间距 */
 h1 {
     font-family: var(--font-sans);
     font-size: 2rem;
     font-weight: 600;
     color: var(--text-primary);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
+    line-height: 1.2;
+    font-feature-settings: "liga";
 }
 
 /* 主内容网格布局 */
@@ -122,7 +177,6 @@ h1 {
     gap: 24px 32px;
 }
 
-/* 主内容区域 — 使用 display: contents 让子元素直接参与 grid */
 .main-content {
     display: contents;
 }
@@ -142,7 +196,6 @@ h1 {
     grid-row: 3;
 }
 
-/* 侧边栏内容区域 */
 .sidebar-content {
     grid-column: 2;
     grid-row: 1 / 3;
@@ -151,16 +204,15 @@ h1 {
 }
 
 /* ========================================
-   4. 输入区域与表单
+   4. 输入区域与表单 — Shadow-as-Border
    ======================================== */
 .input-section {
-    background: var(--bg-surface);
+    background: var(--ds-white);
     padding: 28px;
     border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-card);
 }
 
-/* 标签 */
 label {
     display: block;
     margin-bottom: 8px;
@@ -170,7 +222,7 @@ label {
     letter-spacing: normal;
 }
 
-/* 输入框通用样式 */
+/* 输入框 — Shadow-as-Border */
 textarea,
 input[type="text"],
 input[type="number"],
@@ -179,29 +231,27 @@ input[type="search"] {
     padding: 0 12px;
     height: 40px;
     box-sizing: border-box;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--ds-gray-100);
     border-radius: var(--radius-md);
     font-size: 14px;
     font-family: var(--font-sans);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    background: var(--bg-surface);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    background: var(--ds-white);
     color: var(--text-primary);
 }
 
-/* 输入框焦点样式 */
 textarea:focus,
 input[type="text"]:focus,
 input[type="number"]:focus,
 input[type="search"]:focus {
-    border-color: var(--border-color-focus);
+    border-color: var(--ds-focus-color);
     box-shadow: var(--shadow-focus);
     outline: none;
 }
 
-/* 文本域特定样式 */
 textarea {
     height: 180px;
-    line-height: var(--line-height-relaxed);
+    line-height: 1.5;
     padding: 12px;
     resize: vertical;
 }
@@ -221,35 +271,37 @@ textarea {
     font-weight: 500;
     font-family: var(--font-sans);
     cursor: pointer;
-    transition: all 0.15s ease;
-    border: 1px solid var(--border-color);
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-light-ring);
     color: var(--text-primary);
-    background: var(--bg-surface);
+    background: var(--ds-white);
     gap: 8px;
     position: relative;
     overflow: hidden;
+    border: none;
 }
 
 .button::before {
     display: none;
 }
 
-/* 主要按钮 — 黑色背景 */
+/* 主要按钮 — Vercel 深色 */
 .button.primary {
-    background: var(--accent-dark);
-    color: white;
-    border-color: var(--accent-dark);
+    background: var(--ds-gray-900);
+    color: var(--ds-white);
+    box-shadow: none;
 }
 
 .button.primary:hover {
-    background: var(--accent-dark-hover);
+    background: var(--ds-gray-900);
+    opacity: 0.9;
 }
 
 /* 恢复按钮 */
 .button.resume {
-    background: var(--accent-success);
-    color: white;
-    border-color: var(--accent-success);
+    background: var(--ds-console-blue);
+    color: var(--ds-white);
+    box-shadow: none;
 }
 
 .button.resume:hover {
@@ -258,20 +310,20 @@ textarea {
 
 /* 暂停按钮 */
 .button.pause {
-    background: var(--text-secondary);
-    color: white;
-    border-color: var(--text-secondary);
+    background: var(--ds-gray-500);
+    color: var(--ds-white);
+    box-shadow: none;
 }
 
 .button.pause:hover {
-    background: var(--text-secondary-hover);
+    background: var(--ds-gray-900);
 }
 
 /* 停止按钮 */
 .button.stop {
-    background: var(--accent-error);
-    color: white;
-    border-color: var(--accent-error);
+    background: var(--ds-ship-red);
+    color: var(--ds-white);
+    box-shadow: none;
 }
 
 .button.stop:hover {
@@ -280,10 +332,9 @@ textarea {
 
 /* 禁用按钮 */
 .button:disabled {
-    background: var(--bg-disabled);
-    color: var(--text-tertiary);
+    background: var(--ds-gray-50);
+    color: var(--ds-gray-400);
     cursor: not-allowed;
-    transform: none;
     box-shadow: none;
 }
 
@@ -313,16 +364,18 @@ textarea {
     padding: 24px 0;
     color: var(--text-tertiary);
     font-size: 12px;
+    border-top: 1px solid var(--ds-gray-100);
 }
 
 .footer a {
-    color: var(--text-secondary);
+    color: var(--ds-link-blue);
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: color var(--transition-fast);
 }
 
 .footer a:hover {
-    color: var(--accent-primary);
+    color: var(--ds-gray-900);
+    text-decoration: underline;
 }
 
 /* ========================================

@@ -160,59 +160,60 @@ onBeforeUnmount(() => {
         display: none;
     }
 
-    /* 视图切换 Tab */
+    /* 视图切换 Tab — Vercel pill style */
     .view-tabs {
         display: flex;
         gap: 2px;
-        background: var(--bg-tertiary);
-        border-radius: 9999px;
+        background: var(--ds-gray-50);
+        border-radius: 64px;
         padding: 2px;
         margin-top: 16px;
+        box-shadow: var(--shadow-light-ring);
     }
 
     .view-tab {
         padding: 6px 20px;
         border: none;
-        border-radius: 9999px;
+        border-radius: 64px;
         background: transparent;
         font-size: 13px;
         font-family: var(--font-sans);
         cursor: pointer;
         transition: all 0.15s ease;
-        color: var(--text-secondary);
+        color: var(--ds-gray-500);
     }
 
     .view-tab:hover {
-        color: var(--text-primary);
+        color: var(--ds-gray-900);
     }
 
     .view-tab.active {
-        background: var(--bg-surface);
-        color: var(--text-primary);
+        background: var(--ds-white);
+        color: var(--ds-gray-900);
         font-weight: 500;
-        box-shadow: var(--shadow-subtle);
+        box-shadow: var(--shadow-ring);
     }
 
     /* Key 管理视图 */
     .manager-grid {
         flex: 1;
         min-height: 0;
-        background: var(--bg-paper);
+        background: var(--ds-white);
         border-radius: var(--radius-lg);
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-card);
         overflow: hidden;
     }
 
-    /* 结果面板的通用样式 - 使用绝对定位填满容器 */
+    /* 结果面板 */
     .results-wrapper {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: var(--bg-paper);
+        background: var(--ds-white);
         border-radius: var(--radius-lg);
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-card);
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -227,7 +228,6 @@ onBeforeUnmount(() => {
         overflow: hidden;
     }
 
-    /* 移动端响应式：取消绝对定位，恢复正常文档流 */
     @media (max-width: 1024px) {
         .results-wrapper {
             position: static;
