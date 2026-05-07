@@ -1,68 +1,67 @@
 /**
- * The Anthropic Aesthetic - 人文、文学、纸质感设计系统
- * 灵感来源：claude.ai 的视觉风格
+ * Vercel Design System — 精确、极简、科技感
+ * 参考：getdesign.md/vercel/design-md
  */
 
 /* ========================================
-   1. CSS Root Variables - 设计令牌
+   1. CSS Root Variables — 设计令牌
    ======================================== */
 :root {
-    /* === 颜色系统 - 温暖有机 === */
+    /* === 颜色系统 — Vercel === */
     /* 背景色 - 层级递进 */
-    --bg-paper: #FCFAF8;           /* 主背景：温暖象牙色 */
-    --bg-surface: #FFFFFF;          /* 卡片/面板背景 */
-    --bg-secondary: #F7F5F2;        /* 次要背景：更浅的暖灰 */
-    --bg-tertiary: #F0EDE8;         /* 第三层背景：用于嵌套区域 */
-    --bg-input: #FAFAF9;            /* 输入框背景 */
+    --bg-paper: #ffffff;              /* 主背景：纯白 */
+    --bg-surface: #ffffff;            /* 卡片/面板背景 */
+    --bg-secondary: #fafafa;          /* 次要背景：微灰 */
+    --bg-tertiary: #f5f5f5;           /* 第三层背景 */
+    --bg-input: #ffffff;              /* 输入框背景 */
 
     /* 文字颜色 */
-    --text-primary: #2D2D2D;        /* 主文字：炭灰色 */
-    --text-secondary: #6B6B6B;      /* 次要文字：温暖灰 */
-    --text-tertiary: #9B9B9B;       /* 辅助文字 */
+    --text-primary: #171717;          /* 主文字：Vercel 黑 */
+    --text-secondary: #666666;        /* 次要文字 */
+    --text-tertiary: #808080;         /* 辅助文字 */
 
     /* 边框颜色 */
-    --border-color: #E5E5E5;        /* 默认边框 */
-    --border-color-light: #EFEFEF;  /* 浅边框 */
-    --border-color-focus: #BFBFBF;  /* 焦点边框 */
+    --border-color: #ebebeb;          /* 默认边框 */
+    --border-color-light: #f5f5f5;    /* 浅边框 */
+    --border-color-focus: #0070f3;    /* 焦点边框：Vercel 蓝 */
 
     /* 强调色 */
-    --accent-primary: #D97757;      /* 赭石色 - 主要操作 */
-    --accent-primary-hover: #C4664A;
-    --accent-dark: #2D2D2D;         /* 深色按钮 */
-    --accent-dark-hover: #1A1A1A;
-    --accent-success: #2E7D32;      /* 成功 */
-    --accent-success-hover: #256929;
-    --accent-warning: #ED6C02;      /* 警告 */
-    --accent-error: #D32F2F;        /* 错误 */
-    --accent-error-hover: #B71C1C;
-    --accent-info: #3B82F6;         /* 信息 */
+    --accent-primary: #0070f3;        /* Vercel 蓝 — 主要操作 */
+    --accent-primary-hover: #0060df;
+    --accent-dark: #171717;           /* 深色按钮 */
+    --accent-dark-hover: #000000;
+    --accent-success: #0070f3;        /* 成功：Vercel 蓝 */
+    --accent-success-hover: #0060df;
+    --accent-warning: #f5a623;        /* 警告 */
+    --accent-error: #ee0000;          /* 错误 */
+    --accent-error-hover: #cc0000;
+    --accent-info: #0070f3;           /* 信息 */
 
     /* 状态颜色 */
-    --bg-selected: #FDF5F3;         /* 选中状态背景 */
-    --bg-disabled: #BDBDBD;         /* 禁用状态背景 */
-    --text-secondary-hover: #5A5A5A; /* 次要文字悬停 */
+    --bg-selected: #f5f5f5;           /* 选中状态背景 */
+    --bg-disabled: #ebebeb;           /* 禁用状态背景 */
+    --text-secondary-hover: #333333;  /* 次要文字悬停 */
 
-    /* 阴影 */
-    --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04);
-    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
-    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
-    --shadow-focus: 0 0 0 3px rgba(217, 119, 87, 0.15);
+    /* 阴影 — Vercel ring + card 系统 */
+    --shadow-subtle: 0 0 0 1px rgba(0, 0, 0, 0.05);
+    --shadow-soft: 0 0 0 1px #ebebeb, 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-medium: 0 0 0 1px #ebebeb, 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+    --shadow-focus: 0 0 0 2px #ffffff, 0 0 0 4px #0070f3;
 
-    /* 圆角 */
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
-    --radius-xl: 20px;
+    /* 圆角 — Vercel 系统 */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
 
-    /* === 字体系统 - 文学感 === */
-    --font-serif: "Tiempos Headline", "Merriweather", "Georgia", "Noto Serif SC", serif;
-    --font-sans: "Inter", "Söhne", "Helvetica Neue", -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: "SF Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
+    /* === 字体系统 — Vercel Geist === */
+    --font-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "Fira Code", "Fira Mono", "Roboto Mono", "Cascadia Code", monospace;
 
     /* 行高 */
-    --line-height-tight: 1.4;
-    --line-height-relaxed: 1.7;
-
+    --line-height-tight: 1.2;
+    --line-height-relaxed: 1.5;
 }
 
 /* ========================================
@@ -76,7 +75,7 @@
 
 /* 页面主体 */
 body {
-    background: var(--bg-paper);
+    background: var(--bg-secondary);
     font-family: var(--font-sans);
     color: var(--text-primary);
     line-height: var(--line-height-relaxed);
@@ -95,7 +94,6 @@ body {
 /* ========================================
    3. 主容器与布局
    ======================================== */
-/* 页面包裹器 - 替代原 container */
 .page-wrapper {
     max-width: 1200px;
     margin: 0 auto;
@@ -107,10 +105,10 @@ body {
     margin-bottom: 32px;
 }
 
-/* 标题 - 使用衬线字体 */
+/* 标题 — 无衬线、紧凑字间距 */
 h1 {
-    font-family: var(--font-serif);
-    font-size: 2.25rem;
+    font-family: var(--font-sans);
+    font-size: 2rem;
     font-weight: 600;
     color: var(--text-primary);
     letter-spacing: -0.02em;
@@ -124,30 +122,27 @@ h1 {
     gap: 24px 32px;
 }
 
-/* 主内容区域 - 使用 display: contents 让子元素直接参与 grid */
+/* 主内容区域 — 使用 display: contents 让子元素直接参与 grid */
 .main-content {
     display: contents;
 }
 
-/* 第一个 input-section */
 .main-content .input-section:first-child {
     grid-column: 1;
     grid-row: 1;
 }
 
-/* 第二个 input-section */
 .main-content .input-section:nth-child(2) {
     grid-column: 1;
     grid-row: 2;
 }
 
-/* ActionButtons */
 .main-content .actions-container {
     grid-column: 1;
     grid-row: 3;
 }
 
-/* 侧边栏内容区域 - 跨越前两行，使用相对定位容器 */
+/* 侧边栏内容区域 */
 .sidebar-content {
     grid-column: 2;
     grid-row: 1 / 3;
@@ -159,7 +154,7 @@ h1 {
    4. 输入区域与表单
    ======================================== */
 .input-section {
-    background: var(--bg-paper);
+    background: var(--bg-surface);
     padding: 28px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
@@ -168,11 +163,11 @@ h1 {
 /* 标签 */
 label {
     display: block;
-    margin-bottom: 10px;
-    font-weight: 600;
+    margin-bottom: 8px;
+    font-weight: 500;
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    letter-spacing: 0.01em;
+    font-size: 14px;
+    letter-spacing: normal;
 }
 
 /* 输入框通用样式 */
@@ -181,19 +176,19 @@ input[type="text"],
 input[type="number"],
 input[type="search"] {
     width: 100%;
-    padding: 0 16px;
-    height: 48px;
+    padding: 0 12px;
+    height: 40px;
     box-sizing: border-box;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    font-size: 15px;
+    font-size: 14px;
     font-family: var(--font-sans);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     background: var(--bg-surface);
     color: var(--text-primary);
 }
 
-/* 输入框焦点样式 - 柔和边框变深 */
+/* 输入框焦点样式 */
 textarea:focus,
 input[type="text"]:focus,
 input[type="number"]:focus,
@@ -207,7 +202,7 @@ input[type="search"]:focus {
 textarea {
     height: 180px;
     line-height: var(--line-height-relaxed);
-    padding: 14px 16px;
+    padding: 12px;
     resize: vertical;
 }
 
@@ -216,90 +211,92 @@ textarea {
    ======================================== */
 .button {
     width: 100%;
-    height: 48px;
-    font-size: 1rem;
+    height: 40px;
+    font-size: 14px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 14px 28px;
+    padding: 0 16px;
     border-radius: var(--radius-md);
-    font-weight: 600;
+    font-weight: 500;
     font-family: var(--font-sans);
     cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-    color: white;
-    gap: 10px;
+    transition: all 0.15s ease;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    background: var(--bg-surface);
+    gap: 8px;
     position: relative;
     overflow: hidden;
 }
 
-/* 移除过于花哨的光效 */
 .button::before {
     display: none;
 }
 
-/* 主要按钮 - 深色背景 */
+/* 主要按钮 — 黑色背景 */
 .button.primary {
     background: var(--accent-dark);
-    box-shadow: var(--shadow-soft);
+    color: white;
+    border-color: var(--accent-dark);
 }
 
 .button.primary:hover {
     background: var(--accent-dark-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-medium);
 }
 
 /* 恢复按钮 */
 .button.resume {
     background: var(--accent-success);
+    color: white;
+    border-color: var(--accent-success);
 }
 
 .button.resume:hover {
     background: var(--accent-success-hover);
-    transform: translateY(-1px);
 }
 
 /* 暂停按钮 */
 .button.pause {
     background: var(--text-secondary);
+    color: white;
+    border-color: var(--text-secondary);
 }
 
 .button.pause:hover {
     background: var(--text-secondary-hover);
-    transform: translateY(-1px);
 }
 
 /* 停止按钮 */
 .button.stop {
     background: var(--accent-error);
+    color: white;
+    border-color: var(--accent-error);
 }
 
 .button.stop:hover {
     background: var(--accent-error-hover);
-    transform: translateY(-1px);
 }
 
 /* 禁用按钮 */
 .button:disabled {
     background: var(--bg-disabled);
+    color: var(--text-tertiary);
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
-    opacity: 0.7;
 }
 
 /* ========================================
    6. 加载动画
    ======================================== */
 .loader {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-top: 2px solid white;
     border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    animation: spin 0.6s linear infinite;
 }
 
 @keyframes spin {
@@ -315,13 +312,13 @@ textarea {
     margin-top: 24px;
     padding: 24px 0;
     color: var(--text-tertiary);
-    font-size: 0.85rem;
+    font-size: 12px;
 }
 
 .footer a {
     color: var(--text-secondary);
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color 0.15s ease;
 }
 
 .footer a:hover {
@@ -357,7 +354,7 @@ textarea {
     }
 
     h1 {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
     }
 
     textarea,
@@ -378,7 +375,7 @@ textarea {
     }
 
     h1 {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
     }
 
     .input-section {
@@ -389,14 +386,12 @@ textarea {
 /* ========================================
    9. 无障碍与动效
    ======================================== */
-/* 模态框打开时防止滚动 */
 html.modal-open,
 body.modal-open {
     overflow: hidden;
     height: 100%;
 }
 
-/* 尊重用户减少动画的偏好 */
 @media (prefers-reduced-motion: reduce) {
     * {
         transition: none !important;
@@ -412,18 +407,18 @@ body.modal-open {
 .icon-stop {
     font-size: 1em;
     line-height: 1;
-    margin-right: 6px;
+    margin-right: 4px;
     display: inline-block;
 }
 
 .icon-play::before {
-    content: '▶';
+    content: '\25B6';
 }
 
 .icon-pause::before {
-    content: '❚❚';
+    content: '\275A\275A';
 }
 
 .icon-stop::before {
-    content: '◼';
+    content: '\25FC';
 }

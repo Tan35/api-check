@@ -163,29 +163,34 @@ onBeforeUnmount(() => {
     /* 视图切换 Tab */
     .view-tabs {
         display: flex;
-        gap: 4px;
+        gap: 2px;
+        background: var(--bg-tertiary);
+        border-radius: 9999px;
+        padding: 2px;
+        margin-top: 16px;
     }
 
     .view-tab {
-        padding: 6px 16px;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
+        padding: 6px 20px;
+        border: none;
+        border-radius: 9999px;
         background: transparent;
         font-size: 13px;
         font-family: var(--font-sans);
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.15s ease;
         color: var(--text-secondary);
     }
 
     .view-tab:hover {
-        background: var(--bg-tertiary);
+        color: var(--text-primary);
     }
 
     .view-tab.active {
-        background: var(--accent-primary);
-        color: white;
-        border-color: var(--accent-primary);
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        font-weight: 500;
+        box-shadow: var(--shadow-subtle);
     }
 
     /* Key 管理视图 */
