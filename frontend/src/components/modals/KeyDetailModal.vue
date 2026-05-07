@@ -11,8 +11,6 @@ const uiStore = useUiStore();
 const checkerStore = useCheckerStore();
 const configStore = useConfigStore();
 
-const emit = defineEmits(['close']);
-
 /**
  * @description 从 uiStore.modalData 读取 keyId（由 ModalContainer 调用）。
  */
@@ -253,7 +251,7 @@ async function handleDelete() {
     const confirmed = await uiStore.showConfirmation('确定删除这个 Key？');
     if (confirmed) {
         await keyManager.deleteKey(keyId.value);
-        emit('close');
+        uiStore.closeModal();
         uiStore.showToast('已删除', 'success');
     }
 }
@@ -278,11 +276,11 @@ async function removeTag(tag) {
 </script>
 
 <template>
-    <div class="detail-modal-overlay" @click.self="emit('close')">
+    <div class="detail-modal-overlay" @click.self="uiStore.closeModal()">
         <div class="detail-modal" v-if="keyRecord">
             <div class="detail-header">
                 <h3>Key 详情</h3>
-                <button @click="emit('close')" class="detail-close">✕</button>
+                <button @click="uiStore.closeModal()" class="detail-close">✕</button>
             </div>
 
             <div class="detail-body">
