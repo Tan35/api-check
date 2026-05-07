@@ -1,50 +1,63 @@
 /**
- * Vercel Design System — 精确、极简、科技感
- * 参考：getdesign.md/vercel/design-md (完整 DESIGN.md)
+ * Vercel Design System — 严格遵循 SKILL.md
+ * Shadow-as-border · 极端负字间距 · 多层阴影堆叠
  *
- * 核心原则：
- * - Shadow-as-border 替代 CSS border
- * - 极端负字间距 (-2.4px at 48px)
- * - 多层阴影堆叠 (border + elevation + ambient + inner glow)
- * - 三字重系统：400 (body), 500 (UI), 600 (headings)
- * - 色彩功能化，绝不装饰化
+ * Do:
+ * - Shadow-as-border: 0px 0px 0px 1px rgba(0,0,0,0.08)
+ * - Letter-spacing: -2.4px@48px → -1.28px@32px → -0.96px@24px → normal@14px
+ * - Three weights: 400 (body), 500 (UI), 600 (headings)
+ * - Inner #fafafa ring in card shadows
+ * - font-feature-settings: "liga"
+ *
+ * Don't:
+ * - No positive letter-spacing
+ * - No weight 700 on body text
+ * - No CSS border on cards (use shadow)
+ * - No warm colors in UI chrome
+ * - No pill radius (9999px) on primary action buttons
+ * - No heavy shadows (> 0.1 opacity)
  */
 
 /* ========================================
-   1. CSS Root Variables — 设计令牌
+   1. Design Tokens
    ======================================== */
 :root {
-    /* === 颜色系统 === */
-    /* 主色 */
-    --ds-gray-900: #171717;       /* 主文字、标题、深色背景 — 非纯黑，微暖 */
-    --ds-gray-600: #4d4d4d;       /* 次要文字、描述 */
-    --ds-gray-500: #666666;       /* 第三级文字、弱链接 */
-    --ds-gray-400: #808080;       /* 占位符、禁用态 */
-    --ds-gray-100: #ebebeb;       /* 边框、卡片轮廓、分割线 */
-    --ds-gray-50: #fafafa;        /* 微妙表面色调、内环高光 */
-    --ds-white: #ffffff;          /* 页面背景、卡片表面、按钮文字 */
+    /* === Color Palette === */
+    /* Primary */
+    --ds-gray-900: #171717;
+    --ds-gray-600: #4d4d4d;
+    --ds-gray-500: #666666;
+    --ds-gray-400: #808080;
+    --ds-gray-100: #ebebeb;
+    --ds-gray-50: #fafafa;
+    --ds-white: #ffffff;
+    --ds-black: #000000;
 
-    /* 工作流强调色 */
-    --ds-develop-blue: #0a72ef;   /* 开发流程 */
-    --ds-preview-pink: #de1d8d;   /* 预览部署 */
-    --ds-ship-red: #ff5b4f;       /* 生产部署 */
+    /* Workflow Accents */
+    --ds-develop-blue: #0a72ef;
+    --ds-preview-pink: #de1d8d;
+    --ds-ship-red: #ff5b4f;
 
-    /* 控制台色 */
+    /* Console / Code */
     --ds-console-blue: #0070f3;
     --ds-console-purple: #7928ca;
     --ds-console-pink: #eb367f;
 
-    /* 交互色 */
+    /* Interactive */
     --ds-link-blue: #0072f5;
     --ds-focus-color: hsla(212, 100%, 48%, 1);
     --ds-badge-blue-bg: #ebf5ff;
     --ds-badge-blue-text: #0068d6;
 
-    /* 语义化颜色 — 向后兼容旧变量名 */
+    /* Surface & Overlay */
+    --ds-overlay-backdrop: hsla(0, 0%, 98%, 1);
+    --ds-selection-text: hsla(0, 0%, 95%, 1);
+
+    /* Semantic — backward compat */
     --bg-paper: var(--ds-white);
     --bg-surface: var(--ds-white);
     --bg-secondary: var(--ds-gray-50);
-    --bg-tertiary: #f0f0f0;
+    --bg-tertiary: var(--ds-gray-100);
     --bg-input: var(--ds-white);
 
     --text-primary: var(--ds-gray-900);
@@ -52,16 +65,16 @@
     --text-tertiary: var(--ds-gray-500);
 
     --border-color: var(--ds-gray-100);
-    --border-color-light: #f5f5f5;
+    --border-color-light: var(--ds-gray-50);
     --border-color-focus: var(--ds-focus-color);
 
     --accent-primary: var(--ds-console-blue);
     --accent-primary-hover: #0060df;
     --accent-dark: var(--ds-gray-900);
-    --accent-dark-hover: #000000;
+    --accent-dark-hover: var(--ds-black);
     --accent-success: var(--ds-console-blue);
     --accent-success-hover: #0060df;
-    --accent-warning: #f5a623;
+    --accent-warning: var(--ds-preview-pink);
     --accent-error: var(--ds-ship-red);
     --accent-error-hover: #e04a3e;
     --accent-info: var(--ds-console-blue);
@@ -70,57 +83,65 @@
     --bg-disabled: var(--ds-gray-100);
     --text-secondary-hover: var(--ds-gray-900);
 
-    /* === 阴影系统 — Shadow-as-Border 哲学 === */
-    /* Level 0: Flat — 无阴影 */
+    /* === Shadow System — Shadow-as-Border === */
+    /* Level 0: Flat */
     --shadow-flat: none;
 
-    /* Level 1: Ring — 阴影作为边框 (Vercel 签名技术) */
+    /* Level 1: Ring — the signature */
     --shadow-ring: rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 
-    /* Level 1b: Light Ring — 更轻的环 */
+    /* Level 1b: Light Ring — lighter for tabs, images */
     --shadow-light-ring: rgb(235, 235, 235) 0px 0px 0px 1px;
 
-    /* Level 2: Subtle Card — Ring + 微提升 */
-    --shadow-card: rgba(0, 0, 0, 0.08) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 2px 2px;
+    /* Level 2: Subtle Card — Ring + soft elevation */
+    --shadow-card: rgba(0, 0, 0, 0.08) 0px 0px 0px 1px,
+                   rgba(0, 0, 0, 0.04) 0px 2px 2px;
 
-    /* Level 3: Full Card — Ring + 提升 + 环境光 + 内环高光 */
-    --shadow-full-card: rgba(0, 0, 0, 0.08) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 2px 2px, rgba(0, 0, 0, 0.04) 0px 8px 8px -8px, #fafafa 0px 0px 0px 1px;
+    /* Level 3: Full Card — Ring + elevation + ambient + inner glow */
+    --shadow-full-card: rgba(0, 0, 0, 0.08) 0px 0px 0px 1px,
+                        rgba(0, 0, 0, 0.04) 0px 2px 2px,
+                        rgba(0, 0, 0, 0.04) 0px 8px 8px -8px,
+                        #fafafa 0px 0px 0px 1px;
 
-    /* Focus: 无障碍焦点环 */
-    --shadow-focus: 0 0 0 2px var(--ds-white), 0 0 0 4px var(--ds-focus-color);
+    /* Focus — accessible blue ring */
+    --shadow-focus: 0 0 0 2px var(--ds-white),
+                    0 0 0 4px var(--ds-focus-color);
 
-    /* 语义化阴影 — 向后兼容 */
+    /* Backward compat */
     --shadow-subtle: var(--shadow-light-ring);
     --shadow-soft: var(--shadow-card);
     --shadow-medium: var(--shadow-full-card);
 
-    /* === 圆角系统 === */
-    --radius-xs: 2px;       /* 微：内联代码 */
-    --radius-sm: 4px;       /* 小：小容器 */
-    --radius-md: 6px;       /* 标准：按钮、功能元素 */
-    --radius-lg: 8px;       /* 舒适：卡片、列表项 */
-    --radius-xl: 12px;      /* 图片：特色卡片、图片容器 */
-    --radius-tabs: 64px;    /* 标签页导航药丸 */
-    --radius-badge: 9999px; /* 徽章、状态药丸 */
+    /* === Radius Scale === */
+    --radius-xs: 2px;        /* micro: inline code */
+    --radius-sm: 4px;        /* subtle: small containers */
+    --radius-md: 6px;        /* standard: buttons, functional */
+    --radius-lg: 8px;        /* comfortable: cards, list items */
+    --radius-xl: 12px;       /* image: featured cards, image containers */
+    --radius-tabs: 64px;     /* large pill: tab navigation */
+    --radius-badge: 9999px;  /* full pill: badges, status pills */
     --radius-full: 9999px;
     --radius-pill: 9999px;
 
-    /* === 字体系统 === */
-    --font-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-mono: "Fira Code", "Fira Mono", ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace;
+    /* === Typography === */
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    --font-serif: var(--font-sans);
+    --font-mono: "Fira Code", ui-monospace, SFMono-Regular, "Roboto Mono",
+                 Menlo, Monaco, "Liberation Mono", "DejaVu Sans Mono",
+                 "Courier New", monospace;
 
-    /* 行高 */
+    /* Line heights */
     --line-height-tight: 1.2;
     --line-height-relaxed: 1.5;
 
-    /* 过渡 */
+    /* Transitions */
     --transition-fast: 0.15s ease-in-out;
     --transition-normal: 0.2s ease-in-out;
 }
 
 /* ========================================
-   2. 全局重置与基础样式
+   2. Reset & Base
    ======================================== */
 * {
     box-sizing: border-box;
@@ -140,13 +161,18 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Selection highlight */
+::selection {
+    background: var(--ds-selection-text);
+}
+
 #app {
     max-width: 1200px;
     margin: 0 auto;
 }
 
 /* ========================================
-   3. 主容器与布局
+   3. Layout
    ======================================== */
 .page-wrapper {
     max-width: 1200px;
@@ -158,18 +184,17 @@ body {
     margin-bottom: 32px;
 }
 
-/* 标题 — Vercel 压缩字间距 */
+/* Display Hero — letter-spacing -2.4px@48px */
 h1 {
     font-family: var(--font-sans);
     font-size: 2rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--ds-gray-900);
     letter-spacing: -0.04em;
     line-height: 1.2;
     font-feature-settings: "liga";
 }
 
-/* 主内容网格布局 */
 .main-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -204,7 +229,7 @@ h1 {
 }
 
 /* ========================================
-   4. 输入区域与表单 — Shadow-as-Border
+   4. Forms — Shadow-as-Border for inputs
    ======================================== */
 .input-section {
     background: var(--ds-white);
@@ -222,7 +247,7 @@ label {
     letter-spacing: normal;
 }
 
-/* 输入框 — Shadow-as-Border */
+/* Inputs — shadow-as-border, not traditional border */
 textarea,
 input[type="text"],
 input[type="number"],
@@ -231,21 +256,23 @@ input[type="search"] {
     padding: 0 12px;
     height: 40px;
     box-sizing: border-box;
-    border: 1px solid var(--ds-gray-100);
+    border: none;
     border-radius: var(--radius-md);
     font-size: 14px;
     font-family: var(--font-sans);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    transition: box-shadow var(--transition-fast);
     background: var(--ds-white);
     color: var(--text-primary);
+    box-shadow: var(--shadow-ring);
 }
 
 textarea:focus,
 input[type="text"]:focus,
 input[type="number"]:focus,
 input[type="search"]:focus {
-    border-color: var(--ds-focus-color);
-    box-shadow: var(--shadow-focus);
+    box-shadow: var(--shadow-ring),
+                0 0 0 2px var(--ds-white),
+                0 0 0 4px var(--ds-focus-color);
     outline: none;
 }
 
@@ -257,8 +284,10 @@ textarea {
 }
 
 /* ========================================
-   5. 按钮系统
+   5. Buttons
    ======================================== */
+
+/* Secondary White (Shadow-bordered) — standard button */
 .button {
     width: 100%;
     height: 40px;
@@ -272,9 +301,9 @@ textarea {
     font-family: var(--font-sans);
     cursor: pointer;
     transition: all var(--transition-fast);
-    box-shadow: var(--shadow-light-ring);
-    color: var(--text-primary);
+    color: var(--ds-gray-900);
     background: var(--ds-white);
+    box-shadow: var(--shadow-light-ring);
     gap: 8px;
     position: relative;
     overflow: hidden;
@@ -285,7 +314,12 @@ textarea {
     display: none;
 }
 
-/* 主要按钮 — Vercel 深色 */
+/* Hover: shift to dark */
+.button:hover {
+    background: var(--ds-gray-50);
+}
+
+/* Primary Dark — CTA button */
 .button.primary {
     background: var(--ds-gray-900);
     color: var(--ds-white);
@@ -294,10 +328,10 @@ textarea {
 
 .button.primary:hover {
     background: var(--ds-gray-900);
-    opacity: 0.9;
+    opacity: 0.85;
 }
 
-/* 恢复按钮 */
+/* Resume */
 .button.resume {
     background: var(--ds-console-blue);
     color: var(--ds-white);
@@ -305,10 +339,10 @@ textarea {
 }
 
 .button.resume:hover {
-    background: var(--accent-success-hover);
+    opacity: 0.85;
 }
 
-/* 暂停按钮 */
+/* Pause */
 .button.pause {
     background: var(--ds-gray-500);
     color: var(--ds-white);
@@ -319,7 +353,7 @@ textarea {
     background: var(--ds-gray-900);
 }
 
-/* 停止按钮 */
+/* Stop — Ship Red */
 .button.stop {
     background: var(--ds-ship-red);
     color: var(--ds-white);
@@ -330,7 +364,7 @@ textarea {
     background: var(--accent-error-hover);
 }
 
-/* 禁用按钮 */
+/* Disabled */
 .button:disabled {
     background: var(--ds-gray-50);
     color: var(--ds-gray-400);
@@ -339,7 +373,7 @@ textarea {
 }
 
 /* ========================================
-   6. 加载动画
+   6. Loader
    ======================================== */
 .loader {
     width: 16px;
@@ -356,15 +390,15 @@ textarea {
 }
 
 /* ========================================
-   7. 底部样式
+   7. Footer
    ======================================== */
 .footer {
     text-align: center;
-    margin-top: 24px;
-    padding: 24px 0;
+    margin-top: 32px;
+    padding: 32px 0;
     color: var(--text-tertiary);
     font-size: 12px;
-    border-top: 1px solid var(--ds-gray-100);
+    box-shadow: inset 0 1px 0 0 var(--ds-gray-100);
 }
 
 .footer a {
@@ -379,7 +413,7 @@ textarea {
 }
 
 /* ========================================
-   8. 响应式设计
+   8. Responsive
    ======================================== */
 @media (max-width: 1024px) {
     .main-grid {
@@ -437,7 +471,7 @@ textarea {
 }
 
 /* ========================================
-   9. 无障碍与动效
+   9. Accessibility & Motion
    ======================================== */
 html.modal-open,
 body.modal-open {
@@ -453,7 +487,7 @@ body.modal-open {
 }
 
 /* ========================================
-   10. 按钮图标
+   10. Button Icons
    ======================================== */
 .icon-play,
 .icon-pause,
@@ -464,14 +498,6 @@ body.modal-open {
     display: inline-block;
 }
 
-.icon-play::before {
-    content: '\25B6';
-}
-
-.icon-pause::before {
-    content: '\275A\275A';
-}
-
-.icon-stop::before {
-    content: '\25FC';
-}
+.icon-play::before { content: '\25B6'; }
+.icon-pause::before { content: '\275A\275A'; }
+.icon-stop::before { content: '\25FC'; }

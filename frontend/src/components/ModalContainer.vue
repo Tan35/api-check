@@ -41,7 +41,7 @@ const activeModalComponent = computed(() => {
 </script>
 
 <style scoped>
-    /* Vercel 遮罩层 — 浅色 hsla(0, 0%, 98%, 1) */
+    /* Vercel Overlay Backdrop — hsla(0, 0%, 98%, 1) per SKILL.md */
     .custom-modal {
         position: fixed;
         top: 0;
@@ -49,7 +49,7 @@ const activeModalComponent = computed(() => {
         width: 100vw;
         height: 100vh;
         height: 100dvh;
-        background: rgba(0, 0, 0, 0.4);
+        background: var(--ds-overlay-backdrop);
         -webkit-backdrop-filter: blur(4px);
         backdrop-filter: blur(4px);
         display: flex;
