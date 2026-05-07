@@ -15,10 +15,33 @@ const addModalOpen = ref(false);
 const newKeyText = ref('');
 const newKeyAlias = ref('');
 const newKeyProvider = ref('openai');
+const newKeyBaseUrl = ref('');
+const newKeyModel = ref('');
 const selectedIds = ref(new Set());
 const selectAll = ref(false);
 const showImportExport = ref(false);
 const importText = ref('');
+
+/**
+ * @description 切换平台时自动填充默认 Base URL 和模型。
+ */
+watch(newKeyProvider, (val) => {
+    const p = configStore.providers[val];
+    if (p) {
+        newKeyBaseUrl.value = p.defaultBase || '';
+        newKeyModel.value = p.defaultModel || '';
+    }
+}, { immediate: true });
+
+/**
+ * @description 打开添加模态框时重置表单。
+ */
+function openAddModal() {
+    newKeyText.value = '';
+    newKeyAlias.value = '';
+    newKeyProvider.value = 'openai';
+    addModalOpen.value = true;
+}
 
 /**
  * @description 支持的提供商列表。
@@ -87,12 +110,14 @@ async function handleAddKey() {
         token,
         alias: newKeyAlias.value.trim(),
         provider: newKeyProvider.value,
-        baseUrl: configStore.providers[newKeyProvider.value]?.defaultBase || '',
-        model: configStore.providers[newKeyProvider.value]?.defaultModel || '',
+        baseUrl: newKeyBaseUrl.value.trim() || configStore.providers[newKeyProvider.value]?.defaultBase || '',
+        model: newKeyModel.value.trim() || configStore.providers[newKeyProvider.value]?.defaultModel || '',
     });
 
     newKeyText.value = '';
     newKeyAlias.value = '';
+    newKeyBaseUrl.value = '';
+    newKeyModel.value = '';
     addModalOpen.value = false;
     uiStore.showToast('Key 已添加', 'success');
 }
@@ -210,7 +235,7 @@ watch(() => keyManager.filteredKeys.length, () => {
         <!-- 顶部操作栏 -->
         <div class="km-toolbar">
             <div class="km-toolbar-left">
-                <button @click="addModalOpen = true" class="km-btn primary">
+                <button @click="openAddModal" class="km-btn primary">
                     + 添加 Key
                 </button>
                 <button @click="showImportExport = !showImportExport" class="km-btn">
@@ -362,6 +387,24 @@ watch(() => keyManager.filteredKeys.length, () => {
                                 class="km-form-input"
                                 placeholder="sk-..."
                                 autofocus
+                            />
+                        </div>
+                        <div class="km-form-group">
+                            <label>Base URL</label>
+                            <input
+                                v-model="newKeyBaseUrl"
+                                type="text"
+                                class="km-form-input"
+                                placeholder="https://api.example.com/v1"
+                            />
+                        </div>
+                        <div class="km-form-group">
+                            <label>模型</label>
+                            <input
+                                v-model="newKeyModel"
+                                type="text"
+                                class="km-form-input"
+                                placeholder="gpt-4o"
                             />
                         </div>
                         <div class="km-form-group">
