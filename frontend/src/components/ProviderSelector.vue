@@ -365,8 +365,8 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .provider-option.selected {
-        background: var(--ds-blue-soft);
-        color: var(--ds-blue-text);
+        background: var(--ds-accent-soft);
+        color: var(--text-primary);
         font-weight: 500;
     }
 

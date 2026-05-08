@@ -152,7 +152,7 @@ onBeforeUnmount(() => {
 
     .region-list li:hover {
         background: var(--ds-gray-50);
-        color: var(--accent-primary);
+        color: var(--text-primary);
     }
 
     .region-list li.selected {

@@ -159,9 +159,9 @@ export const useUiStore = defineStore('ui', {
         handleConfirmation(isConfirmed) {
             if (this.confirmationPromise) {
                 this.confirmationPromise(isConfirmed);
+                this.confirmationPromise = null;
             }
-            this.activeModal = null;
-            this.confirmationPromise = null;
+            this.closeModal();
         }
     }
 });

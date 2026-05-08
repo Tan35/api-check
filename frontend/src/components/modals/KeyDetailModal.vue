@@ -520,7 +520,7 @@ async function removeTag(tag) {
     }
 
     .section-toggle:hover {
-        color: var(--accent-primary);
+        color: var(--text-primary);
     }
 
     .detail-row {
@@ -564,7 +564,7 @@ async function removeTag(tag) {
     }
 
     .copy-hint {
-        color: var(--ds-blue-text);
+        color: var(--text-primary);
         font-family: var(--font-sans);
         font-size: 12px;
     }
@@ -577,7 +577,7 @@ async function removeTag(tag) {
 
     .balance-value {
         font-weight: 600;
-        color: var(--accent-primary);
+        color: var(--text-primary);
     }
 
     .status-badge {
@@ -588,8 +588,8 @@ async function removeTag(tag) {
     }
 
     .status-valid {
-        background: var(--ds-blue-soft);
-        color: var(--ds-blue-text);
+        background: var(--ds-accent-soft);
+        color: var(--text-primary);
     }
 
     .status-invalid {
@@ -742,7 +742,7 @@ async function removeTag(tag) {
 
     .snap-balance {
         font-weight: 600;
-        color: var(--accent-primary);
+        color: var(--text-primary);
     }
 
     /* 模型列表 */

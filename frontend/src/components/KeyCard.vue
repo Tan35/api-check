@@ -195,8 +195,8 @@ async function confirmDelete() {
     }
 
     .status-valid {
-        background: var(--ds-blue-soft);
-        color: var(--ds-blue-text);
+        background: var(--ds-accent-soft);
+        color: var(--text-primary);
     }
 
     .status-invalid {
@@ -310,8 +310,8 @@ async function confirmDelete() {
         font-size: 11px;
         padding: 2px 8px;
         border-radius: 9999px;
-        background: var(--ds-badge-blue-bg);
-        color: var(--ds-badge-blue-text);
+        background: var(--ds-badge-bg);
+        color: var(--ds-badge-text);
         font-weight: 500;
     }
 </style>

@@ -1,5 +1,6 @@
 <template>
-    <div class="results-panel" :class="{ active: resultsStore.activeTab === category }">
+    <div class="results-panel t-panel-slide" :class="{ active: resultsStore.activeTab === category }"
+        :data-open="resultsStore.activeTab === category ? 'true' : 'false'">
         <div class="panel-header" v-show="results.length > 0">
             <span class="results-title">{{ title }} KEY</span>
             <div class="panel-actions">
@@ -12,7 +13,9 @@
                         aria-label="排序方式">
                         <span>{{ currentSortOption.text }}</span>
                     </div>
-                    <div class="custom-options" role="listbox" aria-label="排序选项">
+                    <div class="custom-options t-dropdown" data-origin="top-right"
+                        :class="{ 'is-open': uiStore.sortDropdownOpen[category], 'is-closing': sortDropdownClosing }"
+                        role="listbox" aria-label="排序选项">
                         <span v-for="option in sortOptions" :key="option.value" class="custom-option"
                             :class="{ selected: option.value === resultsStore.sortState[category] }"
                             @click="setSort(option.value)"
@@ -89,6 +92,8 @@ const configStore = useConfigStore();
 const sortSelectWrapper = ref(null);
 /** @type {Ref<InstanceType<typeof DynamicScroller>|null>} 虚拟滚动组件的引用。*/
 const scrollerRef = ref(null);
+const sortDropdownClosing = ref(false);
+let sortDropdownCloseTimer = null;
 /** @type {ComputedRef<Array<object>>} 当前类别下的结果列表。*/
 const results = computed(() => resultsStore.results[props.category]);
 
@@ -142,11 +147,51 @@ const currentSortOption = computed(() => {
     return sortOptions.find(opt => opt.value === resultsStore.sortState[props.category]) || sortOptions[0];
 });
 
+const getDropdownCloseMs = () => {
+    try {
+        const raw = getComputedStyle(document.documentElement)
+            .getPropertyValue('--dropdown-close-dur')
+            .trim();
+        if (!raw) return 150;
+        if (raw.endsWith('ms')) return parseFloat(raw) || 150;
+        if (raw.endsWith('s')) return (parseFloat(raw) || 0.15) * 1000;
+        return parseFloat(raw) || 150;
+    } catch {
+        return 150;
+    }
+};
+
+const openSortDropdown = () => {
+    if (sortDropdownCloseTimer) {
+        clearTimeout(sortDropdownCloseTimer);
+        sortDropdownCloseTimer = null;
+    }
+    sortDropdownClosing.value = false;
+    uiStore.sortDropdownOpen[props.category] = true;
+};
+
+const closeSortDropdown = () => {
+    if (!uiStore.sortDropdownOpen[props.category] && !sortDropdownClosing.value) return;
+    uiStore.sortDropdownOpen[props.category] = false;
+    sortDropdownClosing.value = true;
+    if (sortDropdownCloseTimer) {
+        clearTimeout(sortDropdownCloseTimer);
+    }
+    sortDropdownCloseTimer = setTimeout(() => {
+        sortDropdownClosing.value = false;
+        sortDropdownCloseTimer = null;
+    }, getDropdownCloseMs());
+};
+
 /**
  * @description 切换排序下拉菜单的显示状态。
  */
 const toggleSortDropdown = () => {
-    uiStore.sortDropdownOpen[props.category] = !uiStore.sortDropdownOpen[props.category];
+    if (uiStore.sortDropdownOpen[props.category]) {
+        closeSortDropdown();
+    } else {
+        openSortDropdown();
+    }
 };
 
 /**
@@ -155,7 +200,7 @@ const toggleSortDropdown = () => {
  */
 const setSort = (value) => {
     resultsStore.setSort(props.category, value);
-    uiStore.sortDropdownOpen[props.category] = false;
+    closeSortDropdown();
 };
 
 /**
@@ -164,7 +209,7 @@ const setSort = (value) => {
  */
 const closeDropdown = (e) => {
     if (sortSelectWrapper.value && !sortSelectWrapper.value.contains(e.target)) {
-        uiStore.sortDropdownOpen[props.category] = false;
+        closeSortDropdown();
     }
 };
 
@@ -249,6 +294,10 @@ onMounted(() => {
  */
 onBeforeUnmount(() => {
     document.removeEventListener('click', closeDropdown);
+    if (sortDropdownCloseTimer) {
+        clearTimeout(sortDropdownCloseTimer);
+        sortDropdownCloseTimer = null;
+    }
 });
 
 /**
@@ -271,15 +320,17 @@ watch(
 <style scoped>
     /* 结果面板基础样式 */
     .results-panel {
-        display: none;
+        --panel-translate-y: 10px;
+        position: absolute;
+        inset: 0;
+        display: flex;
         flex-direction: column;
-        flex: 1;
         min-height: 0;
         overflow: hidden;
     }
 
     .results-panel.active {
-        display: flex;
+        z-index: 1;
     }
 
     /* 面板头部样式 */
@@ -524,16 +575,6 @@ watch(
         border-radius: var(--radius-sm);
         box-shadow: var(--shadow-medium);
         z-index: 10;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-10px);
-        transition: all 0.2s ease;
-    }
-
-    .custom-select.open .custom-options {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
     }
 
     .custom-option {
@@ -550,8 +591,8 @@ watch(
 
     .custom-option.selected {
         background-color: var(--bg-selected);
-        color: var(--accent-primary);
-        font-weight: 600;
+        color: var(--text-primary);
+        font-weight: 500;
     }
 
     @media (max-width: 768px) {

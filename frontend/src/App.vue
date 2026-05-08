@@ -206,6 +206,7 @@ onBeforeUnmount(() => {
     }
 
     .results-panels {
+        position: relative;
         padding: 10px;
         flex: 1;
         display: flex;

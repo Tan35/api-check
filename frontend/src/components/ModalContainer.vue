@@ -1,7 +1,7 @@
 <template>
     <teleport to="body">
         <div v-if="uiStore.activeModal" class="custom-modal show" @click.self="uiStore.closeModal()">
-            <div class="t-modal" :class="{ 'is-open': !uiStore.modalClosing, 'is-closing': uiStore.modalClosing }">
+            <div class="modal-shell t-modal" :class="{ 'is-open': !uiStore.modalClosing, 'is-closing': uiStore.modalClosing }" role="dialog" aria-modal="true">
                 <component :is="activeModalComponent" />
             </div>
         </div>
@@ -68,21 +68,21 @@ const activeModalComponent = computed(() => {
         visibility: visible;
     }
 
-    .custom-modal.show :deep(.modal-content),
-    .custom-modal.show :deep(.model-selector-content) {
-        transform: scale(1) translateY(0);
+    .modal-shell {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         max-height: 90vh;
         max-height: 90dvh;
     }
 
-    /* 模态框内容 — Shadow-as-Border + multi-layer shadow */
     :deep(.modal-content),
-    :deep(.model-selector-content) {
+    :deep(.model-selector-content),
+    :deep(.detail-modal) {
         background: var(--ds-white);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-full-card);
-        transform: scale(0.95) translateY(10px);
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @media (max-width: 480px) {

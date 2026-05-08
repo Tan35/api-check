@@ -364,7 +364,7 @@ watch(() => keyManager.filteredKeys.length, () => {
         <!-- 添加 Key 模态框 -->
         <Teleport to="body">
             <div v-if="addModalOpen" class="km-modal-overlay" @click.self="addModalOpen = false">
-                <div class="km-modal">
+                <div class="km-modal t-modal is-open" role="dialog" aria-modal="true">
                     <div class="km-modal-header">
                         <h3>添加 API Key</h3>
                         <button @click="addModalOpen = false" class="km-modal-close">×</button>

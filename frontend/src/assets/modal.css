@@ -32,8 +32,8 @@
     flex-shrink: 0;
 }
 
-.modal-icon.info { background: var(--ds-console-blue); }
-.modal-icon.success { background: var(--ds-console-blue); }
+.modal-icon.info { background: var(--ds-console-primary); }
+.modal-icon.success { background: var(--ds-console-primary); }
 .modal-icon.warning { background: var(--accent-warning); }
 .modal-icon.error { background: var(--ds-ship-red); }
 
@@ -160,7 +160,7 @@
 }
 
 .modal-btn.copy-btn {
-    background: var(--ds-console-blue);
+    background: var(--ds-console-primary);
     color: var(--ds-white);
     margin-right: auto;
 }
@@ -251,12 +251,12 @@
 
 .model-list li:hover {
     background-color: var(--ds-gray-50);
-    color: var(--ds-console-blue);
+    color: var(--text-primary);
 }
 
 .model-list li.selected {
-    background-color: var(--ds-badge-blue-bg);
-    color: var(--ds-badge-blue-text);
+    background-color: var(--ds-badge-bg);
+    color: var(--ds-badge-text);
     font-weight: 500;
     box-shadow: var(--shadow-light-ring);
 }

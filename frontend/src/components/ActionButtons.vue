@@ -76,7 +76,7 @@ const checkerStore = useCheckerStore();
     }
 
     .button.resume {
-        background: var(--ds-console-blue);
+        background: var(--ds-gray-1000);
         color: var(--ds-white);
     }
 
