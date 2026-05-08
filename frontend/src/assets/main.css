@@ -324,6 +324,7 @@ h1 {
 }
 
 .view-tabs {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 2px;
@@ -334,7 +335,24 @@ h1 {
     box-shadow: var(--shadow-light-ring);
 }
 
+/* 滑动指示器 */
+.tab-indicator {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: calc(50% - 2px);
+    height: 32px;
+    background: var(--ds-white);
+    border-radius: var(--radius-tabs);
+    box-shadow: var(--shadow-light-ring);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    z-index: 0;
+}
+
 .view-tab {
+    position: relative;
+    z-index: 1;
     height: 32px;
     padding: 0 14px;
     border-radius: var(--radius-tabs);
@@ -343,7 +361,10 @@ h1 {
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
-    transition: color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color var(--transition-fast);
     white-space: nowrap;
 }
 
@@ -352,9 +373,24 @@ h1 {
 }
 
 .view-tab.active {
-    background: var(--ds-white);
     color: var(--text-primary);
-    box-shadow: var(--shadow-light-ring);
+}
+
+/* 数量徽章 */
+.tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9999px;
+    background: var(--ds-gray-100);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    line-height: 1;
 }
 
 .workspace {

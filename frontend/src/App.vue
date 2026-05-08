@@ -131,6 +131,7 @@ onBeforeUnmount(() => {
                 </div>
 
                 <div class="view-tabs" role="tablist" aria-label="视图切换">
+                    <div class="tab-indicator" :style="{ transform: keyManager.showManager ? 'translateX(100%)' : 'translateX(0)' }"></div>
                 <button
                     :class="['view-tab', { active: !keyManager.showManager }]"
                     @click="keyManager.showManager = false"
@@ -145,7 +146,8 @@ onBeforeUnmount(() => {
                     role="tab"
                     :aria-selected="keyManager.showManager"
                 >
-                    Key 库 {{ keyManager.keys.length }}
+                    Key
+                    <span class="tab-count" v-if="keyManager.keys.length > 0">{{ keyManager.keys.length }}</span>
                 </button>
                 </div>
             </div>
