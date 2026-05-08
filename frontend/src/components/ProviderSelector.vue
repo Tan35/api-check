@@ -19,7 +19,7 @@
     <div class="custom-provider-select" :class="{ disabled: checkerStore.isChecking }" id="providerSelectWrapper"
         ref="providerSelectWrapper">
         <div class="custom-provider-trigger" :class="{ open: uiStore.providerDropdownOpen }"
-            @click="!checkerStore.isChecking && (uiStore.providerDropdownOpen = !uiStore.providerDropdownOpen)"
+            @click="!checkerStore.isChecking && toggleProviderDropdown()"
             role="combobox"
             aria-haspopup="listbox"
             :aria-expanded="uiStore.providerDropdownOpen"
@@ -27,7 +27,11 @@
             <span id="providerDisplay">{{ configStore.providers[configStore.currentProvider].label }}</span>
             <span class="trigger-chevron"></span>
         </div>
-        <div class="custom-provider-dropdown" :class="{ open: uiStore.providerDropdownOpen }" ref="dropdownContainer"
+        <div
+            class="custom-provider-dropdown t-dropdown"
+            data-origin="top-left"
+            :class="{ 'is-open': uiStore.providerDropdownOpen, 'is-closing': dropdownClosing }"
+            ref="dropdownContainer"
             role="listbox"
             aria-label="API 提供商列表">
             <input type="search" v-model="providerSearchTerm" placeholder="Search providers..." class="provider-search-input" ref="searchInputElement"
@@ -91,11 +95,12 @@ const handleProviderSelect = (key) => {
         resultsStore.activeTab = 'valid';
     }
     providerSearchTerm.value = '';
+    closeProviderDropdown();
 };
 
 const closeDropdown = (e) => {
     if (providerSelectWrapper.value && !providerSelectWrapper.value.contains(e.target)) {
-        uiStore.providerDropdownOpen = false;
+        closeProviderDropdown();
         providerSearchTerm.value = '';
     }
 };
@@ -104,7 +109,7 @@ const handleKeyDown = (e) => {
     if (!uiStore.providerDropdownOpen) return;
 
     if (e.key === 'Escape') {
-        uiStore.providerDropdownOpen = false;
+        closeProviderDropdown();
         return;
     }
 
@@ -124,9 +129,56 @@ const handleKeyDown = (e) => {
         const key = keys[highlightedIndex.value];
         if (key) {
             handleProviderSelect(key);
-            uiStore.providerDropdownOpen = false;
         }
     }
+};
+
+const dropdownClosing = ref(false);
+let dropdownCloseTimer = null;
+
+const getDropdownCloseMs = () => {
+    try {
+        const raw = getComputedStyle(document.documentElement)
+            .getPropertyValue('--dropdown-close-dur')
+            .trim();
+        if (!raw) return 150;
+        if (raw.endsWith('ms')) return parseFloat(raw) || 150;
+        if (raw.endsWith('s')) return (parseFloat(raw) || 0.15) * 1000;
+        return parseFloat(raw) || 150;
+    } catch {
+        return 150;
+    }
+};
+
+const toggleProviderDropdown = () => {
+    if (uiStore.providerDropdownOpen) {
+        closeProviderDropdown();
+    } else {
+        openProviderDropdown();
+    }
+};
+
+const openProviderDropdown = () => {
+    if (dropdownCloseTimer) {
+        clearTimeout(dropdownCloseTimer);
+        dropdownCloseTimer = null;
+    }
+    dropdownClosing.value = false;
+    uiStore.providerDropdownOpen = true;
+};
+
+const closeProviderDropdown = () => {
+    if (!uiStore.providerDropdownOpen && !dropdownClosing.value) return;
+    uiStore.providerDropdownOpen = false;
+    dropdownClosing.value = true;
+    if (dropdownCloseTimer) {
+        clearTimeout(dropdownCloseTimer);
+    }
+    const closeMs = getDropdownCloseMs();
+    dropdownCloseTimer = setTimeout(() => {
+        dropdownClosing.value = false;
+        dropdownCloseTimer = null;
+    }, closeMs);
 };
 
 const scrollHighlightedIntoView = () => {
@@ -157,6 +209,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
     document.removeEventListener('click', closeDropdown);
     document.removeEventListener('keydown', handleKeyDown);
+    if (dropdownCloseTimer) {
+        clearTimeout(dropdownCloseTimer);
+        dropdownCloseTimer = null;
+    }
 });
 
 watch(() => uiStore.providerDropdownOpen, (isOpen) => {
@@ -275,19 +331,9 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-full-card);
         z-index: 100;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-4px);
-        transition: all var(--transition-fast);
         max-height: 300px;
         overflow-y: auto;
         padding: 8px;
-    }
-
-    .custom-provider-dropdown.open {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
     }
 
     .provider-search-input {
