@@ -357,7 +357,6 @@ watch(() => keyManager.filteredKeys.length, () => {
 
         <!-- 空状态 -->
         <div v-else class="km-empty">
-            <div class="km-empty-icon">🔑</div>
             <div class="km-empty-text">还没有保存任何 API Key</div>
             <div class="km-empty-hint">点击上方 "添加 Key" 开始管理你的密钥</div>
         </div>
@@ -468,7 +467,7 @@ watch(() => keyManager.filteredKeys.length, () => {
         min-width: 200px;
         height: 36px;
         padding: 0 12px;
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-ring); border: none;
         border-radius: var(--radius-sm);
         font-size: 14px;
         font-family: var(--font-sans);
@@ -477,11 +476,11 @@ watch(() => keyManager.filteredKeys.length, () => {
     .km-filter-select {
         height: 36px;
         padding: 0 12px;
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-ring); border: none;
         border-radius: var(--radius-sm);
         font-size: 13px;
         font-family: var(--font-sans);
-        background: var(--bg-surface);
+        background: var(--ds-white);
     }
 
     /* 批量操作 */
@@ -490,7 +489,7 @@ watch(() => keyManager.filteredKeys.length, () => {
         align-items: center;
         gap: 12px;
         padding: 8px 12px;
-        background: var(--bg-secondary);
+        background: var(--ds-gray-50);
         border-radius: var(--radius-sm);
         margin-bottom: 12px;
     }
@@ -504,7 +503,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     /* 导入导出 */
     .km-import-export {
         padding: 12px;
-        background: var(--bg-secondary);
+        background: var(--ds-gray-50);
         border-radius: var(--radius-md);
         margin-bottom: 12px;
     }
@@ -520,7 +519,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     .km-ie-textarea {
         width: 100%;
         padding: 8px;
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-ring); border: none;
         border-radius: var(--radius-sm);
         font-family: var(--font-mono);
         font-size: 12px;
@@ -595,9 +594,9 @@ watch(() => keyManager.filteredKeys.length, () => {
     .km-btn {
         height: 36px;
         padding: 0 16px;
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-ring); border: none;
         border-radius: var(--radius-sm);
-        background: var(--bg-surface);
+        background: var(--ds-white);
         font-size: 13px;
         font-family: var(--font-sans);
         cursor: pointer;
@@ -641,7 +640,7 @@ watch(() => keyManager.filteredKeys.length, () => {
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
+        background: var(--ds-overlay-backdrop); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -649,7 +648,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     }
 
     .km-modal {
-        background: var(--bg-paper);
+        background: var(--ds-white);
         border-radius: var(--radius-lg);
         width: 90%;
         max-width: 440px;
@@ -703,7 +702,7 @@ watch(() => keyManager.filteredKeys.length, () => {
         width: 100%;
         height: 40px;
         padding: 0 12px;
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-ring); border: none;
         border-radius: var(--radius-sm);
         font-size: 14px;
         font-family: var(--font-sans);

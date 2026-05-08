@@ -19,18 +19,12 @@ const emit = defineEmits(['select', 'delete']);
 const keyManager = useKeyManagerStore();
 const uiStore = useUiStore();
 
-/**
- * @description 隐藏的 token 显示。
- */
 const maskedToken = computed(() => {
     const token = props.keyRecord.token;
     if (token.length <= 8) return '****';
     return token.substring(0, 4) + '****' + token.substring(token.length - 4);
 });
 
-/**
- * @description 状态标签样式。
- */
 const statusClass = computed(() => {
     const map = {
         valid: 'status-valid',
@@ -41,9 +35,6 @@ const statusClass = computed(() => {
     return map[props.keyRecord.status] || 'status-unknown';
 });
 
-/**
- * @description 状态中文名。
- */
 const statusText = computed(() => {
     const map = {
         valid: '有效',
@@ -54,9 +45,6 @@ const statusText = computed(() => {
     return map[props.keyRecord.status] || '未知';
 });
 
-/**
- * @description 余额显示文本。
- */
 const balanceText = computed(() => {
     const b = props.keyRecord.balance;
     if (b === null || b === undefined) return null;
@@ -65,9 +53,6 @@ const balanceText = computed(() => {
     return `${b} ${c}`;
 });
 
-/**
- * @description 平台名称。
- */
 const providerLabel = computed(() => {
     const map = {
         openai_responses: 'OpenAI (R)',
@@ -85,9 +70,6 @@ const providerLabel = computed(() => {
     return map[props.keyRecord.provider] || props.keyRecord.provider;
 });
 
-/**
- * @description 格式化日期。
- */
 function formatDate(iso) {
     if (!iso) return '-';
     return new Date(iso).toLocaleString('zh-CN', {
@@ -98,9 +80,6 @@ function formatDate(iso) {
     });
 }
 
-/**
- * @description 复制 token 到剪贴板。
- */
 async function copyToken() {
     try {
         await navigator.clipboard.writeText(props.keyRecord.token);
@@ -110,9 +89,6 @@ async function copyToken() {
     }
 }
 
-/**
- * @description 确认删除。
- */
 async function confirmDelete() {
     const confirmed = await uiStore.showConfirmation(`确定删除这个 Key？\n${maskedToken.value}`);
     if (confirmed) {
@@ -124,13 +100,16 @@ async function confirmDelete() {
 <template>
     <div class="key-card" :class="{ selected }" @click="emit('select', keyRecord.id)">
         <div class="key-card-header">
-            <span class="provider-badge">{{ providerLabel }}</span>
-            <span class="status-badge" :class="statusClass">{{ statusText }}</span>
+            <span class="provider-pill">{{ providerLabel }}</span>
+            <span class="status-pill" :class="statusClass">{{ statusText }}</span>
         </div>
 
         <div class="key-card-token" @click.stop="copyToken" title="点击复制">
             <span class="token-text">{{ maskedToken }}</span>
-            <span class="copy-icon">📋</span>
+            <svg class="copy-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="4.5" y="4.5" width="7" height="7" rx="1"/>
+                <path d="M9.5 4.5V2.5a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1h2"/>
+            </svg>
         </div>
 
         <div v-if="keyRecord.alias" class="key-card-alias">
@@ -138,31 +117,33 @@ async function confirmDelete() {
         </div>
 
         <div class="key-card-meta">
-            <span v-if="balanceText" class="meta-item balance">
-                💰 {{ balanceText }}
+            <span v-if="balanceText" class="meta-item">
+                {{ balanceText }}
             </span>
-            <span v-if="keyRecord.models.length > 0" class="meta-item models">
-                🤖 {{ keyRecord.models.length }} 模型
+            <span v-if="keyRecord.models.length > 0" class="meta-item">
+                {{ keyRecord.models.length }} 模型
             </span>
         </div>
 
         <div class="key-card-footer">
             <span class="meta-date" v-if="keyRecord.lastChecked">
-                检测: {{ formatDate(keyRecord.lastChecked) }}
+                {{ formatDate(keyRecord.lastChecked) }}
             </span>
             <span class="meta-date" v-else>
                 未检测
             </span>
 
             <div class="key-card-actions" @click.stop>
-                <button @click="confirmDelete" class="action-btn delete-btn" title="删除">
-                    🗑️
+                <button @click="confirmDelete" class="action-btn" title="删除">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M2.5 4h9M5 4V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V4M11 4v7.5a1 1 0 01-1 1H4a1 1 0 01-1-1V4"/>
+                    </svg>
                 </button>
             </div>
         </div>
 
         <div v-if="keyRecord.tags.length > 0" class="key-card-tags">
-            <span v-for="tag in keyRecord.tags" :key="tag" class="tag-badge">
+            <span v-for="tag in keyRecord.tags" :key="tag" class="tag-pill">
                 {{ tag }}
             </span>
         </div>
@@ -171,45 +152,45 @@ async function confirmDelete() {
 
 <style scoped>
     .key-card {
-        background: var(--bg-surface);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
+        background: var(--ds-white);
+        border-radius: var(--radius-lg);
         padding: 12px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: box-shadow var(--transition-fast);
+        box-shadow: var(--shadow-card);
     }
 
     .key-card:hover {
-        border-color: var(--border-color-focus);
-        box-shadow: var(--shadow-subtle);
+        box-shadow: var(--shadow-full-card);
     }
 
     .key-card.selected {
-        border-color: var(--accent-primary);
-        background: var(--bg-selected);
+        box-shadow: var(--shadow-full-card),
+                    0 0 0 2px var(--ds-white),
+                    0 0 0 4px var(--ds-focus-color);
     }
 
     .key-card-header {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         margin-bottom: 8px;
     }
 
-    .provider-badge {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 2px 8px;
-        border-radius: 12px;
-        background: var(--accent-dark);
-        color: white;
-    }
-
-    .status-badge {
+    .provider-pill {
         font-size: 11px;
         font-weight: 500;
         padding: 2px 8px;
-        border-radius: 12px;
+        border-radius: 9999px;
+        background: var(--ds-gray-900);
+        color: var(--ds-white);
+    }
+
+    .status-pill {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 9999px;
     }
 
     .status-valid {
@@ -228,8 +209,8 @@ async function confirmDelete() {
     }
 
     .status-unknown {
-        background: #f3f4f6;
-        color: #6b7280;
+        background: var(--ds-gray-100);
+        color: var(--ds-gray-500);
     }
 
     .key-card-token {
@@ -237,15 +218,15 @@ async function confirmDelete() {
         align-items: center;
         gap: 6px;
         padding: 6px 8px;
-        background: var(--bg-secondary);
+        background: var(--ds-gray-50);
         border-radius: var(--radius-sm);
         margin-bottom: 6px;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: background var(--transition-fast);
     }
 
     .key-card-token:hover {
-        background: var(--bg-tertiary);
+        background: var(--ds-gray-100);
     }
 
     .token-text {
@@ -259,13 +240,13 @@ async function confirmDelete() {
     }
 
     .copy-icon {
-        font-size: 12px;
-        opacity: 0.5;
+        color: var(--text-tertiary);
+        flex-shrink: 0;
     }
 
     .key-card-alias {
         font-size: 13px;
-        font-weight: 600;
+        font-weight: 500;
         color: var(--text-primary);
         margin-bottom: 6px;
     }
@@ -280,10 +261,7 @@ async function confirmDelete() {
     .meta-item {
         font-size: 12px;
         color: var(--text-secondary);
-    }
-
-    .meta-item.balance {
-        font-weight: 600;
+        font-family: var(--font-mono);
     }
 
     .key-card-footer {
@@ -306,16 +284,17 @@ async function confirmDelete() {
         background: transparent;
         border: none;
         cursor: pointer;
-        font-size: 14px;
-        padding: 2px 4px;
-        border-radius: 4px;
-        opacity: 0.5;
-        transition: all 0.2s;
+        padding: 4px;
+        border-radius: var(--radius-sm);
+        color: var(--text-tertiary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color var(--transition-fast);
     }
 
     .action-btn:hover {
-        opacity: 1;
-        background: var(--bg-tertiary);
+        color: var(--ds-ship-red);
     }
 
     .key-card-tags {
@@ -325,11 +304,12 @@ async function confirmDelete() {
         flex-wrap: wrap;
     }
 
-    .tag-badge {
-        font-size: 10px;
-        padding: 2px 6px;
-        border-radius: 8px;
-        background: var(--bg-tertiary);
-        color: var(--text-secondary);
+    .tag-pill {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        background: var(--ds-badge-blue-bg);
+        color: var(--ds-badge-blue-text);
+        font-weight: 500;
     }
 </style>
