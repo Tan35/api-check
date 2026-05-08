@@ -703,9 +703,13 @@ watch(() => keyManager.filteredKeys.length, () => {
         width: 100%;
         height: 40px;
         padding: 0 12px;
+        box-shadow: var(--shadow-ring);
+        border: none;
         border-radius: var(--radius-md);
         font-size: 14px;
         font-family: var(--font-sans);
+        background: var(--ds-white);
+        transition: box-shadow var(--transition-fast);
     }
 
     .km-form-input:focus,
