@@ -5,6 +5,7 @@ import { useUiStore } from '@/stores/ui';
 import { useConfigStore } from '@/stores/config';
 import { useCheckerStore } from '@/stores/checker';
 import KeyCard from './KeyCard.vue';
+import CustomSelect from './CustomSelect.vue';
 
 const keyManager = useKeyManagerStore();
 const uiStore = useUiStore();
@@ -372,11 +373,7 @@ watch(() => keyManager.filteredKeys.length, () => {
                     <div class="km-modal-body">
                         <div class="km-form-group">
                             <label>平台</label>
-                            <select v-model="newKeyProvider" class="km-form-select">
-                                <option v-for="opt in providerOptions" :key="opt.key" :value="opt.key">
-                                    {{ opt.label }}
-                                </option>
-                            </select>
+                            <CustomSelect v-model="newKeyProvider" :options="providerOptions" />
                         </div>
                         <div class="km-form-group">
                             <label>API Key</label>
