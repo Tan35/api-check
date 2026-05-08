@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 
 /** @type {number} Toast ID 自增计数器 */
 let toastIdCounter = 0;
+let modalCloseTimer = null;
 
 /**
  * @description ui Store 用于管理应用程序的用户界面状态，如模态框、Toast 提示、加载状态等。
@@ -18,6 +19,8 @@ export const useUiStore = defineStore('ui', {
         toasts: [],
         /** @type {string|null} 当前激活的模态框名称。*/
         activeModal: null,
+        /** @type {boolean} 模态框是否正在关闭中。*/
+        modalClosing: false,
         /** @type {object} 传递给模态框的数据。*/
         modalData: {},
         /** @type {string} 模型选择器中的搜索关键词。*/
@@ -34,6 +37,23 @@ export const useUiStore = defineStore('ui', {
         isModalActive: (state) => !!state.activeModal,
     },
     actions: {
+        /**
+         * @description 获取模态关闭动画的时长（毫秒）。
+         * @returns {number} - 关闭动画时长。
+         */
+        _getModalCloseMs() {
+            try {
+                const raw = getComputedStyle(document.documentElement)
+                    .getPropertyValue('--modal-close-dur')
+                    .trim();
+                if (!raw) return 150;
+                if (raw.endsWith('ms')) return parseFloat(raw) || 150;
+                if (raw.endsWith('s')) return (parseFloat(raw) || 0.15) * 1000;
+                return parseFloat(raw) || 150;
+            } catch {
+                return 150;
+            }
+        },
         /**
          * @description 显示一个 Toast 提示消息。
          * @param {string} message - 消息文本。
@@ -86,6 +106,11 @@ export const useUiStore = defineStore('ui', {
          * @param {object} [data={}] - 传递给模态框的数据。
          */
         openModal(modalName, data = {}) {
+            if (modalCloseTimer) {
+                clearTimeout(modalCloseTimer);
+                modalCloseTimer = null;
+            }
+            this.modalClosing = false;
             this.modalData = data;
             this.activeModal = modalName;
         },
@@ -98,9 +123,23 @@ export const useUiStore = defineStore('ui', {
                 this.confirmationPromise(false);
                 this.confirmationPromise = null;
             }
-            this.activeModal = null;
-            this.modalData = {};
-            this.modelSearch = '';
+            if (!this.activeModal || this.modalClosing) return;
+
+            this.modalClosing = true;
+            const closeMs = this._getModalCloseMs();
+
+            if (modalCloseTimer) {
+                clearTimeout(modalCloseTimer);
+                modalCloseTimer = null;
+            }
+
+            modalCloseTimer = setTimeout(() => {
+                this.activeModal = null;
+                this.modalData = {};
+                this.modelSearch = '';
+                this.modalClosing = false;
+                modalCloseTimer = null;
+            }, closeMs);
         },
         /**
          * @description 显示一个确认模态框，并返回一个 Promise，用于处理用户的选择。

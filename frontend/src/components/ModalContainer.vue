@@ -1,7 +1,9 @@
 <template>
     <teleport to="body">
         <div v-if="uiStore.activeModal" class="custom-modal show" @click.self="uiStore.closeModal()">
-            <component :is="activeModalComponent" />
+            <div class="t-modal" :class="{ 'is-open': !uiStore.modalClosing, 'is-closing': uiStore.modalClosing }">
+                <component :is="activeModalComponent" />
+            </div>
         </div>
     </teleport>
 </template>
