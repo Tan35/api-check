@@ -9,9 +9,9 @@
             </label>
             <button @click="uiStore.openModal('regionSelector')" class="settings-btn" title="检测设置"
                 :disabled="checkerStore.isChecking">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <circle cx="8" cy="8" r="2.5"/>
-                    <path d="M13.5 8a5.5 5.5 0 01-.3 1.8l1.2.9-1.5 2.6-1.4-.5a5.5 5.5 0 01-1.5 1l.2 1.5h-3l.2-1.5a5.5 5.5 0 01-1.5-1l-1.4.5L3.6 10.7l1.2-.9A5.5 5.5 0 014.5 8a5.5 5.5 0 01.3-1.8L3.6 5.3l1.5-2.6 1.4.5a5.5 5.5 0 011.5-1L7.8.7h3l-.2 1.5a5.5 5.5 0 011.5 1l1.4-.5 1.5 2.6-1.2.9c.2.6.3 1.2.3 1.8z"/>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M10.9 2.6a1 1 0 012.2 0l.3 1.3a1.6 1.6 0 001.9 1.2l1.4-.3a1 1 0 011.2.8l.3 1.4a1.6 1.6 0 001.6 1.3h1.3a1 1 0 010 2h-1.3a1.6 1.6 0 00-1.6 1.3l-.3 1.4a1 1 0 01-1.2.8l-1.4-.3a1.6 1.6 0 00-1.9 1.2l-.3 1.3a1 1 0 01-2.2 0l-.3-1.3a1.6 1.6 0 00-1.9-1.2l-1.4.3a1 1 0 01-1.2-.8l-.3-1.4A1.6 1.6 0 005.9 14H4.6a1 1 0 010-2h1.3a1.6 1.6 0 001.6-1.3l.3-1.4a1 1 0 011.2-.8l1.4.3a1.6 1.6 0 001.9-1.2l.3-1.3z"/>
+                    <circle cx="12" cy="12" r="3"/>
                 </svg>
             </button>
         </div>
