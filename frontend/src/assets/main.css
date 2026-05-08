@@ -264,22 +264,11 @@ button {
     height: 26px;
     flex: 0 0 auto;
     border-radius: 50%;
-    background: var(--ds-gray-1000);
-    position: relative;
+    background: url('/favicon.png') center / cover no-repeat;
+    box-shadow: var(--shadow-ring);
 }
 
-.brand-mark::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 0;
-    height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 11px solid var(--ds-white);
-    transform: translate(-50%, -57%);
-}
+/* brand-mark::after removed — using favicon.png instead */
 
 .brand-text {
     min-width: 0;
