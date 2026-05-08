@@ -265,7 +265,6 @@ button {
     flex: 0 0 auto;
     border-radius: 50%;
     background: url('/favicon.png') center / cover no-repeat;
-    box-shadow: var(--shadow-ring);
 }
 
 /* brand-mark::after removed — using favicon.png instead */
