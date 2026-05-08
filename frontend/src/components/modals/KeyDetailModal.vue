@@ -481,13 +481,22 @@ async function removeTag(tag) {
 
     .detail-close {
         background: transparent;
+        border: none;
         font-size: 18px;
         cursor: pointer;
-        opacity: 0.5;
+        color: var(--text-tertiary);
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        transition: all var(--transition-fast);
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .detail-close:hover {
-        opacity: 1;
+        background: var(--ds-gray-100);
+        color: var(--text-primary);
     }
 
     .detail-body {
