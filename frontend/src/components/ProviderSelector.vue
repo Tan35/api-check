@@ -188,13 +188,13 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     .header-actions {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
     }
 
     .settings-btn {
         width: 32px;
         height: 32px;
-        background: var(--ds-white);
+        background: var(--ds-gray-50);
         cursor: pointer;
         border-radius: var(--radius-md);
         color: var(--text-tertiary);
@@ -206,7 +206,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .settings-btn:hover {
-        background: var(--ds-gray-50);
+        background: var(--ds-gray-100);
         color: var(--text-primary);
     }
 
@@ -341,6 +341,16 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         cursor: pointer;
         gap: 8px;
         user-select: none;
+        height: 32px;
+        padding: 0 10px;
+        border-radius: var(--radius-md);
+        background: var(--ds-gray-50);
+        box-shadow: var(--shadow-light-ring);
+        transition: background var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .switch-label:hover {
+        background: var(--ds-gray-100);
     }
 
     .switch-label input[type="checkbox"] {
@@ -351,11 +361,11 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         position: relative;
         width: 34px;
         height: 18px;
-        background-color: var(--ds-gray-100);
+        background-color: var(--ds-gray-200);
         border-radius: var(--radius-badge);
         transition: background-color var(--transition-fast);
         flex-shrink: 0;
-        box-shadow: var(--shadow-light-ring);
+        box-shadow: inset 0 0 0 1px var(--ds-gray-100);
     }
 
     .slider::before {
@@ -372,7 +382,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .switch-label input:checked + .slider {
-        background-color: var(--ds-gray-1000);
+        background-color: var(--ds-gray-900);
     }
 
     .switch-label input:checked + .slider::before {
