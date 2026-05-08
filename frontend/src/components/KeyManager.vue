@@ -539,7 +539,7 @@ watch(() => keyManager.filteredKeys.length, () => {
         gap: 6px;
         font-size: 13px;
         color: var(--text-secondary);
-        margin-bottom: 0;
+        margin-bottom: 8px;
         cursor: pointer;
     }
 
