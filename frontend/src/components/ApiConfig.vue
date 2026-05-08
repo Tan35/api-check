@@ -7,7 +7,7 @@
                     placeholder="API Base URL" :disabled="checkerStore.isChecking">
             </div>
             <div class="config-item">
-                <label :for="configStore.currentProvider + '__model'">测试模型</label>
+                <label :for="configStore.currentProvider + '__model'">Model</label>
                 <div class="input-with-button">
                     <input type="text" :id="configStore.currentProvider + '__model'" v-model="currentConfig.model"
                         placeholder="测试用的模型名称" :disabled="checkerStore.isChecking">
@@ -105,15 +105,15 @@ const handleFetchModels = async () => {
 
 <style scoped>
     .provider-config-area {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid var(--border-color-light);
+        margin-top: 14px;
+        padding-top: 14px;
+        box-shadow: inset 0 1px 0 0 var(--ds-gray-100);
     }
 
     .config-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
+        gap: 12px;
     }
 
     @media (max-width: 768px) {
@@ -125,7 +125,7 @@ const handleFetchModels = async () => {
     .config-item {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 7px;
     }
 
     .config-item label {
@@ -144,25 +144,30 @@ const handleFetchModels = async () => {
 
     .fetch-models-btn {
         padding: 0 16px;
-        color: white;
-        border: none;
+        color: var(--ds-white);
         border-radius: var(--radius-md);
-        font-size: 0.9rem;
-        font-weight: 600;
+        font-size: 13px;
+        font-weight: 500;
         font-family: var(--font-sans);
         cursor: pointer;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 6px;
-        height: 48px;
+        min-width: 64px;
+        height: 40px;
         background: var(--accent-dark);
         flex-shrink: 0;
     }
 
     .fetch-models-btn:hover {
         background: var(--accent-dark-hover);
-        transform: translateY(-1px);
+    }
+
+    .fetch-models-btn:focus-visible {
+        outline: none;
+        box-shadow: var(--shadow-focus);
     }
 
     input:disabled {

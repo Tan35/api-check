@@ -276,11 +276,10 @@ async function removeTag(tag) {
 </script>
 
 <template>
-    <div class="detail-modal-overlay" @click.self="uiStore.closeModal()">
         <div class="detail-modal" v-if="keyRecord">
             <div class="detail-header">
                 <h3>Key 详情</h3>
-                <button @click="uiStore.closeModal()" class="detail-close">✕</button>
+                <button @click="uiStore.closeModal()" class="detail-close">×</button>
             </div>
 
             <div class="detail-body">
@@ -311,7 +310,7 @@ async function removeTag(tag) {
                         <span class="detail-label">Key</span>
                         <span class="detail-value token-value" @click="copyToken" title="点击复制">
                             {{ keyRecord.token.substring(0, 20) }}...
-                            <span class="copy-hint">📋</span>
+                            <span class="copy-hint">复制</span>
                         </span>
                     </div>
 
@@ -350,14 +349,14 @@ async function removeTag(tag) {
                         @click="isEditing = true"
                         class="detail-btn"
                     >
-                        ✏️ 编辑
+                        编辑
                     </button>
                     <button
                         v-if="isEditing"
                         @click="saveEdit"
                         class="detail-btn primary"
                     >
-                        💾 保存
+                        保存
                     </button>
                     <button
                         v-if="isEditing"
@@ -372,7 +371,7 @@ async function removeTag(tag) {
                         :disabled="isTesting"
                         class="detail-btn primary"
                     >
-                        {{ isTesting ? '⏳ 测试中...' : '🔗 测试连接' }}
+                        {{ isTesting ? '测试中...' : '测试连接' }}
                     </button>
 
                     <button
@@ -380,11 +379,11 @@ async function removeTag(tag) {
                         :disabled="isLoadingModels"
                         class="detail-btn"
                     >
-                        {{ isLoadingModels ? '⏳ 获取中...' : '🤖 获取模型' }}
+                        {{ isLoadingModels ? '获取中...' : '获取模型' }}
                     </button>
 
                     <button @click="handleDelete" class="detail-btn danger">
-                        🗑️ 删除
+                        删除
                     </button>
                 </div>
 
@@ -419,7 +418,7 @@ async function removeTag(tag) {
                         class="section-toggle"
                     >
                         余额历史 ({{ keyManager.balanceHistory.length }})
-                        <span>{{ showBalanceHistory ? '▼' : '▶' }}</span>
+                        <span>{{ showBalanceHistory ? '收起' : '展开' }}</span>
                     </h4>
                     <div v-if="showBalanceHistory" class="balance-history">
                         <div
@@ -453,23 +452,9 @@ async function removeTag(tag) {
                 </div>
             </div>
         </div>
-    </div>
 </template>
 
 <style scoped>
-    .detail-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-    }
-
     .detail-modal {
         background: var(--bg-paper);
         border-radius: var(--radius-lg);
@@ -478,7 +463,7 @@ async function removeTag(tag) {
         max-height: 80vh;
         display: flex;
         flex-direction: column;
-        box-shadow: var(--shadow-medium);
+        box-shadow: var(--shadow-full-card);
     }
 
     .detail-header {
@@ -486,18 +471,18 @@ async function removeTag(tag) {
         justify-content: space-between;
         align-items: center;
         padding: 16px 20px;
-        border-bottom: 1px solid var(--border-color-light);
+        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
     }
 
     .detail-header h3 {
         margin: 0;
         font-size: 16px;
         font-family: var(--font-serif);
+        font-weight: 600;
     }
 
     .detail-close {
         background: transparent;
-        border: none;
         font-size: 18px;
         cursor: pointer;
         opacity: 0.5;
@@ -521,7 +506,7 @@ async function removeTag(tag) {
         margin: 0 0 10px 0;
         font-size: 14px;
         color: var(--text-secondary);
-        border-bottom: 1px solid var(--border-color-light);
+        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
         padding-bottom: 6px;
     }
 
@@ -540,7 +525,7 @@ async function removeTag(tag) {
         display: flex;
         align-items: center;
         padding: 8px 0;
-        border-bottom: 1px solid var(--border-color-light);
+        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
     }
 
     .detail-row:last-child {
@@ -567,6 +552,9 @@ async function removeTag(tag) {
         padding: 4px 8px;
         background: var(--bg-secondary);
         border-radius: var(--radius-sm);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .token-value:hover {
@@ -574,8 +562,9 @@ async function removeTag(tag) {
     }
 
     .copy-hint {
-        margin-left: 4px;
-        opacity: 0.5;
+        color: var(--ds-blue-text);
+        font-family: var(--font-sans);
+        font-size: 12px;
     }
 
     .url-value {
@@ -585,30 +574,30 @@ async function removeTag(tag) {
     }
 
     .balance-value {
-        font-weight: 700;
+        font-weight: 600;
         color: var(--accent-primary);
     }
 
     .status-badge {
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 500;
         padding: 2px 10px;
-        border-radius: 12px;
+        border-radius: var(--radius-badge);
     }
 
     .status-valid {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ds-blue-soft);
+        color: var(--ds-blue-text);
     }
 
     .status-invalid {
-        background: #fee2e2;
-        color: #991b1b;
+        background: #fff1f0;
+        color: var(--ds-red-dark);
     }
 
     .status-rateLimit {
-        background: #fef3c7;
-        color: #92400e;
+        background: #fdf2fa;
+        color: var(--ds-pink);
     }
 
     .status-unknown {
@@ -621,7 +610,8 @@ async function removeTag(tag) {
         flex: 1;
         height: 32px;
         padding: 0 8px;
-        border: 1px solid var(--border-color);
+        border: none;
+        box-shadow: var(--shadow-ring);
         border-radius: var(--radius-sm);
         font-size: 13px;
         font-family: var(--font-sans);
@@ -638,7 +628,8 @@ async function removeTag(tag) {
     .detail-btn {
         height: 32px;
         padding: 0 12px;
-        border: 1px solid var(--border-color);
+        border: none;
+        box-shadow: var(--shadow-light-ring);
         border-radius: var(--radius-sm);
         background: var(--bg-surface);
         font-size: 12px;
@@ -648,27 +639,27 @@ async function removeTag(tag) {
     }
 
     .detail-btn:hover {
-        background: var(--bg-tertiary);
+        background: var(--ds-gray-50);
     }
 
     .detail-btn.primary {
-        background: var(--accent-primary);
-        color: white;
-        border-color: var(--accent-primary);
+        background: var(--ds-gray-1000);
+        color: var(--ds-white);
+        box-shadow: none;
     }
 
     .detail-btn.primary:hover {
-        background: var(--accent-dark);
+        background: var(--ds-black);
     }
 
     .detail-btn.danger {
-        background: #ef4444;
-        color: white;
-        border-color: #ef4444;
+        background: var(--ds-red);
+        color: var(--ds-white);
+        box-shadow: none;
     }
 
     .detail-btn.danger:hover {
-        background: #dc2626;
+        background: var(--ds-red-dark);
     }
 
     .detail-btn.small {
@@ -695,7 +686,7 @@ async function removeTag(tag) {
         gap: 4px;
         padding: 2px 8px;
         background: var(--bg-tertiary);
-        border-radius: 12px;
+        border-radius: var(--radius-badge);
         font-size: 12px;
         color: var(--text-secondary);
     }
@@ -710,7 +701,7 @@ async function removeTag(tag) {
 
     .tag-remove:hover {
         opacity: 1;
-        color: #ef4444;
+        color: var(--ds-red);
     }
 
     .tag-add {
@@ -722,7 +713,8 @@ async function removeTag(tag) {
         flex: 1;
         height: 28px;
         padding: 0 8px;
-        border: 1px solid var(--border-color);
+        border: none;
+        box-shadow: var(--shadow-ring);
         border-radius: var(--radius-sm);
         font-size: 12px;
         font-family: var(--font-sans);
@@ -738,7 +730,7 @@ async function removeTag(tag) {
         display: flex;
         justify-content: space-between;
         padding: 6px 0;
-        border-bottom: 1px solid var(--border-color-light);
+        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
         font-size: 13px;
     }
 
@@ -756,7 +748,8 @@ async function removeTag(tag) {
         width: 100%;
         height: 32px;
         padding: 0 8px;
-        border: 1px solid var(--border-color);
+        border: none;
+        box-shadow: var(--shadow-ring);
         border-radius: var(--radius-sm);
         font-size: 12px;
         font-family: var(--font-sans);
@@ -770,7 +763,7 @@ async function removeTag(tag) {
 
     .model-item {
         padding: 6px 8px;
-        border-bottom: 1px solid var(--border-color-light);
+        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
         font-size: 12px;
         font-family: var(--font-mono);
         color: var(--text-secondary);

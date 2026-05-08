@@ -5,7 +5,7 @@
             <button class="model-selector-close" @click="uiStore.closeModal()">&times;</button>
         </div>
         <div class="model-selector-search">
-            <input type="search" v-model="uiStore.modelSearch" placeholder="🔍 搜索模型...">
+            <input type="search" v-model="uiStore.modelSearch" placeholder="搜索模型...">
         </div>
         <div class="model-selector-body">
             <ul class="model-list">
@@ -14,7 +14,7 @@
         </div>
         <div class="model-selector-footer">
             <span id="modelCount">显示: {{ filteredModels.length }} / {{ uiStore.modalData.models?.length || 0 }}</span>
-            <button class="copy-btn" @click="copyAllModels">📋 复制全部</button>
+            <button class="copy-btn" @click="copyAllModels">复制全部</button>
         </div>
     </div>
 </template>
@@ -66,7 +66,7 @@ const copyAllModels = () => {
     /* 搜索框 */
     .model-selector-search {
         padding: 8px 16px;
-        border-bottom: 1px solid var(--border-color-light);
+        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
     }
 
     .model-selector-search input {
@@ -76,12 +76,12 @@ const copyAllModels = () => {
     /* 复制按钮 */
     .copy-btn {
         padding: 0 16px;
-        background: var(--accent-success);
-        color: white;
-        border: none;
+        background: var(--ds-white);
+        color: var(--text-primary);
+        box-shadow: var(--shadow-light-ring);
         border-radius: var(--radius-sm);
-        font-size: 0.85rem;
-        font-weight: 600;
+        font-size: 13px;
+        font-weight: 500;
         font-family: var(--font-sans);
         cursor: pointer;
         transition: all 0.2s ease;
@@ -94,7 +94,6 @@ const copyAllModels = () => {
     }
 
     .copy-btn:hover {
-        background: var(--accent-success-hover);
-        transform: translateY(-1px);
+        background: var(--ds-gray-50);
     }
 </style>

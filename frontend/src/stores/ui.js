@@ -41,7 +41,7 @@ export const useUiStore = defineStore('ui', {
          * @param {number} [duration=3500] - 消息显示时长（毫秒）。
          */
         showToast(message, type = 'success', duration = 3500) {
-            const icons = { success: "✓", error: "✕", warning: "⚠", info: "ℹ" };
+            const icons = { success: "✓", error: "×", warning: "!", info: "i" };
             const titles = { success: "成功", error: "错误", warning: "警告", info: "提示" };
             const id = ++toastIdCounter;
 

@@ -1,9 +1,9 @@
 <template>
     <div class="provider-header">
-        <label for="providerSelect">API 提供商</label>
+        <label for="providerSelect">Provider</label>
         <div class="header-actions">
             <label class="switch-label" title="启用流式检测 (Stream Mode)">
-                <span class="switch-title">流式检测</span>
+                <span class="switch-title">Stream</span>
                 <input type="checkbox" v-model="currentConfig.enableStream" :disabled="checkerStore.isChecking">
                 <span class="slider"></span>
             </label>
@@ -31,7 +31,7 @@
         <div class="custom-provider-dropdown" :class="{ open: uiStore.providerDropdownOpen }" ref="dropdownContainer"
             role="listbox"
             aria-label="API 提供商列表">
-            <input type="search" v-model="providerSearchTerm" placeholder="搜索提供商..." class="provider-search-input" ref="searchInputElement"
+            <input type="search" v-model="providerSearchTerm" placeholder="Search providers..." class="provider-search-input" ref="searchInputElement"
                 aria-label="搜索提供商">
             <div v-for="(provider, key) in filteredProviders" :key="key" class="provider-option"
                 :class="{ selected: key === configStore.currentProvider, highlighted: providerKeys[highlightedIndex] === key }" @click="handleProviderSelect(key)"
@@ -177,7 +177,8 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
+        gap: 12px;
+        margin-bottom: 10px;
     }
 
     .provider-header label {
@@ -187,25 +188,31 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     .header-actions {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
     }
 
-    /* Settings button — clean, no emoji */
     .settings-btn {
-        background: transparent;
-        border: none;
+        width: 32px;
+        height: 32px;
+        background: var(--ds-white);
         cursor: pointer;
-        padding: 4px;
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-md);
         color: var(--text-tertiary);
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: color var(--transition-fast);
+        box-shadow: var(--shadow-light-ring);
+        transition: color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
     }
 
     .settings-btn:hover {
+        background: var(--ds-gray-50);
         color: var(--text-primary);
+    }
+
+    .settings-btn:focus-visible {
+        outline: none;
+        box-shadow: var(--shadow-light-ring), var(--shadow-focus);
     }
 
     .settings-btn:disabled {
@@ -225,7 +232,6 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         padding: 0 32px 0 12px;
         background: var(--ds-white);
         box-shadow: var(--shadow-ring);
-        border: none;
         border-radius: var(--radius-md);
         font-size: 14px;
         font-family: var(--font-sans);
@@ -236,15 +242,12 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .custom-provider-trigger:hover {
-        box-shadow: var(--shadow-ring),
-                    0 0 0 2px var(--ds-white),
-                    0 0 0 4px var(--ds-focus-color);
+        background: var(--ds-gray-50);
     }
 
     .custom-provider-trigger.open {
         box-shadow: var(--shadow-ring),
-                    0 0 0 2px var(--ds-white),
-                    0 0 0 4px var(--ds-focus-color);
+                    var(--shadow-focus);
     }
 
     .trigger-chevron {
@@ -279,6 +282,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         transition: all var(--transition-fast);
         max-height: 300px;
         overflow-y: auto;
+        padding: 8px;
     }
 
     .custom-provider-dropdown.open {
@@ -288,33 +292,36 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .provider-search-input {
-        width: calc(100% - 24px);
-        margin: 8px 12px;
+        width: 100%;
+        margin: 0 0 6px;
         height: 36px;
-        border-radius: var(--radius-sm);
-        box-shadow: var(--shadow-ring);
-        border: none;
+        border-radius: var(--radius-md);
         padding: 0 10px;
         font-size: 13px;
         font-family: var(--font-sans);
     }
 
     .provider-option {
-        padding: 8px 12px;
+        min-height: 34px;
+        padding: 0 10px;
         cursor: pointer;
-        transition: background var(--transition-fast);
+        transition: background var(--transition-fast), color var(--transition-fast);
         display: flex;
         align-items: center;
         font-size: 14px;
         font-family: var(--font-sans);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
     }
 
     .provider-option:hover {
         background: var(--ds-gray-50);
+        color: var(--text-primary);
     }
 
     .provider-option.selected {
-        color: var(--ds-console-blue);
+        background: var(--ds-blue-soft);
+        color: var(--ds-blue-text);
         font-weight: 500;
     }
 
@@ -342,19 +349,20 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
 
     .slider {
         position: relative;
-        width: 36px;
-        height: 20px;
+        width: 34px;
+        height: 18px;
         background-color: var(--ds-gray-100);
-        border-radius: 10px;
+        border-radius: var(--radius-badge);
         transition: background-color var(--transition-fast);
         flex-shrink: 0;
+        box-shadow: var(--shadow-light-ring);
     }
 
     .slider::before {
         content: '';
         position: absolute;
-        height: 16px;
-        width: 16px;
+        height: 14px;
+        width: 14px;
         left: 2px;
         top: 2px;
         background-color: var(--ds-white);
@@ -364,7 +372,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .switch-label input:checked + .slider {
-        background-color: var(--ds-gray-900);
+        background-color: var(--ds-gray-1000);
     }
 
     .switch-label input:checked + .slider::before {
@@ -374,7 +382,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     .switch-title {
         font-weight: 500;
         color: var(--text-secondary);
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .switch-label:has(input:disabled) {

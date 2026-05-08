@@ -35,24 +35,23 @@ const resultTabs = computed(() => {
     /* 结果标签页容器 */
     .results-tabs {
         display: flex;
-        background-color: transparent;
-        border-bottom: 1px solid var(--border-color-light);
         overflow-x: auto;
-        padding: 0 8px;
+        padding: 10px 10px 0;
+        gap: 4px;
+        background: var(--ds-white);
     }
 
-    /* 标签按钮 */
     .tab-btn {
-        padding: 12px 16px;
-        border: none;
+        height: 34px;
+        padding: 0 10px;
+        border-radius: var(--radius-md);
         background: transparent;
         cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 600;
+        font-size: 13px;
+        font-weight: 500;
         font-family: var(--font-sans);
         color: var(--text-secondary);
-        transition: all 0.2s ease;
-        border-bottom: 2px solid transparent;
+        transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
         flex-shrink: 0;
         display: flex;
         align-items: center;
@@ -60,26 +59,33 @@ const resultTabs = computed(() => {
     }
 
     .tab-btn:hover {
-        color: var(--accent-primary);
+        background: var(--ds-gray-50);
+        color: var(--text-primary);
     }
 
     .tab-btn.active {
-        color: var(--accent-primary);
-        border-bottom-color: var(--accent-primary);
+        background: var(--ds-gray-1000);
+        color: var(--ds-white);
+        box-shadow: none;
     }
 
-    /* 计数器 */
     .tab-btn .counter {
-        background: var(--border-color);
+        min-width: 20px;
+        height: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--ds-gray-100);
         color: var(--text-secondary);
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 0.8rem;
-        transition: all 0.2s ease;
+        padding: 0 6px;
+        border-radius: var(--radius-badge);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        transition: all var(--transition-fast);
     }
 
     .tab-btn.active .counter {
-        background-color: var(--accent-primary);
-        color: white;
+        background-color: rgba(255, 255, 255, 0.16);
+        color: var(--ds-white);
     }
 </style>

@@ -156,12 +156,13 @@ async function confirmDelete() {
         border-radius: var(--radius-lg);
         padding: 12px;
         cursor: pointer;
-        transition: box-shadow var(--transition-fast);
-        box-shadow: var(--shadow-card);
+        transition: box-shadow var(--transition-fast), background var(--transition-fast);
+        box-shadow: var(--shadow-light-ring);
     }
 
     .key-card:hover {
-        box-shadow: var(--shadow-full-card);
+        background: var(--ds-gray-50);
+        box-shadow: var(--shadow-card);
     }
 
     .key-card.selected {
@@ -182,7 +183,7 @@ async function confirmDelete() {
         font-weight: 500;
         padding: 2px 8px;
         border-radius: 9999px;
-        background: var(--ds-gray-900);
+        background: var(--ds-gray-1000);
         color: var(--ds-white);
     }
 
@@ -194,18 +195,18 @@ async function confirmDelete() {
     }
 
     .status-valid {
-        background: #dcfce7;
-        color: #166534;
+        background: var(--ds-blue-soft);
+        color: var(--ds-blue-text);
     }
 
     .status-invalid {
-        background: #fee2e2;
-        color: #991b1b;
+        background: #fff1f0;
+        color: var(--ds-red-dark);
     }
 
     .status-rateLimit {
-        background: #fef3c7;
-        color: #92400e;
+        background: #fdf2fa;
+        color: var(--ds-pink);
     }
 
     .status-unknown {
@@ -262,6 +263,7 @@ async function confirmDelete() {
         font-size: 12px;
         color: var(--text-secondary);
         font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
     }
 
     .key-card-footer {

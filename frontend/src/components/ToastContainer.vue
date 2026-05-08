@@ -34,17 +34,16 @@ const uiStore = useUiStore();
     .toast {
         background: var(--bg-surface);
         border-radius: var(--radius-md);
-        padding: 16px 20px;
+        padding: 12px 14px;
         display: flex;
         align-items: flex-start;
-        gap: 12px;
+        gap: 10px;
         min-width: 280px;
         max-width: 420px;
         box-shadow: var(--shadow-medium);
         transform: translateX(120%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         pointer-events: auto;
-        border: 1px solid var(--border-color-light);
     }
 
     .toast.show {
@@ -53,13 +52,13 @@ const uiStore = useUiStore();
 
     /* Toast 图标 */
     .toast-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
+        width: 26px;
+        height: 26px;
+        border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
+        font-size: 13px;
         color: white;
         flex-shrink: 0;
     }
@@ -92,12 +91,12 @@ const uiStore = useUiStore();
         font-family: var(--font-sans);
         color: var(--text-primary);
         margin-bottom: 2px;
-        font-size: 0.95rem;
+        font-size: 13px;
     }
 
     .toast-message {
         color: var(--text-secondary);
-        font-size: 0.9rem;
+        font-size: 12px;
         line-height: 1.4;
         overflow-wrap: break-word;
         word-break: break-word;

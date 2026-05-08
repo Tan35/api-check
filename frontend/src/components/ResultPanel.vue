@@ -20,10 +20,10 @@
                             :aria-selected="option.value === resultsStore.sortState[category]">{{ option.text }}</span>
                     </div>
                 </div>
-                <button class="copy-btn" @click="copyTokens(category, title)">📋 复制</button>
+                <button class="copy-btn" @click="copyTokens(category, title)">复制</button>
             </div>
         </div>
-        <input type="search" class="search-input" v-model="searchTerm" placeholder="🔍 在结果中搜索..."
+        <input type="search" class="search-input" v-model="searchTerm" placeholder="在结果中搜索..."
             v-show="results.length > 0"
             aria-label="在结果中搜索">
         <div class="results-content">
@@ -48,10 +48,10 @@
                             <span class="key-text" v-html="result.displayText"></span>
                             <div class="result-line-actions">
                                 <button v-if="result.details" class="view-details-btn" title="查看接口返回详情"
-                                    @click="uiStore.openModal('details', result.details)">ℹ️</button>
+                                    @click="uiStore.openModal('details', result.details)">详情</button>
                                 <button v-if="category === 'valid'" class="get-models-btn" title="获取可用模型"
-                                    @click="handleFetchModelsForToken(result.token, $event)">🎛</button>
-                                <button class="copy-key-btn" title="复制此KEY" @click="copySingleToken(result.token, $event)">📋</button>
+                                    @click="handleFetchModelsForToken(result.token, $event)">模型</button>
+                                <button class="copy-key-btn" title="复制此 KEY" @click="copySingleToken(result.token, $event)">复制</button>
                             </div>
                         </div>
                     </DynamicScrollerItem>
@@ -134,8 +134,8 @@ const searchTerm = computed({
 /** @type {Array<object>} 排序选项的配置。*/
 const sortOptions = [
     { value: 'default', text: '默认排序' },
-    { value: 'balance-desc', text: '余额 ▾' },
-    { value: 'balance-asc', text: '余额 ▴' },
+    { value: 'balance-desc', text: '余额高' },
+    { value: 'balance-asc', text: '余额低' },
 ];
 /** @type {ComputedRef<object>} 当前选中的排序选项。*/
 const currentSortOption = computed(() => {
@@ -196,11 +196,11 @@ const copySingleToken = (token, event) => {
     const btn = event.target.closest('button');
     const originalContent = btn.innerHTML;
     navigator.clipboard.writeText(token).then(() => {
-        btn.innerHTML = '✓';
+        btn.textContent = '已复制';
         setTimeout(() => { btn.innerHTML = originalContent; }, 1500);
     }).catch((err) => {
         console.error('复制失败:', err);
-        btn.innerHTML = '✕';
+        btn.textContent = '失败';
         setTimeout(() => { btn.innerHTML = originalContent; }, 1500);
     });
 };
@@ -287,23 +287,24 @@ watch(
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 16px;
-        padding: 8px;
+        gap: 12px;
+        padding: 0 0 10px;
         flex-wrap: wrap;
+        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
     }
 
     .results-title {
-        font-size: 1rem;
-        font-weight: 600;
+        font-size: 13px;
+        font-weight: 500;
         font-family: var(--font-serif);
-        color: var(--text-primary);
+        color: var(--text-secondary);
         white-space: nowrap;
     }
 
     .panel-actions {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
         flex-shrink: 0;
         margin-left: auto;
     }
@@ -311,19 +312,19 @@ watch(
     /* 搜索输入框样式 */
     .search-input {
         width: calc(100% - 16px);
-        margin: 4px 8px 8px 8px;
-        height: 40px;
-        border-radius: var(--radius-sm);
+        margin: 10px 8px;
+        height: 36px;
+        border-radius: var(--radius-md);
     }
 
     /* 结果内容区域 */
     .results-content {
-        background: var(--bg-surface);
-        border-radius: var(--radius-sm);
+        background: var(--ds-white);
+        border-radius: var(--radius-md);
         overflow-y: auto;
         flex: 1;
-        margin: 0 8px 8px 8px;
-        border: 1px solid var(--border-color-light);
+        margin: 0;
+        box-shadow: var(--shadow-light-ring);
     }
 
     /* 确保 scroller 本身填满其容器 */
@@ -337,14 +338,15 @@ watch(
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 6px 8px;
-        min-height: 34px;
+        padding: 7px 8px;
+        min-height: 36px;
         width: 100%;
         box-sizing: border-box;
-        border-radius: var(--radius-sm);
-        transition: background-color 0.2s ease;
+        border-radius: var(--radius-md);
+        transition: background-color var(--transition-fast);
         font-family: var(--font-mono);
-        font-size: 0.85rem;
+        font-size: 12px;
+        color: var(--text-primary);
     }
 
     .result-line:hover {
@@ -353,7 +355,7 @@ watch(
 
     .key-text {
         word-break: break-all;
-        padding-right: 16px;
+        padding-right: 12px;
         white-space: normal;
         line-height: 1.4;
     }
@@ -391,15 +393,18 @@ watch(
     .copy-key-btn,
     .get-models-btn,
     .view-details-btn {
-        background: transparent;
-        border: none;
+        min-width: 38px;
+        height: 26px;
+        background: var(--ds-white);
+        box-shadow: var(--shadow-light-ring);
         cursor: pointer;
-        font-size: 1rem;
-        padding: 4px;
+        font-size: 12px;
+        padding: 0 7px;
         border-radius: var(--radius-sm);
         flex-shrink: 0;
-        opacity: 0.4;
-        transition: all 0.2s;
+        opacity: 0;
+        color: var(--text-secondary);
+        transition: all var(--transition-fast);
         line-height: 1;
     }
 
@@ -412,12 +417,12 @@ watch(
     .copy-key-btn:hover,
     .get-models-btn:hover,
     .view-details-btn:hover {
-        color: var(--accent-primary);
-        transform: scale(1.1);
+        color: var(--text-primary);
+        background: var(--ds-gray-50);
     }
 
     .view-details-btn:hover {
-        color: var(--accent-info) !important;
+        color: var(--accent-info);
     }
 
     /* 空状态提示 */
@@ -429,6 +434,7 @@ watch(
         padding: 48px 24px;
         text-align: center;
         color: var(--text-tertiary);
+        height: 100%;
     }
 
     .empty-state .empty-icon {
@@ -439,40 +445,38 @@ watch(
     }
 
     .empty-state .empty-icon::before {
-        content: '📭';
+        content: '';
     }
 
     /* 复制按钮 */
     .copy-btn {
-        padding: 0 16px;
-        background: var(--accent-success);
-        color: white;
-        border: none;
-        border-radius: var(--radius-sm);
-        font-size: 0.85rem;
-        font-weight: 600;
+        padding: 0 12px;
+        background: var(--ds-white);
+        color: var(--text-primary);
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 500;
         font-family: var(--font-sans);
         cursor: pointer;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
         white-space: nowrap;
-        height: 32px;
+        height: 30px;
+        box-shadow: var(--shadow-light-ring);
     }
 
     .copy-btn:hover {
-        background: var(--accent-success-hover);
-        transform: translateY(-1px);
+        background: var(--ds-gray-50);
     }
 
     /* 自定义选择器（排序） */
     .custom-select {
         position: relative;
-        width: 120px;
-        font-size: 0.85rem;
-        height: 32px;
+        width: 104px;
+        font-size: 13px;
+        height: 30px;
     }
 
     .custom-select-trigger {
@@ -481,9 +485,9 @@ watch(
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 12px;
+        padding: 0 10px;
         background: var(--bg-surface);
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-light-ring);
         border-radius: var(--radius-sm);
         cursor: pointer;
         transition: all 0.2s ease;
@@ -491,12 +495,11 @@ watch(
     }
 
     .custom-select-trigger:hover {
-        border-color: var(--border-color-focus);
+        background: var(--ds-gray-50);
     }
 
     .custom-select.open .custom-select-trigger {
-        border-color: var(--border-color-focus);
-        box-shadow: var(--shadow-focus);
+        box-shadow: var(--shadow-light-ring), var(--shadow-focus);
     }
 
     .custom-select-trigger .arrow {
@@ -519,7 +522,6 @@ watch(
         right: 0;
         background: var(--bg-surface);
         border-radius: var(--radius-sm);
-        border: 1px solid var(--border-color-light);
         box-shadow: var(--shadow-medium);
         z-index: 10;
         opacity: 0;
@@ -535,7 +537,7 @@ watch(
     }
 
     .custom-option {
-        padding: 8px 12px;
+        padding: 8px 10px;
         cursor: pointer;
         transition: background-color 0.2s ease;
         display: block;
@@ -554,9 +556,10 @@ watch(
 
     @media (max-width: 768px) {
         .result-line-actions button {
-            padding: 10px;
+            padding: 0 8px;
             min-width: 44px;
             min-height: 44px;
+            opacity: 1;
         }
     }
 </style>

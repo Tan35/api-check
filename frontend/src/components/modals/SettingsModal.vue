@@ -6,7 +6,7 @@
         </div>
         <div class="model-selector-body">
             <div class="settings-section">
-                <h4 class="settings-title">检测区域</h4>
+                <h4 class="settings-title">Region</h4>
                 <ul class="model-list region-list">
                     <li v-for="(label, key) in configStore.regions" :key="key"
                         :class="{ selected: key === configStore.currentRegion }" @click="configStore.selectRegion(key)">
@@ -15,15 +15,15 @@
                 </ul>
             </div>
             <div class="settings-section">
-                <h4 class="settings-title">高级配置</h4>
+                <h4 class="settings-title">Validation</h4>
                 <div class="advanced-settings-grid">
                     <div class="config-item">
-                        <label for="threshold">最低余额阈值</label>
+                        <label for="threshold">最低余额</label>
                         <input id="threshold" type="number" v-model.number="configStore.threshold" min="0" step="0.1">
                     </div>
                     <div class="config-item">
                         <div class="label-with-hint">
-                            <label for="concurrency">并发请求数</label>
+                            <label for="concurrency">并发数</label>
                             <span class="config-hint">(1-20)</span>
                         </div>
                         <input id="concurrency" type="number" :value="configStore.concurrency"
@@ -41,7 +41,7 @@
                     </div>
 
                     <div class="config-item prompt-item">
-                        <label for="prompt">验证提示词 (Prompt)</label>
+                        <label for="prompt">Prompt</label>
                         <input id="prompt" type="text" v-model="configStore.validationPrompt">
                     </div>
                 </div>
@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
 <style scoped>
     /* 设置部分 */
     .settings-section {
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
 
     .settings-section:last-child {
@@ -125,9 +125,9 @@ onBeforeUnmount(() => {
         font-weight: 600;
         font-family: var(--font-serif);
         color: var(--text-primary);
-        margin-bottom: 16px;
+        margin-bottom: 12px;
         padding-bottom: 8px;
-        border-bottom: 1px solid var(--border-color-light);
+        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
     }
 
     /* 区域列表 */
@@ -140,34 +140,34 @@ onBeforeUnmount(() => {
 
     .region-list li {
         font-family: var(--font-sans);
-        font-size: 0.9rem;
-        padding: 10px 14px;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
+        font-size: 13px;
+        padding: 10px 12px;
+        border-radius: var(--radius-md);
         text-align: center;
         cursor: pointer;
         transition: all 0.2s ease;
         background-color: var(--bg-surface);
+        box-shadow: var(--shadow-light-ring);
     }
 
     .region-list li:hover {
-        border-color: var(--accent-primary);
+        background: var(--ds-gray-50);
         color: var(--accent-primary);
     }
 
     .region-list li.selected {
-        border-color: var(--accent-primary);
-        background-color: var(--bg-selected);
-        color: var(--accent-primary);
-        font-weight: 600;
+        background-color: var(--ds-gray-1000);
+        color: var(--ds-white);
+        font-weight: 500;
+        box-shadow: none;
     }
 
     /* 高级设置网格布局 */
     .advanced-settings-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        padding: 0 8px;
+        gap: 12px;
+        padding: 0;
     }
 
     .prompt-item {
@@ -188,14 +188,14 @@ onBeforeUnmount(() => {
     }
 
     .config-item label {
-        font-size: 0.9rem;
+        font-size: 12px;
         margin-bottom: 0;
         font-weight: 500;
         color: var(--text-secondary);
     }
 
     .config-hint {
-        font-size: 0.8rem;
+        font-size: 12px;
         color: var(--text-tertiary);
     }
 

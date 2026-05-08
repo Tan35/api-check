@@ -3,6 +3,7 @@ import { onMounted, onBeforeUnmount, watch, ref, computed } from 'vue';
 import { useUiStore } from '@/stores/ui';
 import { useCheckerStore } from '@/stores/checker';
 import { useKeyManagerStore } from '@/stores/keyManager';
+import { useConfigStore } from '@/stores/config';
 import { RESULT_TAB_CONFIG } from '@/constants';
 
 // 导入组件
@@ -24,12 +25,27 @@ const resultTabsConfig = RESULT_TAB_CONFIG;
 const uiStore = useUiStore();
 const checkerStore = useCheckerStore();
 const keyManager = useKeyManagerStore();
+const configStore = useConfigStore();
 const scrollPosition = ref(0);
 
 /**
  * @description 动态计算当前年份，用于 Footer 版权信息。
  */
 const currentYear = computed(() => new Date().getFullYear());
+
+const currentProviderLabel = computed(() => {
+    return configStore.providers[configStore.currentProvider]?.label || configStore.currentProvider;
+});
+
+const currentRegionLabel = computed(() => {
+    return configStore.regions[configStore.currentRegion] || configStore.currentRegion;
+});
+
+const statusLabel = computed(() => {
+    if (checkerStore.isPaused) return '已暂停';
+    if (checkerStore.isChecking) return `检测中 ${checkerStore.progress}%`;
+    return '待命';
+});
 
 /**
  * @description 监听 checkerStore 的 lastStatusMessage 变化，并触发 UI Toast 提示。
@@ -99,55 +115,73 @@ onBeforeUnmount(() => {
 
 <template>
     <div class="page-wrapper">
-        <div class="header">
-            <h1>API KEY 检测工具</h1>
-            <div class="view-tabs">
+        <header class="topbar">
+            <div class="brand-lockup">
+                <span class="brand-mark" aria-hidden="true"></span>
+                <div class="brand-text">
+                    <h1>API Check</h1>
+                    <p class="brand-subtitle">{{ currentProviderLabel }} · {{ currentRegionLabel }}</p>
+                </div>
+            </div>
+
+            <div class="topbar-actions">
+                <div class="run-status" :class="{ active: checkerStore.isChecking && !checkerStore.isPaused }">
+                    <span class="run-status-dot" aria-hidden="true"></span>
+                    <span>{{ statusLabel }}</span>
+                </div>
+
+                <div class="view-tabs" role="tablist" aria-label="视图切换">
                 <button
                     :class="['view-tab', { active: !keyManager.showManager }]"
                     @click="keyManager.showManager = false"
+                    role="tab"
+                    :aria-selected="!keyManager.showManager"
                 >
-                    🔍 检测工具
+                    检测台
                 </button>
                 <button
                     :class="['view-tab', { active: keyManager.showManager }]"
                     @click="keyManager.showManager = true"
+                    role="tab"
+                    :aria-selected="keyManager.showManager"
                 >
-                    🔑 我的 Key ({{ keyManager.keys.length }})
+                    Key 库 {{ keyManager.keys.length }}
                 </button>
+                </div>
             </div>
-        </div>
+        </header>
 
-        <!-- 检测工具视图 -->
-        <div v-if="!keyManager.showManager" class="main-grid">
-            <div class="main-content">
-                <div class="input-section">
-                    <ProviderSelector />
-                    <ApiConfig />
+        <main class="workspace">
+            <div v-if="!keyManager.showManager" class="main-grid">
+                <div class="main-content">
+                    <section class="input-section">
+                        <ProviderSelector />
+                        <ApiConfig />
+                    </section>
+                    <section class="input-section">
+                        <KeyInput />
+                    </section>
+                    <ActionButtons />
                 </div>
-                <div class="input-section">
-                    <KeyInput />
-                </div>
-                <ActionButtons />
-            </div>
-            <div class="sidebar-content">
-                <div class="results-wrapper">
-                    <ResultsTabs />
-                    <div class="results-panels">
-                        <ResultPanel v-for="tab in resultTabsConfig" :key="tab.id" :category="tab.id" :title="tab.name"
-                            :sortable="tab.sortable" />
+                <div class="sidebar-content">
+                    <div class="results-wrapper">
+                        <ResultsTabs />
+                        <div class="results-panels">
+                            <ResultPanel v-for="tab in resultTabsConfig" :key="tab.id" :category="tab.id" :title="tab.name"
+                                :sortable="tab.sortable" />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Key 管理视图 -->
-        <div v-else class="manager-grid">
-            <KeyManager />
-        </div>
+            <div v-else class="manager-grid">
+                <KeyManager />
+            </div>
+        </main>
 
         <div class="footer">
-            <p>© {{ currentYear }} LLM API KEY 检测工具 | <a href="https://github.com/ssfun/llm-api-key-checker" target="_blank"
-                    rel="noopener noreferrer">@SFUN</a></p>
+            <p>© {{ currentYear }} API Check · <a href="https://github.com/Tan35/api-check" target="_blank"
+                    rel="noopener noreferrer">GitHub</a></p>
         </div>
         <ToastContainer />
         <ModalContainer />
@@ -160,67 +194,19 @@ onBeforeUnmount(() => {
         display: none;
     }
 
-    /* 视图切换 Tab — Vercel pill style */
-    .view-tabs {
-        display: flex;
-        gap: 2px;
-        background: var(--ds-gray-50);
-        border-radius: 64px;
-        padding: 2px;
-        margin-top: 16px;
-        box-shadow: var(--shadow-light-ring);
-    }
-
-    .view-tab {
-        padding: 6px 20px;
-        border: none;
-        border-radius: 64px;
-        background: transparent;
-        font-size: 13px;
-        font-family: var(--font-sans);
-        cursor: pointer;
-        transition: all 0.15s ease;
-        color: var(--ds-gray-500);
-    }
-
-    .view-tab:hover {
-        color: var(--ds-gray-900);
-    }
-
-    .view-tab.active {
-        background: var(--ds-white);
-        color: var(--ds-gray-900);
-        font-weight: 500;
-        box-shadow: var(--shadow-ring);
-    }
-
-    /* Key 管理视图 */
-    .manager-grid {
-        flex: 1;
-        min-height: 0;
-        background: var(--ds-white);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-card);
-        overflow: hidden;
-    }
-
-    /* 结果面板 */
     .results-wrapper {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: var(--ds-white);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-card);
         overflow: hidden;
         display: flex;
         flex-direction: column;
     }
 
     .results-panels {
-        padding: 8px;
+        padding: 10px;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -231,13 +217,13 @@ onBeforeUnmount(() => {
     @media (max-width: 1024px) {
         .results-wrapper {
             position: static;
-            height: 500px;
+            height: 560px;
         }
     }
 
     @media (max-width: 768px) {
         .results-wrapper {
-            height: 450px;
+            height: 520px;
         }
     }
 

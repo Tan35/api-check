@@ -1,7 +1,7 @@
 <template>
     <div class="modal-content">
         <div class="modal-header">
-            <div class="modal-icon info">ℹ</div>
+            <div class="modal-icon info">i</div>
             <h3 class="modal-title">请确认</h3>
         </div>
         <div class="modal-message">{{ uiStore.modalData.message }}</div>

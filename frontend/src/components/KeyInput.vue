@@ -1,10 +1,10 @@
 <template>
     <div class="input-header">
-        <label for="tokens">API KEYS</label>
+        <label for="tokens">API Keys</label>
         <div class="input-header-actions">
             <button type="button" class="import-btn" @click="triggerFileInput" :disabled="checkerStore.isChecking || isImporting">
                 <span v-if="isImporting" class="import-spinner"></span>
-                {{ isImporting ? '导入中...' : '导入文件' }}
+                {{ isImporting ? '导入中' : '导入文件' }}
             </button>
             <button type="button" class="clear-btn" @click="configStore.clearTokens"
                 :disabled="checkerStore.isChecking || isImporting">清空输入</button>
@@ -25,7 +25,7 @@
         @dragleave.prevent="isDragOver = false"
         @drop.prevent="handleFileDrop"
         :class="{ 'drag-over': isDragOver, 'importing': isImporting }"
-        placeholder="输入或拖拽.txt文件到此处&#10;多个KEY以英文逗号、分号或换行分隔" :disabled="checkerStore.isChecking || isImporting"></textarea>
+        placeholder="粘贴 API Key，或拖入 .txt 文件。多个 Key 可用逗号、分号或换行分隔。" :disabled="checkerStore.isChecking || isImporting"></textarea>
 </template>
 
 <script setup>
@@ -266,46 +266,49 @@ const finishImport = (cleanLines, fileName) => {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
+        gap: 12px;
+        margin-bottom: 10px;
     }
 
     .input-header-actions {
         display: flex;
-        gap: 8px;
+        gap: 6px;
+        flex-shrink: 0;
     }
 
     .import-btn, .clear-btn {
-        color: white;
-        border: none;
+        color: var(--text-primary);
         border-radius: var(--radius-sm);
-        font-size: 0.85rem;
-        font-weight: 600;
+        font-size: 12px;
+        font-weight: 500;
         font-family: var(--font-sans);
         cursor: pointer;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
         gap: 6px;
-        height: auto;
-        padding: 8px 16px;
+        height: 30px;
+        padding: 0 10px;
+        background: var(--ds-white);
+        box-shadow: var(--shadow-light-ring);
     }
 
     .import-btn {
-        background: var(--accent-dark);
+        background: var(--ds-gray-1000);
+        color: var(--ds-white);
+        box-shadow: none;
     }
 
     .import-btn:hover:not(:disabled) {
-        background: var(--accent-dark-hover);
-        transform: translateY(-1px);
+        background: var(--ds-black);
     }
 
     .clear-btn {
-        background: var(--text-secondary);
+        background: var(--ds-white);
     }
 
     .clear-btn:hover:not(:disabled) {
-        background: var(--text-secondary-hover);
-        transform: translateY(-1px);
+        background: var(--ds-gray-50);
     }
 
     textarea:disabled {
@@ -321,8 +324,7 @@ const finishImport = (cleanLines, fileName) => {
 
     /* 拖放悬停状态样式 */
     textarea.drag-over {
-        border-color: var(--accent-primary);
-        box-shadow: var(--shadow-focus);
+        box-shadow: var(--shadow-ring), var(--shadow-focus);
         background-color: var(--bg-selected);
     }
 
@@ -333,7 +335,7 @@ const finishImport = (cleanLines, fileName) => {
 
     /* 导入进度条 */
     .import-progress {
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         display: flex;
         flex-direction: column;
         gap: 6px;
@@ -354,7 +356,7 @@ const finishImport = (cleanLines, fileName) => {
     }
 
     .import-progress-text {
-        font-size: 0.85rem;
+        font-size: 12px;
         color: var(--text-secondary);
         text-align: center;
     }

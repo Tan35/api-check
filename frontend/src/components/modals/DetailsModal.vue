@@ -1,7 +1,7 @@
 <template>
     <div class="modal-content">
         <div class="modal-header">
-            <div class="modal-icon info">ℹ</div>
+            <div class="modal-icon info">i</div>
             <h3 class="modal-title">接口返回详情</h3>
         </div>
         <div class="modal-message raw-data">
@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="modal-actions">
-            <button class="modal-btn copy-btn" @click="copyDetails">📋 复制详情</button>
+            <button class="modal-btn copy-btn" @click="copyDetails">复制详情</button>
             <button class="modal-btn primary" @click="uiStore.closeModal()">确定</button>
         </div>
     </div>
@@ -62,9 +62,9 @@ const copyDetails = () => {
         text-align: left;
         background-color: var(--bg-secondary);
         padding: 12px;
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-md);
         font-family: var(--font-mono);
-        font-size: 0.85rem;
+        font-size: 12px;
         max-height: 400px;
         overflow-y: auto;
     }
@@ -75,7 +75,7 @@ const copyDetails = () => {
         margin-top: 10px;
         margin-bottom: 4px;
         color: var(--text-primary);
-        font-weight: bold;
+        font-weight: 500;
     }
 
     .detail-key:first-of-type {

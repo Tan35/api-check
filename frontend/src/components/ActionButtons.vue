@@ -43,7 +43,11 @@ const checkerStore = useCheckerStore();
     .actions-container {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 12px;
+        background: var(--ds-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-full-card);
+        padding: 16px;
     }
 
     .button-group-wrapper {
@@ -94,14 +98,14 @@ const checkerStore = useCheckerStore();
     #progress-container {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 7px;
         align-items: center;
         width: 100%;
     }
 
     .progress-bar-wrapper {
         width: 100%;
-        height: 4px;
+        height: 3px;
         background-color: var(--ds-gray-100);
         border-radius: 2px;
         overflow: hidden;
@@ -112,7 +116,7 @@ const checkerStore = useCheckerStore();
         height: 100%;
         background: var(--ds-gray-900);
         border-radius: 2px;
-        transition: width 0.3s ease;
+        transition: width 0.2s ease;
     }
 
     #progressText {
@@ -120,5 +124,6 @@ const checkerStore = useCheckerStore();
         font-weight: 500;
         font-family: var(--font-sans);
         color: var(--text-tertiary);
+        font-variant-numeric: tabular-nums;
     }
 </style>
