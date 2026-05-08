@@ -221,11 +221,7 @@ async function handleFetchModels() {
         uiStore.showToast(`获取到 ${models.length} 个模型`, 'success');
     } catch (err) {
         const msg = err.message || '未知错误';
-        if (msg.includes('fetch') || msg.includes('network') || msg.includes('Failed') || msg.includes('unknown error')) {
-            uiStore.showToast('获取模型失败：后端服务未运行，请使用 npm run dev:full 启动', 'error', 5000);
-        } else {
-            uiStore.showToast(`获取模型失败: ${msg}`, 'error');
-        }
+        uiStore.showToast(`获取模型失败: ${msg}`, 'error', 5000);
     } finally {
         isLoadingModels.value = false;
     }
