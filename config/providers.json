@@ -123,7 +123,7 @@
     "hasBalance": true,
     "apiStyle": "openai",
     "defaultBase": "https://api.moonshot.cn/v1",
-    "defaultModel": "kimi-latest",
+    "defaultModel": "moonshot-v1-auto",
     "balanceCheck": "checkMoonshotBalance",
     "fetchModels": "fetchOpenAIModels"
   },
