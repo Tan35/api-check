@@ -7,8 +7,13 @@
                 <input type="checkbox" v-model="currentConfig.enableStream" :disabled="checkerStore.isChecking">
                 <span class="slider"></span>
             </label>
-            <button @click="uiStore.openModal('regionSelector')" class="region-btn" title="检测设置"
-                :disabled="checkerStore.isChecking">⚙️</button>
+            <button @click="uiStore.openModal('regionSelector')" class="settings-btn" title="检测设置"
+                :disabled="checkerStore.isChecking">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="8" r="2.5"/>
+                    <path d="M13.5 8a5.5 5.5 0 01-.3 1.8l1.2.9-1.5 2.6-1.4-.5a5.5 5.5 0 01-1.5 1l.2 1.5h-3l.2-1.5a5.5 5.5 0 01-1.5-1l-1.4.5L3.6 10.7l1.2-.9A5.5 5.5 0 014.5 8a5.5 5.5 0 01.3-1.8L3.6 5.3l1.5-2.6 1.4.5a5.5 5.5 0 011.5-1L7.8.7h3l-.2 1.5a5.5 5.5 0 011.5 1l1.4-.5 1.5 2.6-1.2.9c.2.6.3 1.2.3 1.8z"/>
+                </svg>
+            </button>
         </div>
     </div>
 
@@ -21,17 +26,17 @@
             :aria-expanded="uiStore.providerDropdownOpen"
             aria-labelledby="providerSelect providerDisplay">
             <span id="providerDisplay">{{ configStore.providers[configStore.currentProvider].label }}</span>
+            <span class="trigger-chevron"></span>
         </div>
         <div class="custom-provider-dropdown" :class="{ open: uiStore.providerDropdownOpen }" ref="dropdownContainer"
             role="listbox"
             aria-label="API 提供商列表">
-            <input type="search" v-model="providerSearchTerm" placeholder="🔍 搜索提供商..." class="provider-search-input" ref="searchInputElement"
+            <input type="search" v-model="providerSearchTerm" placeholder="搜索提供商..." class="provider-search-input" ref="searchInputElement"
                 aria-label="搜索提供商">
             <div v-for="(provider, key) in filteredProviders" :key="key" class="provider-option"
                 :class="{ selected: key === configStore.currentProvider, highlighted: providerKeys[highlightedIndex] === key }" @click="handleProviderSelect(key)"
                 role="option"
                 :aria-selected="key === configStore.currentProvider">
-                <span class="provider-icon" aria-hidden="true">{{ provider.icon }}</span>
                 <span>{{ provider.label }}</span>
             </div>
         </div>
@@ -58,16 +63,10 @@ const highlightedIndex = ref(-1);
 
 const providerKeys = computed(() => Object.keys(filteredProviders.value));
 
-/**
- * @description 计算属性，获取当前选中提供商的配置。
- */
 const currentConfig = computed(() => {
     return configStore.getCurrentProviderConfig();
 });
 
-/**
- * @description 计算属性，根据搜索关键词过滤提供商列表。
- */
 const filteredProviders = computed(() => {
     const searchTerm = providerSearchTerm.value.toLowerCase();
     const providers = configStore.providers;
@@ -81,40 +80,27 @@ const filteredProviders = computed(() => {
             filtered[key] = provider;
         }
     }
-    // 搜索后如果高亮索引超出范围，重置
     const keys = Object.keys(filtered);
     if (highlightedIndex.value >= keys.length) highlightedIndex.value = keys.length - 1;
     return filtered;
 });
 
-/**
- * @description 处理提供商选择事件。
- * @param {string} key - 选中的提供商 Key。
- */
 const handleProviderSelect = (key) => {
     configStore.selectProvider(key);
     resultsStore.clearResults();
     if (resultsStore.activeTab !== 'valid') {
         resultsStore.activeTab = 'valid';
     }
-    providerSearchTerm.value = ''; // 清空搜索词
+    providerSearchTerm.value = '';
 };
 
-/**
- * @description 点击外部时关闭提供商下拉菜单。
- * @param {Event} e - 点击事件对象。
- */
 const closeDropdown = (e) => {
     if (providerSelectWrapper.value && !providerSelectWrapper.value.contains(e.target)) {
         uiStore.providerDropdownOpen = false;
-        providerSearchTerm.value = ''; // 清空搜索词
+        providerSearchTerm.value = '';
     }
 };
 
-/**
- * @description 处理键盘事件，按下 ESC 键关闭下拉菜单。
- * @param {KeyboardEvent} e - 键盘事件对象。
- */
 const handleKeyDown = (e) => {
     if (!uiStore.providerDropdownOpen) return;
 
@@ -144,9 +130,6 @@ const handleKeyDown = (e) => {
     }
 };
 
-/**
- * @description 将高亮项滚动到可视区域内
- */
 const scrollHighlightedIntoView = () => {
     nextTick(() => {
         const container = dropdownContainer.value;
@@ -167,32 +150,23 @@ const scrollHighlightedIntoView = () => {
     });
 };
 
-/**
- * @description 组件挂载时添加事件监听器。
- */
 onMounted(() => {
     document.addEventListener('click', closeDropdown);
     document.addEventListener('keydown', handleKeyDown);
 });
 
-/**
- * @description 组件卸载前移除事件监听器。
- */
 onBeforeUnmount(() => {
     document.removeEventListener('click', closeDropdown);
     document.removeEventListener('keydown', handleKeyDown);
 });
 
-/**
- * @description 监听下拉菜单的打开状态，并在打开时自动聚焦搜索框。
- */
 watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     if (isOpen) {
         highlightedIndex.value = -1;
         nextTick(() => {
             setTimeout(() => {
                 searchInputElement.value?.focus();
-            }, 100); // 延迟以确保动画完成
+            }, 100);
         });
     }
 });
@@ -216,22 +190,30 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         gap: 16px;
     }
 
-    .region-btn {
+    /* Settings button — clean, no emoji */
+    .settings-btn {
         background: transparent;
         border: none;
-        font-size: 1.5rem;
         cursor: pointer;
-        padding: 0;
-        line-height: 1;
-        opacity: 0.6;
-        transition: all 0.2s ease;
+        padding: 4px;
+        border-radius: var(--radius-sm);
+        color: var(--text-tertiary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color var(--transition-fast);
     }
 
-    .region-btn:hover {
-        opacity: 1;
-        transform: rotate(15deg);
+    .settings-btn:hover {
+        color: var(--text-primary);
     }
 
+    .settings-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    /* Custom select */
     .custom-provider-select {
         position: relative;
         width: 100%;
@@ -239,43 +221,47 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
 
     .custom-provider-trigger {
         width: 100%;
-        height: 48px;
-        padding: 0 40px 0 16px;
-        background: var(--bg-surface);
-        border: 1px solid var(--border-color);
+        height: 40px;
+        padding: 0 32px 0 12px;
+        background: var(--ds-white);
+        box-shadow: var(--shadow-ring);
+        border: none;
         border-radius: var(--radius-md);
-        font-size: 15px;
+        font-size: 14px;
         font-family: var(--font-sans);
         cursor: pointer;
         display: flex;
         align-items: center;
-        transition: all 0.2s ease;
+        transition: box-shadow var(--transition-fast);
     }
 
     .custom-provider-trigger:hover {
-        border-color: var(--border-color-focus);
+        box-shadow: var(--shadow-ring),
+                    0 0 0 2px var(--ds-white),
+                    0 0 0 4px var(--ds-focus-color);
     }
 
     .custom-provider-trigger.open {
-        border-color: var(--border-color-focus);
-        box-shadow: var(--shadow-focus);
+        box-shadow: var(--shadow-ring),
+                    0 0 0 2px var(--ds-white),
+                    0 0 0 4px var(--ds-focus-color);
     }
 
-    .custom-provider-trigger::after {
-        content: '';
+    .trigger-chevron {
         position: absolute;
-        right: 16px;
+        right: 12px;
         top: 50%;
-        width: 10px;
-        height: 10px;
-        border-left: 2px solid var(--text-tertiary);
-        border-bottom: 2px solid var(--text-tertiary);
-        transform: translateY(-60%) rotate(-45deg);
-        transition: transform 0.2s ease;
+        width: 6px;
+        height: 6px;
+        border-right: 1.5px solid var(--ds-gray-400);
+        border-bottom: 1.5px solid var(--ds-gray-400);
+        transform: translateY(-65%) rotate(45deg);
+        transition: transform var(--transition-fast);
+        pointer-events: none;
     }
 
-    .custom-provider-trigger.open::after {
-        transform: translateY(-40%) rotate(135deg);
+    .custom-provider-trigger.open .trigger-chevron {
+        transform: translateY(-35%) rotate(-135deg);
     }
 
     .custom-provider-dropdown {
@@ -283,15 +269,14 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         top: calc(100% + 4px);
         left: 0;
         right: 0;
-        background: var(--bg-surface);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border-color-light);
-        box-shadow: var(--shadow-medium);
+        background: var(--ds-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-full-card);
         z-index: 100;
         opacity: 0;
         visibility: hidden;
-        transform: translateY(-10px);
-        transition: all 0.2s ease;
+        transform: translateY(-4px);
+        transition: all var(--transition-fast);
         max-height: 300px;
         overflow-y: auto;
     }
@@ -303,72 +288,46 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .provider-search-input {
-        width: calc(100% - 32px);
-        margin: 8px 16px;
-        height: 40px;
+        width: calc(100% - 24px);
+        margin: 8px 12px;
+        height: 36px;
         border-radius: var(--radius-sm);
-        border: 1px solid var(--border-color);
-        padding: 0 12px;
-        font-size: 15px;
+        box-shadow: var(--shadow-ring);
+        border: none;
+        padding: 0 10px;
+        font-size: 13px;
         font-family: var(--font-sans);
     }
 
     .provider-option {
-        padding: 12px 16px;
+        padding: 8px 12px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: background var(--transition-fast);
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-size: 15px;
+        font-size: 14px;
         font-family: var(--font-sans);
-        border-bottom: 1px solid var(--border-color-light);
-    }
-
-    .provider-option:last-child {
-        border-bottom: none;
     }
 
     .provider-option:hover {
-        background: var(--bg-tertiary);
+        background: var(--ds-gray-50);
     }
 
     .provider-option.selected {
-        background-color: var(--bg-selected);
-        color: var(--accent-primary);
-        font-weight: 600;
+        color: var(--ds-console-blue);
+        font-weight: 500;
     }
 
     .provider-option.highlighted {
-        outline: 2px solid var(--accent-primary);
-        outline-offset: -2px;
-        background: var(--bg-tertiary);
-    }
-
-    .provider-option .provider-icon {
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        background: var(--accent-dark);
-        color: white;
-        border-radius: 4px;
-    }
-
-    .region-btn:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-        transform: none;
+        background: var(--ds-gray-50);
     }
 
     .custom-provider-select.disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         pointer-events: none;
-        background-color: var(--bg-secondary);
     }
 
+    /* Toggle switch */
     .switch-label {
         display: inline-flex;
         align-items: center;
@@ -383,45 +342,44 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
 
     .slider {
         position: relative;
-        width: 44px;
-        height: 24px;
-        background-color: var(--bg-tertiary);
-        border-radius: 12px;
-        transition: background-color 0.2s;
+        width: 36px;
+        height: 20px;
+        background-color: var(--ds-gray-100);
+        border-radius: 10px;
+        transition: background-color var(--transition-fast);
         flex-shrink: 0;
-        border: 1px solid var(--border-color);
     }
 
     .slider::before {
         content: '';
         position: absolute;
-        height: 20px;
-        width: 20px;
+        height: 16px;
+        width: 16px;
         left: 2px;
-        bottom: 2px;
-        background-color: white;
+        top: 2px;
+        background-color: var(--ds-white);
         border-radius: 50%;
-        transition: transform 0.2s;
+        transition: transform var(--transition-fast);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
 
-    .switch-label input:checked+.slider {
-        background-color: var(--accent-primary);
-        border-color: var(--accent-primary);
+    .switch-label input:checked + .slider {
+        background-color: var(--ds-gray-900);
     }
 
-    .switch-label input:checked+.slider::before {
-        transform: translateX(20px);
+    .switch-label input:checked + .slider::before {
+        transform: translateX(16px);
     }
 
     .switch-title {
-        font-weight: 600;
+        font-weight: 500;
         color: var(--text-secondary);
-        font-size: 0.9rem;
+        font-size: 13px;
     }
 
     .switch-label:has(input:disabled) {
         cursor: not-allowed;
-        opacity: 0.6;
+        opacity: 0.5;
     }
 
     @media (max-width: 480px) {

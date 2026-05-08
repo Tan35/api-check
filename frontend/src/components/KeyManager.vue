@@ -239,7 +239,7 @@ watch(() => keyManager.filteredKeys.length, () => {
                     + 添加 Key
                 </button>
                 <button @click="showImportExport = !showImportExport" class="km-btn">
-                    📥 导入/导出
+                    导入/导出
                 </button>
             </div>
             <div class="km-toolbar-right">
@@ -255,7 +255,7 @@ watch(() => keyManager.filteredKeys.length, () => {
                 v-model="keyManager.searchTerm"
                 type="text"
                 class="km-search"
-                placeholder="🔍 搜索 Key、别名、标签..."
+                placeholder="搜索 Key、别名、标签..."
             />
 
             <select v-model="keyManager.filterProvider" class="km-filter-select">
@@ -296,7 +296,7 @@ watch(() => keyManager.filteredKeys.length, () => {
             </label>
             <span class="km-selected-count">已选 {{ selectedIds.size }} 个</span>
             <button @click="handleBatchDelete" class="km-btn danger small">
-                🗑️ 批量删除
+                批量删除
             </button>
         </div>
 
