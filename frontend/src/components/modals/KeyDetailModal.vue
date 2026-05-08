@@ -248,9 +248,11 @@ async function copyToken() {
  * @description 删除 Key。
  */
 async function handleDelete() {
+    const idToDelete = keyId.value;
+    if (!idToDelete) return;
     const confirmed = await uiStore.showConfirmation('确定删除这个 Key？');
     if (confirmed) {
-        await keyManager.deleteKey(keyId.value);
+        await keyManager.deleteKey(idToDelete);
         uiStore.closeModal();
         uiStore.showToast('已删除', 'success');
     }
