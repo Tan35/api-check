@@ -391,6 +391,8 @@ h1 {
     font-weight: 600;
     font-family: var(--font-mono);
     line-height: 1;
+    position: relative;
+    top: 1px;
 }
 
 .workspace {
