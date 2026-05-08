@@ -194,25 +194,25 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     .settings-btn {
         width: 32px;
         height: 32px;
-        background: var(--ds-gray-50);
+        background: transparent;
         cursor: pointer;
         border-radius: var(--radius-md);
         color: var(--text-tertiary);
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: var(--shadow-light-ring);
+        box-shadow: none;
         transition: color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
     }
 
     .settings-btn:hover {
-        background: var(--ds-gray-100);
+        background: var(--ds-gray-50);
         color: var(--text-primary);
     }
 
     .settings-btn:focus-visible {
         outline: none;
-        box-shadow: var(--shadow-light-ring), var(--shadow-focus);
+        box-shadow: var(--shadow-focus);
     }
 
     .settings-btn:disabled {
