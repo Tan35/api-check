@@ -2,7 +2,11 @@
     <div class="model-selector-content">
         <div class="model-selector-header">
             <h3 id="modelSelectorTitle">选择一个模型</h3>
-            <button class="model-selector-close" @click="uiStore.closeModal()">&times;</button>
+            <button class="model-selector-close" @click="uiStore.closeModal()" aria-label="关闭">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75">
+                    <path d="M3 3l10 10M13 3L3 13"/>
+                </svg>
+            </button>
         </div>
         <div class="model-selector-search">
             <input type="search" v-model="uiStore.modelSearch" placeholder="搜索模型...">
