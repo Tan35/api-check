@@ -355,7 +355,7 @@ async function removeTag(tag) {
     padding: 3px 9px;
     border-radius: 9999px;
 }
-.status-valid     { background: #f0fdf4; color: #0a7c42; }
+.status-valid     { background: #f0fdf4; color: #166534; }
 .status-invalid   { background: #fff1f0; color: var(--ds-red-dark); }
 .status-rateLimit { background: #fdf2fa; color: var(--ds-pink); }
 .status-unknown   { background: var(--ds-gray-100); color: var(--ds-gray-500); }
@@ -410,7 +410,7 @@ async function removeTag(tag) {
 }
 .field-value.mono  { font-family: var(--font-mono); font-size: 12px; }
 .field-value.small { font-size: 12px; color: var(--text-secondary); }
-.field-value.balance-value { font-weight: 600; font-family: var(--font-mono); }
+.field-value.balance-value { font-family: var(--font-mono); }
 
 /* Token row */
 .token-row {
@@ -502,8 +502,8 @@ async function removeTag(tag) {
 .detail-btn:hover { background: var(--ds-gray-50); }
 .detail-btn.primary { background: var(--ds-gray-1000); color: var(--ds-white); box-shadow: none; }
 .detail-btn.primary:hover { background: var(--ds-black); }
-.detail-btn.danger  { background: var(--ds-red); color: var(--ds-white); box-shadow: none; }
-.detail-btn.danger:hover  { background: var(--ds-red-dark); }
+.detail-btn.danger  { background: var(--ds-white); color: var(--ds-red); box-shadow: var(--shadow-light-ring); }
+.detail-btn.danger:hover  { background: #fff1f0; box-shadow: var(--shadow-light-ring); }
 .detail-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .detail-btn-sm { height: var(--ctrl-height-sm); padding: 0 10px; font-size: var(--ctrl-font-sm); }
 
