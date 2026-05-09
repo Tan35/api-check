@@ -171,6 +171,8 @@ watch(isOpen, (v) => {
         transition: box-shadow var(--transition-fast), background var(--transition-fast);
         text-align: left;
         position: relative;
+        white-space: nowrap;
+        overflow: hidden;
     }
 
     .cs-trigger:hover {
