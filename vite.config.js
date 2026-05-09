@@ -22,6 +22,7 @@ export default defineConfig({
     },
     // 开发服务器配置
     server: {
+        allowedHosts: true,
         // 配置代理，将 API 请求转发到本地运行的 Cloudflare Worker (wrangler dev)
         proxy: {
             '/proxy': {

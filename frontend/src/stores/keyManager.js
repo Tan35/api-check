@@ -14,9 +14,9 @@ export const useKeyManagerStore = defineStore('keyManager', () => {
     /** @type {Ref<string>} 搜索关键词。*/
     const searchTerm = ref('');
     /** @type {Ref<string|null>} 按平台筛选。null 表示全部。*/
-    const filterProvider = ref(null);
+    const filterProvider = ref('');
     /** @type {Ref<string|null>} 按状态筛选。null 表示全部。*/
-    const filterStatus = ref(null);
+    const filterStatus = ref('');
     /** @type {Ref<string>} 排序字段。*/
     const sortBy = ref('createdAt');
     /** @type {Ref<string>} 排序方向。*/
@@ -48,12 +48,12 @@ export const useKeyManagerStore = defineStore('keyManager', () => {
         }
 
         // 平台过滤
-        if (filterProvider.value) {
+        if (filterProvider.value && filterProvider.value !== '') {
             result = result.filter(k => k.provider === filterProvider.value);
         }
 
         // 状态过滤
-        if (filterStatus.value) {
+        if (filterStatus.value && filterStatus.value !== '') {
             result = result.filter(k => k.status === filterStatus.value);
         }
 
@@ -289,8 +289,8 @@ export const useKeyManagerStore = defineStore('keyManager', () => {
      */
     function clearFilters() {
         searchTerm.value = '';
-        filterProvider.value = null;
-        filterStatus.value = null;
+        filterProvider.value = '';
+        filterStatus.value = '';
     }
 
     return {

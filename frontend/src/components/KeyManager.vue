@@ -7,178 +7,115 @@ import { useCheckerStore } from '@/stores/checker';
 import KeyCard from './KeyCard.vue';
 import CustomSelect from './CustomSelect.vue';
 
-const keyManager = useKeyManagerStore();
-const uiStore = useUiStore();
-const configStore = useConfigStore();
+const keyManager   = useKeyManagerStore();
+const uiStore      = useUiStore();
+const configStore  = useConfigStore();
 const checkerStore = useCheckerStore();
 
-const addModalOpen = ref(false);
-const newKeyText = ref('');
-const newKeyAlias = ref('');
+const addModalOpen   = ref(false);
+const newKeyText     = ref('');
+const newKeyAlias    = ref('');
 const newKeyProvider = ref('openai');
-const newKeyBaseUrl = ref('');
-const newKeyModel = ref('');
-const selectedIds = ref(new Set());
-const selectAll = ref(false);
+const newKeyBaseUrl  = ref('');
+const newKeyModel    = ref('');
+const selectedIds    = ref(new Set());
+const selectAll      = ref(false);
 const showImportExport = ref(false);
-const importText = ref('');
+const importText     = ref('');
 
-/**
- * @description 切换平台时自动填充默认 Base URL 和模型。
- */
 watch(newKeyProvider, (val) => {
     const p = configStore.providers[val];
     if (p) {
         newKeyBaseUrl.value = p.defaultBase || '';
-        newKeyModel.value = p.defaultModel || '';
+        newKeyModel.value   = p.defaultModel || '';
     }
 }, { immediate: true });
 
-/**
- * @description 打开添加模态框时重置表单。
- */
 function openAddModal() {
-    newKeyText.value = '';
-    newKeyAlias.value = '';
+    newKeyText.value     = '';
+    newKeyAlias.value    = '';
     newKeyProvider.value = 'openai';
-    addModalOpen.value = true;
+    addModalOpen.value   = true;
 }
 
-/**
- * @description 支持的提供商列表。
- */
-const providerOptions = computed(() => {
-    return Object.entries(configStore.providers).map(([key, val]) => ({
-        key,
-        label: val.label,
-    }));
-});
+const providerOptions = computed(() =>
+    Object.entries(configStore.providers).map(([key, val]) => ({ key, label: val.label }))
+);
 
-/**
- * @description 当前筛选的提供商选项。
- */
 const filterProviderOptions = computed(() => {
-    const options = [{ key: null, label: '全部平台' }];
+    const options = [{ key: '', label: '全部平台' }];
     for (const [key, val] of Object.entries(configStore.providers)) {
         options.push({ key, label: val.label });
     }
     return options;
 });
 
-/**
- * @description 状态筛选选项。
- */
 const filterStatusOptions = [
-    { key: null, label: '全部状态' },
-    { key: 'valid', label: '有效' },
-    { key: 'invalid', label: '无效' },
+    { key: '',        label: '全部状态' },
+    { key: 'valid',     label: '有效' },
+    { key: 'invalid',   label: '无效' },
     { key: 'rateLimit', label: '限流' },
-    { key: 'unknown', label: '未知' },
+    { key: 'unknown',   label: '未知' },
 ];
 
-/**
- * @description 排序选项。
- */
 const sortOptions = [
-    { key: 'createdAt', label: '创建时间' },
+    { key: 'createdAt',   label: '创建时间' },
     { key: 'lastChecked', label: '最近检测' },
-    { key: 'balance', label: '余额' },
-    { key: 'provider', label: '平台' },
+    { key: 'balance',     label: '余额' },
+    { key: 'provider',    label: '平台' },
 ];
 
-onMounted(() => {
-    keyManager.loadKeys();
-});
+const sortOptionsForSelect = sortOptions.map(o => ({ key: o.key, label: '排序: ' + o.label }));
 
-/**
- * @description 添加单个 Key。
- */
+onMounted(() => { keyManager.loadKeys(); });
+
 async function handleAddKey() {
     const token = newKeyText.value.trim();
-    if (!token) {
-        uiStore.showToast('请输入 API Key', 'warning');
-        return;
-    }
-
-    // 检查重复
+    if (!token) { uiStore.showToast('请输入 API Key', 'warning'); return; }
     const existing = keyManager.keys.find(k => k.token === token);
-    if (existing) {
-        uiStore.showToast('该 Key 已存在', 'warning');
-        return;
-    }
-
+    if (existing) { uiStore.showToast('该 Key 已存在', 'warning'); return; }
     await keyManager.addKey({
         token,
-        alias: newKeyAlias.value.trim(),
+        alias:    newKeyAlias.value.trim(),
         provider: newKeyProvider.value,
-        baseUrl: newKeyBaseUrl.value.trim() || configStore.providers[newKeyProvider.value]?.defaultBase || '',
-        model: newKeyModel.value.trim() || configStore.providers[newKeyProvider.value]?.defaultModel || '',
+        baseUrl:  newKeyBaseUrl.value.trim() || configStore.providers[newKeyProvider.value]?.defaultBase || '',
+        model:    newKeyModel.value.trim()   || configStore.providers[newKeyProvider.value]?.defaultModel || '',
     });
-
-    newKeyText.value = '';
-    newKeyAlias.value = '';
-    newKeyBaseUrl.value = '';
-    newKeyModel.value = '';
+    newKeyText.value = newKeyAlias.value = newKeyBaseUrl.value = newKeyModel.value = '';
     addModalOpen.value = false;
     uiStore.showToast('Key 已添加', 'success');
 }
 
-/**
- * @description 批量导入 Key（每行一个）。
- */
 async function handleBatchImport() {
     const lines = importText.value.split('\n').map(l => l.trim()).filter(l => l);
-    if (lines.length === 0) {
-        uiStore.showToast('没有有效的 Key', 'warning');
-        return;
-    }
-
+    if (lines.length === 0) { uiStore.showToast('没有有效的 Key', 'warning'); return; }
     const records = lines.map(token => ({
         token,
         provider: newKeyProvider.value,
-        baseUrl: configStore.providers[newKeyProvider.value]?.defaultBase || '',
-        model: configStore.providers[newKeyProvider.value]?.defaultModel || '',
+        baseUrl:  configStore.providers[newKeyProvider.value]?.defaultBase || '',
+        model:    configStore.providers[newKeyProvider.value]?.defaultModel || '',
     }));
-
     const count = await keyManager.addKeysBatch(records);
     importText.value = '';
     showImportExport.value = false;
     uiStore.showToast(`成功导入 ${count} 个 Key`, 'success');
 }
 
-/**
- * @description 选中/取消选中单个 Key。
- */
 function toggleSelect(id) {
-    if (selectedIds.value.has(id)) {
-        selectedIds.value.delete(id);
-    } else {
-        selectedIds.value.add(id);
-    }
-    selectedIds.value = new Set(selectedIds.value); // 触发响应式更新
+    if (selectedIds.value.has(id)) selectedIds.value.delete(id);
+    else selectedIds.value.add(id);
+    selectedIds.value = new Set(selectedIds.value);
     selectAll.value = selectedIds.value.size === keyManager.filteredKeys.length;
 }
 
-/**
- * @description 全选/取消全选。
- */
 function toggleSelectAll() {
-    if (selectAll.value) {
-        selectedIds.value = new Set();
-    } else {
-        selectedIds.value = new Set(keyManager.filteredKeys.map(k => k.id));
-    }
+    if (selectAll.value) selectedIds.value = new Set();
+    else selectedIds.value = new Set(keyManager.filteredKeys.map(k => k.id));
     selectAll.value = !selectAll.value;
 }
 
-/**
- * @description 批量删除选中的 Key。
- */
 async function handleBatchDelete() {
-    if (selectedIds.value.size === 0) {
-        uiStore.showToast('请先选择要删除的 Key', 'warning');
-        return;
-    }
+    if (selectedIds.value.size === 0) { uiStore.showToast('请先选择要删除的 Key', 'warning'); return; }
     const confirmed = await uiStore.showConfirmation(`确定删除选中的 ${selectedIds.value.size} 个 Key？`);
     if (confirmed) {
         await keyManager.deleteKeysBatch([...selectedIds.value]);
@@ -188,25 +125,18 @@ async function handleBatchDelete() {
     }
 }
 
-/**
- * @description 导出 Key 到剪贴板。
- */
 async function handleExport() {
     const json = await keyManager.exportKeys();
     try {
         await navigator.clipboard.writeText(json);
         uiStore.showToast('已复制到剪贴板', 'success');
     } catch {
-        // 降级：显示在 textarea
         showImportExport.value = true;
         importText.value = json;
         uiStore.showToast('请手动复制下方内容', 'info');
     }
 }
 
-/**
- * @description 处理 Key 删除事件。
- */
 async function handleDeleteKey(id) {
     await keyManager.deleteKey(id);
     selectedIds.value.delete(id);
@@ -214,17 +144,11 @@ async function handleDeleteKey(id) {
     uiStore.showToast('已删除', 'success');
 }
 
-/**
- * @description 打开 Key 详情。
- */
 function openDetail(id) {
     keyManager.selectKey(id);
     uiStore.openModal('keyDetail', { keyId: id });
 }
 
-/**
- * @description 全选 checkbox 状态同步。
- */
 watch(() => keyManager.filteredKeys.length, () => {
     selectAll.value = false;
     selectedIds.value = new Set();
@@ -233,112 +157,107 @@ watch(() => keyManager.filteredKeys.length, () => {
 
 <template>
     <div class="key-manager">
-        <!-- 顶部操作栏 -->
+
+        <!-- ── Toolbar ── -->
         <div class="km-toolbar">
             <div class="km-toolbar-left">
                 <button @click="openAddModal" class="km-btn primary">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.75">
+                        <path d="M7 2v10M2 7h10"/>
+                    </svg>
                     添加 Key
                 </button>
                 <button @click="showImportExport = !showImportExport" class="km-btn">
                     导入/导出
                 </button>
             </div>
-            <div class="km-toolbar-right">
-                <span class="km-count">
-                    {{ keyManager.filteredKeys.length }} / {{ keyManager.keys.length }} 个 Key
-                </span>
+            <span class="km-count">{{ keyManager.filteredKeys.length }} / {{ keyManager.keys.length }} 个 Key</span>
+        </div>
+
+        <!-- ── Filter bar ── -->
+        <div class="km-filters">
+            <div class="km-search-wrap">
+                <svg class="km-search-icon" width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="6" cy="6" r="4.5"/>
+                    <path d="M10 10l2.5 2.5"/>
+                </svg>
+                <input
+                    v-model="keyManager.searchTerm"
+                    type="text"
+                    class="km-search"
+                    placeholder="搜索 Key、别名、标签..."
+                />
+            </div>
+            <div class="km-filter-group">
+                <CustomSelect
+                    v-model="keyManager.filterProvider"
+                    :options="filterProviderOptions"
+                    placeholder="全部平台"
+                    class="km-custom-select"
+                />
+                <CustomSelect
+                    v-model="keyManager.filterStatus"
+                    :options="filterStatusOptions"
+                    placeholder="全部状态"
+                    class="km-custom-select"
+                />
+                <CustomSelect
+                    v-model="keyManager.sortBy"
+                    :options="sortOptionsForSelect"
+                    placeholder="排序: 创建时间"
+                    class="km-custom-select km-custom-select-sort"
+                />
+                <button
+                    @click="keyManager.sortDir = keyManager.sortDir === 'asc' ? 'desc' : 'asc'"
+                    class="km-btn km-sort-dir"
+                    :title="keyManager.sortDir === 'asc' ? '升序' : '降序'"
+                >
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path v-if="keyManager.sortDir === 'asc'" d="M7 2v10M3 8l4 4 4-4"/>
+                        <path v-else d="M7 12V2M3 6l4-4 4 4"/>
+                    </svg>
+                </button>
             </div>
         </div>
 
-        <!-- 搜索和筛选 -->
-        <div class="km-filters">
-            <input
-                v-model="keyManager.searchTerm"
-                type="text"
-                class="km-search"
-                placeholder="搜索 Key、别名、标签..."
-            />
-
-            <select v-model="keyManager.filterProvider" class="km-filter-select">
-                <option v-for="opt in filterProviderOptions" :key="opt.key" :value="opt.key">
-                    {{ opt.label }}
-                </option>
-            </select>
-
-            <select v-model="keyManager.filterStatus" class="km-filter-select">
-                <option v-for="opt in filterStatusOptions" :key="opt.key" :value="opt.key">
-                    {{ opt.label }}
-                </option>
-            </select>
-
-            <select v-model="keyManager.sortBy" class="km-filter-select">
-                <option v-for="opt in sortOptions" :key="opt.key" :value="opt.key">
-                    排序: {{ opt.label }}
-                </option>
-            </select>
-
-            <button
-                @click="keyManager.sortDir = keyManager.sortDir === 'asc' ? 'desc' : 'asc'"
-                class="km-btn small"
-            >
-                {{ keyManager.sortDir === 'asc' ? '↑' : '↓' }}
-            </button>
-        </div>
-
-        <!-- 批量操作栏 -->
-        <div v-if="selectedIds.size > 0" class="km-batch-actions">
-            <label class="km-checkbox-label">
-                <input
-                    type="checkbox"
-                    :checked="selectAll"
-                    @change="toggleSelectAll"
-                />
-                全选
+        <!-- ── Batch action bar ── -->
+        <div v-if="selectedIds.size > 0" class="km-batch-bar">
+            <label class="km-check-label">
+                <input type="checkbox" :checked="selectAll" @change="toggleSelectAll" />
+                <span>全选</span>
             </label>
             <span class="km-selected-count">已选 {{ selectedIds.size }} 个</span>
-            <button @click="handleBatchDelete" class="km-btn danger small">
-                批量删除
-            </button>
+            <button @click="handleBatchDelete" class="km-btn danger km-btn-sm">批量删除</button>
         </div>
 
-        <!-- 导入/导出面板 -->
-        <div v-if="showImportExport" class="km-import-export">
+        <!-- ── Import/Export panel ── -->
+        <div v-if="showImportExport" class="km-ie-panel">
             <div class="km-ie-header">
-                <span>导入/导出 Keys</span>
-                <button @click="showImportExport = false" class="km-btn small">关闭</button>
+                <span class="km-ie-title">导入 / 导出</span>
+                <button @click="showImportExport = false" class="km-btn km-btn-sm">关闭</button>
             </div>
             <textarea
                 v-model="importText"
                 class="km-ie-textarea"
                 placeholder="导入：每行一个 API Key，或粘贴 JSON 数组&#10;导出：点击下方按钮复制所有 Key"
-                rows="6"
+                rows="5"
             ></textarea>
             <div class="km-ie-actions">
-                <button @click="handleBatchImport" class="km-btn primary small">
-                    导入
-                </button>
-                <button @click="handleExport" class="km-btn small">
-                    导出全部
-                </button>
+                <button @click="handleBatchImport" class="km-btn primary km-btn-sm">导入</button>
+                <button @click="handleExport" class="km-btn km-btn-sm">导出全部</button>
             </div>
         </div>
 
-        <!-- Key 列表 -->
+        <!-- ── Key list ── -->
         <div class="km-key-list" v-if="keyManager.keys.length > 0">
-            <label class="km-checkbox-label" v-if="keyManager.filteredKeys.length > 0">
-                <input
-                    type="checkbox"
-                    :checked="selectAll"
-                    @change="toggleSelectAll"
-                />
-                全选
+            <label class="km-check-label km-check-all" v-if="keyManager.filteredKeys.length > 0">
+                <input type="checkbox" :checked="selectAll" @change="toggleSelectAll" />
+                <span>全选</span>
             </label>
-
             <div
                 v-for="key in keyManager.filteredKeys"
                 :key="key.id"
                 class="km-key-item"
-                :class="{ selected: selectedIds.has(key.id) }"
             >
                 <input
                     type="checkbox"
@@ -356,379 +275,367 @@ watch(() => keyManager.filteredKeys.length, () => {
             </div>
         </div>
 
-        <!-- 空状态 -->
+        <!-- ── Empty state ── -->
         <div v-else class="km-empty">
-            <div class="km-empty-text">还没有保存任何 API Key</div>
-            <div class="km-empty-hint">点击上方“添加 Key”开始管理你的密钥</div>
+            <svg class="km-empty-icon" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.25">
+                <rect x="6" y="10" width="28" height="22" rx="3"/>
+                <path d="M14 10V8a2 2 0 012-2h8a2 2 0 012 2v2"/>
+                <path d="M20 19v6M17 22h6"/>
+            </svg>
+            <p class="km-empty-title">还没有 Key</p>
+            <p class="km-empty-hint">点击「添加 Key」开始管理你的 API 密钥</p>
         </div>
 
-        <!-- 添加 Key 模态框 -->
-        <Teleport to="body">
-            <div v-if="addModalOpen" class="km-modal-overlay" @click.self="addModalOpen = false">
-                <div class="km-modal t-modal is-open" role="dialog" aria-modal="true">
-                    <div class="km-modal-header">
-                        <h3>添加 API Key</h3>
-                        <button @click="addModalOpen = false" class="km-modal-close">×</button>
+    </div>
+
+    <!-- ── Add Key Modal ── -->
+    <Teleport to="body">
+        <div v-if="addModalOpen" class="km-overlay" @click.self="addModalOpen = false">
+            <div class="km-modal">
+                <div class="km-modal-header">
+                    <h3>添加 Key</h3>
+                    <button @click="addModalOpen = false" class="km-modal-close" aria-label="关闭">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75">
+                            <path d="M3 3l10 10M13 3L3 13"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="km-modal-body">
+                    <div class="km-form-group">
+                        <label>平台</label>
+                        <CustomSelect
+                            v-model="newKeyProvider"
+                            :options="providerOptions"
+                            placeholder="选择平台"
+                        />
                     </div>
-                    <div class="km-modal-body">
-                        <div class="km-form-group">
-                            <label>平台</label>
-                            <CustomSelect v-model="newKeyProvider" :options="providerOptions" />
-                        </div>
-                        <div class="km-form-group">
-                            <label>API Key</label>
-                            <input
-                                v-model="newKeyText"
-                                type="text"
-                                class="km-form-input"
-                                placeholder="sk-..."
-                                autofocus
-                            />
-                        </div>
+                    <div class="km-form-group">
+                        <label>API Key <span class="km-required">*</span></label>
+                        <input
+                            v-model="newKeyText"
+                            type="text"
+                            class="km-input"
+                            placeholder="sk-..."
+                            @keydown.enter="handleAddKey"
+                        />
+                    </div>
+                    <div class="km-form-group">
+                        <label>别名（可选）</label>
+                        <input v-model="newKeyAlias" type="text" class="km-input" placeholder="方便识别的名称" />
+                    </div>
+                    <div class="km-form-row">
                         <div class="km-form-group">
                             <label>Base URL</label>
-                            <input
-                                v-model="newKeyBaseUrl"
-                                type="text"
-                                class="km-form-input"
-                                placeholder="https://api.example.com/v1"
-                            />
+                            <input v-model="newKeyBaseUrl" type="text" class="km-input" placeholder="https://..." />
                         </div>
                         <div class="km-form-group">
                             <label>模型</label>
-                            <input
-                                v-model="newKeyModel"
-                                type="text"
-                                class="km-form-input"
-                                placeholder="gpt-4o"
-                            />
+                            <input v-model="newKeyModel" type="text" class="km-input" placeholder="gpt-4o-mini" />
                         </div>
-                        <div class="km-form-group">
-                            <label>别名（可选）</label>
-                            <input
-                                v-model="newKeyAlias"
-                                type="text"
-                                class="km-form-input"
-                                placeholder="例如：我的 OpenAI Key"
-                            />
-                        </div>
-                    </div>
-                    <div class="km-modal-footer">
-                        <button @click="addModalOpen = false" class="km-btn">取消</button>
-                        <button @click="handleAddKey" class="km-btn primary">添加</button>
                     </div>
                 </div>
+                <div class="km-modal-footer">
+                    <button @click="addModalOpen = false" class="km-btn">取消</button>
+                    <button @click="handleAddKey" class="km-btn primary">添加</button>
+                </div>
             </div>
-        </Teleport>
-    </div>
+        </div>
+    </Teleport>
 </template>
 
 <style scoped>
-    .key-manager {
-        padding: 16px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
+/* ── Layout ── */
+.key-manager {
+    padding: 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-    /* 工具栏 */
-    .km-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
+/* ── Toolbar ── */
+.km-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.km-toolbar-left { display: flex; gap: 8px; }
+.km-count {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+}
 
-    .km-toolbar-left {
-        display: flex;
-        gap: 8px;
-    }
+/* ── Unified button — same height as global inputs (--ctrl-height-md = 36px) ── */
+.km-btn {
+    height: var(--ctrl-height-md);
+    padding: 0 14px;
+    box-shadow: var(--shadow-light-ring);
+    border-radius: var(--radius-md);
+    background: var(--ds-white);
+    color: var(--text-primary);
+    font-size: var(--ctrl-font-md);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: background var(--transition-fast), box-shadow var(--transition-fast);
+}
+.km-btn:hover { background: var(--ds-gray-50); }
+.km-btn.primary { background: var(--ds-gray-1000); color: var(--ds-white); box-shadow: none; }
+.km-btn.primary:hover { background: var(--ds-black); }
+.km-btn.danger  { background: var(--ds-red); color: var(--ds-white); box-shadow: none; }
+.km-btn.danger:hover  { background: var(--ds-red-dark); }
+.km-btn-sm { height: var(--ctrl-height-sm); padding: 0 10px; font-size: var(--ctrl-font-sm); }
 
-    .km-count {
-        font-size: 13px;
-        color: var(--text-secondary);
-        font-variant-numeric: tabular-nums;
-    }
+/* ── Filter bar ── */
+.km-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 8px 0;
+}
+.km-search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 180px;
+    max-width: 320px;
+}
+.km-search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ds-gray-400);
+    pointer-events: none;
+}
+.km-search {
+    width: 100%;
+    height: var(--ctrl-height-md);
+    padding: 0 12px 0 30px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--ds-white);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-ring);
+    font-size: var(--ctrl-font-md);
+    font-family: var(--font-sans);
+    transition: box-shadow var(--transition-fast);
+}
+.km-search:focus {
+    outline: none;
+    box-shadow: var(--shadow-ring), var(--shadow-focus);
+}
+.km-filter-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    flex: 1;
+}
+/* CustomSelect width overrides inside filter group */
+.km-custom-select { min-width: 110px; max-width: 160px; flex: 1; }
+.km-custom-select-sort { min-width: 140px; max-width: 180px; }
+/* Unified select — matches km-btn height */
+.km-select {
+    height: var(--ctrl-height-md);
+    padding: 0 28px 0 10px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--ds-white);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-ring);
+    font-size: var(--ctrl-font-md);
+    font-family: var(--font-sans);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%238a8a8a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: box-shadow var(--transition-fast);
+}
+.km-select:focus {
+    outline: none;
+    box-shadow: var(--shadow-ring), var(--shadow-focus);
+}
+.km-select-sort { min-width: 130px; }
+.km-sort-dir {
+    padding: 0 10px;
+    flex-shrink: 0;
+}
 
-    /* 筛选栏 */
-    .km-filters {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
+/* ── Batch bar ── */
+.km-batch-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--ds-gray-50);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-light-ring);
+}
+.km-check-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+}
+.km-check-all { margin-bottom: 6px; }
+.km-selected-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
 
-    .km-search {
-        flex: 1;
-        min-width: 200px;
-        height: 36px;
-        padding: 0 12px;
-        border-radius: var(--radius-md);
-        font-size: 14px;
-        font-family: var(--font-sans);
-    }
+/* ── Import/Export panel ── */
+.km-ie-panel {
+    padding: 14px;
+    background: var(--ds-gray-50);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-light-ring);
+}
+.km-ie-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.km-ie-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.km-ie-textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--ds-white);
+    box-shadow: var(--shadow-ring);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    resize: vertical;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+.km-ie-textarea:focus { outline: none; box-shadow: var(--shadow-ring), var(--shadow-focus); }
+.km-ie-actions { display: flex; gap: 6px; }
 
-    .km-filter-select {
-        height: 36px;
-        padding: 0 12px;
-        border-radius: var(--radius-md);
-        font-size: 13px;
-        font-family: var(--font-sans);
-        background: var(--ds-white);
-    }
+/* ── Key list ── */
+.km-key-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+.km-key-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.km-key-checkbox { margin-top: 12px; cursor: pointer; flex-shrink: 0; }
+.km-key-card-wrapper { flex: 1; min-width: 0; }
 
-    /* 批量操作 */
-    .km-batch-actions {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 12px;
-        background: var(--ds-gray-50);
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-light-ring);
-    }
+/* ── Empty state ── */
+.km-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 380px;
+    color: var(--text-tertiary);
+}
+.km-empty-icon { opacity: 0.35; }
+.km-empty-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+.km-empty-hint  { font-size: 12px; color: var(--text-tertiary); }
 
-    .km-selected-count {
-        font-size: 13px;
-        color: var(--text-secondary);
-        font-weight: 600;
-    }
+/* ── Modal overlay ── */
+.km-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--ds-overlay-backdrop);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.km-modal {
+    background: var(--ds-white);
+    border-radius: var(--radius-xl);
+    width: 90%;
+    max-width: 460px;
+    box-shadow: var(--shadow-full-card);
+}
+.km-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
+}
+.km-modal-header h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.km-modal-close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+.km-modal-close:hover { background: var(--ds-gray-100); color: var(--text-primary); }
+.km-modal-body { padding: 20px; display: flex; flex-direction: column; gap: 0; }
+.km-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 20px;
+    box-shadow: inset 0 1px 0 0 var(--ds-gray-100);
+}
 
-    /* 导入导出 */
-    .km-import-export {
-        padding: 12px;
-        background: var(--ds-gray-50);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-light-ring);
-    }
-
-    .km-ie-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-        font-weight: 600;
-    }
-
-    .km-ie-textarea {
-        width: 100%;
-        padding: 8px;
-        border-radius: var(--radius-md);
-        font-family: var(--font-mono);
-        font-size: 12px;
-        resize: vertical;
-        margin-bottom: 8px;
-    }
-
-    .km-ie-actions {
-        display: flex;
-        gap: 8px;
-    }
-
-    /* Key 列表 */
-    .km-key-list {
-        flex: 1;
-        overflow-y: auto;
-        padding-right: 4px;
-    }
-
-    .km-checkbox-label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13px;
-        color: var(--text-secondary);
-        margin-bottom: 8px;
-        cursor: pointer;
-    }
-
-    .km-key-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-        margin-bottom: 8px;
-    }
-
-    .km-key-checkbox {
-        margin-top: 14px;
-        cursor: pointer;
-    }
-
-    .km-key-card-wrapper {
-        flex: 1;
-    }
-
-    /* 空状态 */
-    .km-empty {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        min-height: 420px;
-        color: var(--text-secondary);
-    }
-
-    .km-empty-icon {
-        font-size: 48px;
-        opacity: 0.3;
-    }
-
-    .km-empty-text {
-        font-size: 15px;
-        color: var(--text-secondary);
-    }
-
-    .km-empty-hint {
-        font-size: 13px;
-        color: var(--text-tertiary);
-    }
-
-    /* 按钮 */
-    .km-btn {
-        height: 36px;
-        padding: 0 16px;
-        box-shadow: var(--shadow-light-ring);
-        border-radius: var(--radius-md);
-        background: var(--ds-white);
-        font-size: 13px;
-        font-family: var(--font-sans);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .km-btn:hover {
-        background: var(--ds-gray-50);
-    }
-
-    .km-btn.primary {
-        background: var(--ds-gray-1000);
-        color: var(--ds-white);
-        box-shadow: none;
-    }
-
-    .km-btn.primary:hover {
-        background: var(--ds-black);
-    }
-
-    .km-btn.danger {
-        background: var(--ds-red);
-        color: var(--ds-white);
-        box-shadow: none;
-    }
-
-    .km-btn.danger:hover {
-        background: var(--ds-red-dark);
-    }
-
-    .km-btn.small {
-        height: 28px;
-        padding: 0 10px;
-        font-size: 12px;
-    }
-
-    /* 模态框 */
-    .km-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: var(--ds-overlay-backdrop);
-        -webkit-backdrop-filter: blur(4px);
-        backdrop-filter: blur(4px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-    }
-
-    .km-modal {
-        background: var(--ds-white);
-        border-radius: var(--radius-lg);
-        width: 90%;
-        max-width: 440px;
-        box-shadow: var(--shadow-full-card);
-    }
-
-    .km-modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 20px;
-        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
-    }
-
-    .km-modal-header h3 {
-        margin: 0;
-        font-size: 16px;
-        font-family: var(--font-serif);
-        font-weight: 600;
-    }
-
-    .km-modal-close {
-        background: transparent;
-        border: none;
-        font-size: 18px;
-        cursor: pointer;
-        color: var(--text-tertiary);
-        padding: 4px 8px;
-        border-radius: var(--radius-sm);
-        transition: all var(--transition-fast);
-        line-height: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .km-modal-close:hover {
-        background: var(--ds-gray-100);
-        color: var(--text-primary);
-    }
-
-    .km-modal-body {
-        padding: 20px;
-    }
-
-    .km-form-group {
-        margin-bottom: 16px;
-    }
-
-    .km-form-group label {
-        display: block;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-secondary);
-        margin-bottom: 6px;
-    }
-
-    .km-form-input,
-    .km-form-select {
-        width: 100%;
-        height: 40px;
-        padding: 0 12px;
-        box-shadow: var(--shadow-ring);
-        border: none;
-        border-radius: var(--radius-md);
-        font-size: 14px;
-        font-family: var(--font-sans);
-        background: var(--ds-white);
-        transition: box-shadow var(--transition-fast);
-    }
-
-    .km-form-input:focus,
-    .km-form-select:focus {
-        outline: none;
-        box-shadow: var(--shadow-ring), var(--shadow-focus);
-    }
-
-    .km-modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        padding: 12px 20px;
-        box-shadow: inset 0 1px 0 0 var(--ds-gray-100);
-    }
+/* ── Form ── */
+.km-form-group {
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.km-form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.km-required { color: var(--ds-red); }
+.km-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.km-input {
+    width: 100%;
+    height: var(--ctrl-height-md);
+    padding: 0 12px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--ds-white);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-ring);
+    font-size: 13px;
+    font-family: var(--font-sans);
+    transition: box-shadow var(--transition-fast);
+}
+.km-input:focus { outline: none; box-shadow: var(--shadow-ring), var(--shadow-focus); }
 </style>

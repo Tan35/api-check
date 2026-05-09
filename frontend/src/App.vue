@@ -120,7 +120,6 @@ onBeforeUnmount(() => {
                 <span class="brand-mark" aria-hidden="true"></span>
                 <div class="brand-text">
                     <h1>API Check</h1>
-                    <p class="brand-subtitle">{{ currentProviderLabel }} · {{ currentRegionLabel }}</p>
                 </div>
             </div>
 
