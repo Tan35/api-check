@@ -18,13 +18,24 @@
 
     <div class="custom-provider-select" :class="{ disabled: checkerStore.isChecking }" id="providerSelectWrapper"
         ref="providerSelectWrapper">
+        <!-- 沉浸式触发器：打开时变为 input，关闭时显示选中值 -->
         <div class="custom-provider-trigger" :class="{ open: uiStore.providerDropdownOpen }"
             @click="!checkerStore.isChecking && toggleProviderDropdown()"
             role="combobox"
             aria-haspopup="listbox"
             :aria-expanded="uiStore.providerDropdownOpen"
             aria-labelledby="providerSelect providerDisplay">
-            <span id="providerDisplay">{{ configStore.providers[configStore.currentProvider].label }}</span>
+            <input
+                v-if="uiStore.providerDropdownOpen"
+                ref="searchInputElement"
+                class="provider-inline-search"
+                type="text"
+                v-model="providerSearchTerm"
+                :placeholder="configStore.providers[configStore.currentProvider].label"
+                @click.stop
+                aria-label="搜索提供商"
+            />
+            <span v-else id="providerDisplay">{{ configStore.providers[configStore.currentProvider].label }}</span>
             <span class="trigger-chevron"></span>
         </div>
         <div
@@ -34,10 +45,8 @@
             ref="dropdownContainer"
             role="listbox"
             aria-label="API 提供商列表">
-            <input type="search" v-model="providerSearchTerm" placeholder="Search providers..." class="provider-search-input" ref="searchInputElement"
-                aria-label="搜索提供商">
             <div v-for="(provider, key) in filteredProviders" :key="key" class="provider-option"
-                :class="{ selected: key === configStore.currentProvider, highlighted: providerKeys[highlightedIndex] === key }" @click="handleProviderSelect(key)"
+                :class="{ selected: key === configStore.currentProvider, highlighted: providerKeys[highlightedIndex] === key }" @mousedown.prevent="handleProviderSelect(key)"
                 role="option"
                 :aria-selected="key === configStore.currentProvider">
                 <span>{{ provider.label }}</span>
@@ -164,7 +173,9 @@ const openProviderDropdown = () => {
         dropdownCloseTimer = null;
     }
     dropdownClosing.value = false;
+    providerSearchTerm.value = '';
     uiStore.providerDropdownOpen = true;
+    nextTick(() => searchInputElement.value?.focus());
 };
 
 const closeProviderDropdown = () => {
@@ -297,7 +308,26 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
 
     .custom-provider-trigger.open {
         box-shadow: var(--shadow-ring);
-        background: var(--ds-gray-50);
+        background: var(--ds-white);
+        cursor: text;
+    }
+
+    /* 沉浸式搜索输入框，融入触发器 */
+    .provider-inline-search {
+        flex: 1;
+        height: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 14px;
+        font-family: var(--font-sans);
+        color: var(--text-primary);
+        padding: 0;
+        min-width: 0;
+    }
+
+    .provider-inline-search::placeholder {
+        color: var(--ds-gray-400);
     }
 
     .trigger-chevron {
@@ -328,22 +358,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         z-index: 100;
         max-height: 300px;
         overflow-y: auto;
-        padding: 8px;
-    }
-
-    .provider-search-input {
-        width: 100%;
-        margin: 0 0 6px;
-        height: 36px;
-        border-radius: var(--radius-md);
-        padding: 0 10px;
-        font-size: 13px;
-        font-family: var(--font-sans);
-    }
-
-    .provider-search-input:focus {
-        outline: none;
-        box-shadow: var(--shadow-ring);
+        padding: 4px 8px;
     }
 
     .provider-option {

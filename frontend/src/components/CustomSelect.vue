@@ -12,6 +12,7 @@ const emit = defineEmits(['update:modelValue']);
 
 const isOpen = ref(false);
 const containerRef = ref(null);
+const inputRef = ref(null);
 const searchTerm = ref('');
 const highlightedIndex = ref(-1);
 
@@ -28,19 +29,18 @@ const selectedLabel = computed(() => {
     return found ? found.label : props.placeholder;
 });
 
-function toggle() {
-    if (props.disabled) return;
-    isOpen.value = !isOpen.value;
-    if (isOpen.value) {
-        highlightedIndex.value = -1;
-        searchTerm.value = '';
-    }
-}
+// 触发器显示：打开时显示搜索词（可能为空），关闭时显示选中值
+const displayValue = computed(() => {
+    if (isOpen.value) return searchTerm.value;
+    return selectedLabel.value;
+});
 
-function select(key) {
-    emit('update:modelValue', key);
-    isOpen.value = false;
+function open() {
+    if (props.disabled || isOpen.value) return;
+    isOpen.value = true;
+    highlightedIndex.value = -1;
     searchTerm.value = '';
+    nextTick(() => inputRef.value?.focus());
 }
 
 function close() {
@@ -48,19 +48,27 @@ function close() {
     searchTerm.value = '';
 }
 
+function toggle() {
+    if (isOpen.value) close();
+    else open();
+}
+
+function select(key) {
+    emit('update:modelValue', key);
+    close();
+}
+
 function handleKeyDown(e) {
     if (!isOpen.value) {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            toggle();
+            open();
         }
         return;
     }
 
-    if (e.key === 'Escape') {
-        close();
-        return;
-    }
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key === 'Tab') { close(); return; }
 
     const keys = optionKeys.value;
     if (!keys.length) return;
@@ -94,39 +102,41 @@ watch(isOpen, (v) => {
 
 <template>
     <div class="cs-wrapper" ref="containerRef" :class="{ disabled }">
-        <button
+        <!-- 沉浸式触发器：打开时变为 input，关闭时显示选中值 -->
+        <div
             class="cs-trigger"
             :class="{ open: isOpen }"
             @click="toggle"
-            @keydown="handleKeyDown"
-            type="button"
             role="combobox"
             :aria-expanded="isOpen"
-            :disabled="disabled"
         >
-            <span class="cs-value">{{ selectedLabel }}</span>
+            <input
+                v-if="isOpen"
+                ref="inputRef"
+                class="cs-input"
+                type="text"
+                v-model="searchTerm"
+                :placeholder="selectedLabel"
+                @keydown="handleKeyDown"
+                @click.stop
+            />
+            <span v-else class="cs-value">{{ selectedLabel }}</span>
             <span class="cs-chevron"></span>
-        </button>
+        </div>
+
         <Transition name="cs-drop">
             <div v-if="isOpen" class="cs-dropdown">
-                <input
-                    type="text"
-                    v-model="searchTerm"
-                    class="cs-search"
-                    placeholder="Search..."
-                    @keydown="handleKeyDown"
-                />
                 <div class="cs-options">
                     <div
                         v-for="(opt, idx) in filteredOptions"
                         :key="opt.key"
                         class="cs-option"
                         :class="{ selected: opt.key === modelValue, highlighted: idx === highlightedIndex }"
-                        @click="select(opt.key)"
+                        @mousedown.prevent="select(opt.key)"
                     >
                         {{ opt.label }}
                     </div>
-                    <div v-if="filteredOptions.length === 0" class="cs-empty">No matches</div>
+                    <div v-if="filteredOptions.length === 0" class="cs-empty">无匹配项</div>
                 </div>
             </div>
         </Transition>
@@ -158,18 +168,37 @@ watch(isOpen, (v) => {
         cursor: pointer;
         display: flex;
         align-items: center;
-        transition: box-shadow var(--transition-fast);
+        transition: box-shadow var(--transition-fast), background var(--transition-fast);
         text-align: left;
+        position: relative;
     }
 
     .cs-trigger:hover {
-        box-shadow: var(--shadow-ring);
         background: var(--ds-gray-50);
     }
 
     .cs-trigger.open {
+        background: var(--ds-white);
         box-shadow: var(--shadow-ring);
-        background: var(--ds-gray-50);
+        cursor: text;
+    }
+
+    /* 沉浸式搜索输入框，完全融入触发器 */
+    .cs-input {
+        flex: 1;
+        height: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: var(--ctrl-font-md);
+        font-family: var(--font-sans);
+        color: var(--text-primary);
+        padding: 0;
+        min-width: 0;
+    }
+
+    .cs-input::placeholder {
+        color: var(--ds-gray-400);
     }
 
     .cs-value {
@@ -190,6 +219,7 @@ watch(isOpen, (v) => {
         transform: translateY(-65%) rotate(45deg);
         transition: transform var(--transition-fast);
         pointer-events: none;
+        flex-shrink: 0;
     }
 
     .cs-trigger.open .cs-chevron {
@@ -208,27 +238,10 @@ watch(isOpen, (v) => {
         overflow: hidden;
     }
 
-    .cs-search {
-        width: calc(100% - 24px);
-        margin: 8px 12px;
-        height: 36px;
-        border: none;
-        box-shadow: var(--shadow-ring);
-        border-radius: var(--radius-sm);
-        padding: 0 10px;
-        font-size: 13px;
-        font-family: var(--font-sans);
-        outline: none;
-    }
-
-    .cs-search:focus {
-        box-shadow: var(--shadow-ring);
-    }
-
     .cs-options {
         max-height: 240px;
         overflow-y: auto;
-        padding-bottom: 4px;
+        padding: 4px 0;
     }
 
     .cs-option {
