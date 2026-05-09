@@ -440,8 +440,8 @@ watch(() => keyManager.filteredKeys.length, () => {
     flex: 1;
 }
 /* CustomSelect width overrides inside filter group */
-.km-custom-select { min-width: 110px; max-width: 160px; flex: 1; }
-.km-custom-select-sort { min-width: 140px; max-width: 180px; }
+.km-custom-select { min-width: 110px; max-width: 150px; flex: 1 1 110px; }
+.km-custom-select-sort { min-width: 110px; max-width: 150px; flex: 1 1 110px; }
 /* Unified select — matches km-btn height */
 .km-select {
     height: var(--ctrl-height-md);

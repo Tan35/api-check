@@ -150,13 +150,13 @@ watch(isOpen, (v) => {
 
     .cs-trigger {
         width: 100%;
-        height: 40px;
+        height: var(--ctrl-height-md);
         padding: 0 32px 0 12px;
         background: var(--ds-white);
         box-shadow: var(--shadow-ring);
         border: none;
         border-radius: var(--radius-md);
-        font-size: 14px;
+        font-size: var(--ctrl-font-md);
         font-family: var(--font-sans);
         color: var(--text-primary);
         cursor: pointer;
@@ -243,7 +243,7 @@ watch(isOpen, (v) => {
     }
 
     .cs-option.selected {
-        color: var(--ds-console-blue);
+        color: var(--text-primary);
         font-weight: 500;
     }
 

@@ -237,6 +237,10 @@ h1 {
     background: var(--ds-gray-1000);
 }
 
+.run-status.paused .run-status-dot {
+    background: var(--ds-pink);
+}
+
 .topbar-actions {
     display: flex;
     align-items: center;
@@ -492,6 +496,15 @@ select {
 
 /* ── Loader spinner ── */
 .loader {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--ds-gray-200);
+    border-top-color: var(--ds-gray-700);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+/* White loader variant for dark-background buttons */
+.loader-white {
     width: 14px;
     height: 14px;
     border: 2px solid rgba(255, 255, 255, 0.35);

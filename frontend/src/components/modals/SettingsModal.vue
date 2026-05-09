@@ -10,7 +10,7 @@
         </div>
         <div class="model-selector-body">
             <div class="settings-section">
-                <h4 class="settings-title">Region</h4>
+                <h4 class="settings-title">区域</h4>
                 <ul class="model-list region-list">
                     <li v-for="(label, key) in configStore.regions" :key="key"
                         :class="{ selected: key === configStore.currentRegion }" @click="configStore.selectRegion(key)">
@@ -19,7 +19,7 @@
                 </ul>
             </div>
             <div class="settings-section">
-                <h4 class="settings-title">Validation</h4>
+                <h4 class="settings-title">验证参数</h4>
                 <div class="advanced-settings-grid">
                     <div class="config-item">
                         <label for="threshold">最低余额</label>
@@ -35,17 +35,17 @@
                     </div>
 
                     <div class="config-item">
-                        <label for="max-tokens">max_tokens</label>
+                        <label for="max-tokens">最大 Token 数</label>
                         <input id="max-tokens" type="number" v-model.number="configStore.validationMaxTokens" min="1">
                     </div>
                     
                     <div class="config-item">
-                        <label for="max-output-tokens">max_output_tokens</label>
+                        <label for="max-output-tokens">最大输出 Token</label>
                         <input id="max-output-tokens" type="number" v-model.number="configStore.validationMaxOutputTokens" min="1">
                     </div>
 
                     <div class="config-item prompt-item">
-                        <label for="prompt">Prompt</label>
+                        <label for="prompt">提示词</label>
                         <input id="prompt" type="text" v-model="configStore.validationPrompt">
                     </div>
                 </div>

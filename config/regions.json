@@ -1,12 +1,11 @@
 {
-  
-  "wnam": "Western North America",
-  "enam": "Eastern North America",
-  "sam": "South America",
-  "weur": "Western Europe",
-  "eeur": "Eastern Europe",
-  "apac": "Asia-Pacific",
-  "oc": "Oceania",
-  "afr": "Africa",
-  "me": "Middle East"
+  "wnam": "北美西部",
+  "enam": "北美东部",
+  "sam": "南美洲",
+  "weur": "西欧",
+  "eeur": "东欧",
+  "apac": "亚太",
+  "oc": "大洋洲",
+  "afr": "非洲",
+  "me": "中东"
 }

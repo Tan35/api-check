@@ -143,26 +143,28 @@ const handleFetchModels = async () => {
     }
 
     .fetch-models-btn {
-        padding: 0 16px;
-        color: var(--ds-white);
+        padding: 0 14px;
+        color: var(--text-secondary);
         border-radius: var(--radius-md);
         font-size: 13px;
         font-weight: 500;
         font-family: var(--font-sans);
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
-        min-width: 64px;
-        height: 40px;
-        background: var(--accent-dark);
+        min-width: 56px;
+        height: var(--ctrl-height-md);
+        background: var(--ds-white);
+        box-shadow: var(--shadow-light-ring);
         flex-shrink: 0;
     }
 
-    .fetch-models-btn:hover {
-        background: var(--accent-dark-hover);
+    .fetch-models-btn:hover:not(:disabled) {
+        background: var(--ds-gray-50);
+        color: var(--text-primary);
     }
 
     .fetch-models-btn:focus-visible {
@@ -176,9 +178,7 @@ const handleFetchModels = async () => {
     }
 
     .fetch-models-btn:disabled {
-        background: var(--bg-disabled);
+        opacity: 0.5;
         cursor: not-allowed;
-        transform: none;
-        opacity: 0.7;
     }
 </style>

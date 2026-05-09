@@ -294,13 +294,13 @@ const finishImport = (cleanLines, fileName) => {
     }
 
     .import-btn {
-        background: var(--ds-gray-1000);
-        color: var(--ds-white);
-        box-shadow: none;
+        background: var(--ds-white);
+        color: var(--text-primary);
+        box-shadow: var(--shadow-light-ring);
     }
 
     .import-btn:hover:not(:disabled) {
-        background: var(--ds-black);
+        background: var(--ds-gray-50);
     }
 
     .clear-btn {
@@ -365,8 +365,8 @@ const finishImport = (cleanLines, fileName) => {
     .import-spinner {
         width: 14px;
         height: 14px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-top-color: white;
+        border: 2px solid var(--ds-gray-200);
+        border-top-color: var(--ds-gray-700);
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
     }

@@ -124,7 +124,9 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="topbar-actions">
-                <div class="run-status" :class="{ active: checkerStore.isChecking && !checkerStore.isPaused }">
+                <div v-if="checkerStore.isChecking || checkerStore.isPaused"
+                    class="run-status"
+                    :class="{ active: checkerStore.isChecking && !checkerStore.isPaused, paused: checkerStore.isPaused }">
                     <span class="run-status-dot" aria-hidden="true"></span>
                     <span>{{ statusLabel }}</span>
                 </div>
@@ -155,11 +157,10 @@ onBeforeUnmount(() => {
         <main class="workspace">
             <div v-if="!keyManager.showManager" class="main-grid">
                 <div class="main-content">
-                    <section class="input-section">
+                    <section class="input-section input-section-unified">
                         <ProviderSelector />
                         <ApiConfig />
-                    </section>
-                    <section class="input-section">
+                        <div class="input-divider"></div>
                         <KeyInput />
                     </section>
                     <ActionButtons />
@@ -193,6 +194,19 @@ onBeforeUnmount(() => {
     /* 防止 Vue 渲染时闪烁未编译内容 */
     [v-cloak] {
         display: none;
+    }
+
+    /* 内容分隔线 */
+    .input-divider {
+        height: 1px;
+        background: var(--ds-gray-100);
+        margin: 14px 0;
+    }
+
+    /* 合并后的单一卡片内层布局 */
+    .input-section-unified {
+        display: flex;
+        flex-direction: column;
     }
 
     .results-wrapper {
