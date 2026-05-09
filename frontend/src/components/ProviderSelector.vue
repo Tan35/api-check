@@ -218,11 +218,6 @@ onBeforeUnmount(() => {
 watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     if (isOpen) {
         highlightedIndex.value = -1;
-        nextTick(() => {
-            setTimeout(() => {
-                searchInputElement.value?.focus();
-            }, 100);
-        });
     }
 });
 </script>
@@ -301,8 +296,8 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .custom-provider-trigger.open {
-        box-shadow: var(--shadow-ring),
-                    var(--shadow-focus);
+        box-shadow: var(--shadow-ring);
+        background: var(--ds-gray-50);
     }
 
     .trigger-chevron {
@@ -344,6 +339,11 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         padding: 0 10px;
         font-size: 13px;
         font-family: var(--font-sans);
+    }
+
+    .provider-search-input:focus {
+        outline: none;
+        box-shadow: var(--shadow-ring);
     }
 
     .provider-option {

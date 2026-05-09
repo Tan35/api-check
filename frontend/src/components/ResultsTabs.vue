@@ -68,7 +68,12 @@ const resultTabs = computed(() => {
     white-space: nowrap;
 }
 .tab-btn:hover { background: var(--ds-gray-100); color: var(--text-primary); }
-.tab-btn.active { background: var(--ds-gray-1000); color: var(--ds-white); }
+.tab-btn.active {
+    background: var(--ds-white);
+    color: var(--text-primary);
+    font-weight: 600;
+    box-shadow: var(--shadow-ring);
+}
 
 .counter {
     min-width: 18px;
@@ -85,5 +90,5 @@ const resultTabs = computed(() => {
     font-variant-numeric: tabular-nums;
     transition: background var(--transition-fast);
 }
-.tab-btn.active .counter { background: rgba(255, 255, 255, 0.18); }
+.tab-btn.active .counter { background: var(--ds-gray-100); }
 </style>

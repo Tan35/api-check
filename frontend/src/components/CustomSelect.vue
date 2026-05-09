@@ -34,10 +34,6 @@ function toggle() {
     if (isOpen.value) {
         highlightedIndex.value = -1;
         searchTerm.value = '';
-        nextTick(() => {
-            const input = containerRef.value?.querySelector('input');
-            if (input) input.focus();
-        });
     }
 }
 
@@ -167,11 +163,13 @@ watch(isOpen, (v) => {
     }
 
     .cs-trigger:hover {
-        box-shadow: var(--shadow-ring), 0 0 0 2px var(--ds-white), 0 0 0 4px var(--ds-focus-color);
+        box-shadow: var(--shadow-ring);
+        background: var(--ds-gray-50);
     }
 
     .cs-trigger.open {
-        box-shadow: var(--shadow-ring), 0 0 0 2px var(--ds-white), 0 0 0 4px var(--ds-focus-color);
+        box-shadow: var(--shadow-ring);
+        background: var(--ds-gray-50);
     }
 
     .cs-value {
@@ -221,6 +219,10 @@ watch(isOpen, (v) => {
         font-size: 13px;
         font-family: var(--font-sans);
         outline: none;
+    }
+
+    .cs-search:focus {
+        box-shadow: var(--shadow-ring);
     }
 
     .cs-options {
