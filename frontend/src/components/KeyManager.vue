@@ -283,7 +283,13 @@ watch(() => keyManager.filteredKeys.length, () => {
                 <path d="M20 19v6M17 22h6"/>
             </svg>
             <p class="km-empty-title">还没有 Key</p>
-            <p class="km-empty-hint">点击「添加 Key」开始管理你的 API 密钥</p>
+            <p class="km-empty-hint">添加你的第一个 API 密钥，开始管理和检测</p>
+            <button @click="openAddModal" class="km-empty-cta">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.75">
+                    <path d="M7 2v10M2 7h10"/>
+                </svg>
+                添加第一个 Key
+            </button>
         </div>
 
     </div>
@@ -374,7 +380,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     padding: 0 14px;
     box-shadow: var(--shadow-light-ring);
     border-radius: var(--radius-md);
-    background: var(--ds-white);
+    background: var(--bg-surface);
     color: var(--text-primary);
     font-size: var(--ctrl-font-md);
     font-family: var(--font-sans);
@@ -386,7 +392,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     white-space: nowrap;
     transition: background var(--transition-fast), box-shadow var(--transition-fast);
 }
-.km-btn:hover { background: var(--ds-gray-50); }
+.km-btn:hover { background: var(--bg-secondary); }
 .km-btn.primary { background: var(--ds-gray-1000); color: var(--ds-white); box-shadow: none; }
 .km-btn.primary:hover { background: var(--ds-black); }
 .km-btn.danger  { background: var(--ds-red); color: var(--ds-white); box-shadow: none; }
@@ -421,7 +427,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     padding: 0 12px 0 30px;
     border: none;
     border-radius: var(--radius-md);
-    background: var(--ds-white);
+    background: var(--bg-input);
     color: var(--text-primary);
     box-shadow: var(--shadow-ring);
     font-size: var(--ctrl-font-md);
@@ -448,7 +454,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     padding: 0 28px 0 10px;
     border: none;
     border-radius: var(--radius-md);
-    background: var(--ds-white);
+    background: var(--bg-input);
     color: var(--text-primary);
     box-shadow: var(--shadow-ring);
     font-size: var(--ctrl-font-md);
@@ -477,7 +483,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     align-items: center;
     gap: 10px;
     padding: 8px 12px;
-    background: var(--ds-gray-50);
+    background: var(--bg-secondary);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-light-ring);
 }
@@ -500,7 +506,7 @@ watch(() => keyManager.filteredKeys.length, () => {
 /* ── Import/Export panel ── */
 .km-ie-panel {
     padding: 14px;
-    background: var(--ds-gray-50);
+    background: var(--bg-secondary);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-light-ring);
 }
@@ -516,7 +522,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     padding: 8px 10px;
     border: none;
     border-radius: var(--radius-md);
-    background: var(--ds-white);
+    background: var(--bg-input);
     box-shadow: var(--shadow-ring);
     font-family: var(--font-mono);
     font-size: 12px;
@@ -555,7 +561,25 @@ watch(() => keyManager.filteredKeys.length, () => {
 }
 .km-empty-icon { opacity: 0.35; }
 .km-empty-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
-.km-empty-hint  { font-size: 12px; color: var(--text-tertiary); }
+.km-empty-hint  { font-size: 12px; color: var(--text-tertiary); margin-bottom: 4px; }
+.km-empty-cta {
+    height: var(--ctrl-height-md);
+    padding: 0 16px;
+    border-radius: var(--radius-md);
+    background: var(--ds-gray-1000);
+    color: var(--ds-white);
+    font-size: var(--ctrl-font-md);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    margin-top: 4px;
+    transition: background var(--transition-fast);
+}
+.km-empty-cta:hover { background: var(--ds-black); }
 
 /* ── Modal overlay ── */
 .km-overlay {
@@ -570,7 +594,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     z-index: 1000;
 }
 .km-modal {
-    background: var(--ds-white);
+    background: var(--bg-surface);
     border-radius: var(--radius-xl);
     width: 90%;
     max-width: 460px;
@@ -581,7 +605,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
-    box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
+    box-shadow: inset 0 -1px 0 0 var(--border-color);
 }
 .km-modal-header h3 { margin: 0; font-size: 15px; font-weight: 600; }
 .km-modal-close {
@@ -596,14 +620,14 @@ watch(() => keyManager.filteredKeys.length, () => {
     justify-content: center;
     transition: color var(--transition-fast), background var(--transition-fast);
 }
-.km-modal-close:hover { background: var(--ds-gray-100); color: var(--text-primary); }
+.km-modal-close:hover { background: var(--bg-tertiary); color: var(--text-primary); }
 .km-modal-body { padding: 20px; display: flex; flex-direction: column; gap: 0; }
 .km-modal-footer {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
     padding: 12px 20px;
-    box-shadow: inset 0 1px 0 0 var(--ds-gray-100);
+    box-shadow: inset 0 1px 0 0 var(--border-color);
 }
 
 /* ── Form ── */
@@ -630,7 +654,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     padding: 0 12px;
     border: none;
     border-radius: var(--radius-md);
-    background: var(--ds-white);
+    background: var(--bg-input);
     color: var(--text-primary);
     box-shadow: var(--shadow-ring);
     font-size: 13px;

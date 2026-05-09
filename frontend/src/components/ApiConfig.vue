@@ -107,7 +107,7 @@ const handleFetchModels = async () => {
     .provider-config-area {
         margin-top: 14px;
         padding-top: 14px;
-        box-shadow: inset 0 1px 0 0 var(--ds-gray-100);
+        box-shadow: inset 0 1px 0 0 var(--border-color);
     }
 
     .config-grid {
@@ -157,13 +157,13 @@ const handleFetchModels = async () => {
         gap: 6px;
         min-width: 56px;
         height: var(--ctrl-height-md);
-        background: var(--ds-white);
+        background: var(--bg-input);
         box-shadow: var(--shadow-light-ring);
         flex-shrink: 0;
     }
 
     .fetch-models-btn:hover:not(:disabled) {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
         color: var(--text-primary);
     }
 

@@ -42,10 +42,10 @@ const resultTabs = computed(() => {
     align-items: center;
     gap: 3px;
     padding: 10px 12px 8px;
-    background: var(--ds-white);
+    background: var(--bg-surface);
     overflow-x: auto;
     flex-shrink: 0;
-    box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
+    box-shadow: inset 0 -1px 0 0 var(--border-color);
 }
 
 /* ── Tab button — capsule shape, matches topbar segmented control ── */
@@ -67,9 +67,9 @@ const resultTabs = computed(() => {
     gap: 5px;
     white-space: nowrap;
 }
-.tab-btn:hover { background: var(--ds-gray-100); color: var(--text-primary); }
+.tab-btn:hover { background: var(--bg-tertiary); color: var(--text-primary); }
 .tab-btn.active {
-    background: var(--ds-white);
+    background: var(--bg-secondary);
     color: var(--text-primary);
     font-weight: 600;
     box-shadow: var(--shadow-ring);
@@ -81,7 +81,7 @@ const resultTabs = computed(() => {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.08);
+    background: var(--bg-tertiary);
     color: inherit;
     padding: 0 5px;
     border-radius: 9999px;
@@ -90,5 +90,5 @@ const resultTabs = computed(() => {
     font-variant-numeric: tabular-nums;
     transition: background var(--transition-fast);
 }
-.tab-btn.active .counter { background: var(--ds-gray-100); }
+.tab-btn.active .counter { background: var(--bg-tertiary); }
 </style>

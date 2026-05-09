@@ -131,7 +131,7 @@ onBeforeUnmount(() => {
         color: var(--text-primary);
         margin-bottom: 12px;
         padding-bottom: 8px;
-        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
+        box-shadow: inset 0 -1px 0 0 var(--border-color);
     }
 
     /* 区域列表 */
@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
     }
 
     .region-list li:hover {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
         color: var(--text-primary);
     }
 

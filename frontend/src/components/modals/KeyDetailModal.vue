@@ -277,8 +277,9 @@ async function removeTag(tag) {
                         </button>
                     </span>
                 </div>
+                <p v-else class="tag-empty-hint">暂无标签，在下方输入后按 Enter 添加</p>
                 <div class="tag-add">
-                    <input v-model="newTag" class="field-input" placeholder="添加标签..." @keyup.enter="addTag" />
+                    <input v-model="newTag" class="field-input" placeholder="输入标签名称..." @keyup.enter="addTag" />
                     <button @click="addTag" class="detail-btn detail-btn-sm">添加</button>
                 </div>
             </div>
@@ -316,7 +317,7 @@ async function removeTag(tag) {
 <style scoped>
 /* ── Modal shell ── */
 .detail-modal {
-    background: var(--ds-white);
+    background: var(--bg-surface);
     border-radius: var(--radius-xl);
     width: 90vw;
     max-width: 520px;
@@ -333,7 +334,7 @@ async function removeTag(tag) {
     justify-content: space-between;
     align-items: center;
     padding: 14px 20px;
-    box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
+    box-shadow: inset 0 -1px 0 0 var(--border-color);
     flex-shrink: 0;
 }
 .detail-header-left {
@@ -371,7 +372,7 @@ async function removeTag(tag) {
     align-items: center;
     transition: color var(--transition-fast), background var(--transition-fast);
 }
-.detail-close:hover { background: var(--ds-gray-100); color: var(--text-primary); }
+.detail-close:hover { background: var(--bg-tertiary); color: var(--text-primary); }
 
 /* ── Body ── */
 .detail-body {
@@ -418,12 +419,12 @@ async function removeTag(tag) {
     align-items: center;
     gap: 6px;
     padding: 6px 10px;
-    background: var(--ds-gray-50);
+    background: var(--bg-secondary);
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: background var(--transition-fast);
 }
-.token-row:hover { background: var(--ds-gray-100); }
+.token-row:hover { background: var(--bg-tertiary); }
 .token-text {
     font-family: var(--font-mono);
     font-size: 12px;
@@ -446,7 +447,7 @@ async function removeTag(tag) {
     padding: 0 10px;
     border: none;
     border-radius: var(--radius-sm);
-    background: var(--ds-white);
+    background: var(--bg-input);
     box-shadow: var(--shadow-ring);
     font-size: 13px;
     font-family: var(--font-sans);
@@ -461,7 +462,7 @@ async function removeTag(tag) {
     padding: 0 28px 0 10px;
     border: none;
     border-radius: var(--radius-sm);
-    background: var(--ds-white);
+    background: var(--bg-input);
     box-shadow: var(--shadow-ring);
     font-size: 13px;
     font-family: var(--font-sans);
@@ -480,13 +481,18 @@ async function removeTag(tag) {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
+    align-items: center;
+}
+/* 删除按鈕推到最右，与其他操作按鈕明确隔离 */
+.detail-actions .detail-btn.danger {
+    margin-left: auto;
 }
 .detail-btn {
     height: var(--ctrl-height-md);
     padding: 0 14px;
     border: none;
     border-radius: var(--radius-md);
-    background: var(--ds-white);
+    background: var(--bg-surface);
     color: var(--text-primary);
     box-shadow: var(--shadow-light-ring);
     font-size: var(--ctrl-font-md);
@@ -499,11 +505,16 @@ async function removeTag(tag) {
     white-space: nowrap;
     transition: background var(--transition-fast), box-shadow var(--transition-fast);
 }
-.detail-btn:hover { background: var(--ds-gray-50); }
+.detail-btn:hover { background: var(--bg-secondary); }
 .detail-btn.primary { background: var(--ds-gray-1000); color: var(--ds-white); box-shadow: none; }
 .detail-btn.primary:hover { background: var(--ds-black); }
-.detail-btn.danger  { background: var(--ds-white); color: var(--ds-red); box-shadow: var(--shadow-light-ring); }
-.detail-btn.danger:hover  { background: #fff1f0; box-shadow: var(--shadow-light-ring); }
+/* 删除按鈕：红色轮廓 + 红色文字，警示感更强 */
+.detail-btn.danger  {
+    background: var(--bg-surface);
+    color: var(--ds-red-dark);
+    box-shadow: 0 0 0 1px var(--ds-red-dark);
+}
+.detail-btn.danger:hover  { background: #fff1f0; }
 .detail-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .detail-btn-sm { height: var(--ctrl-height-sm); padding: 0 10px; font-size: var(--ctrl-font-sm); }
 
@@ -516,7 +527,7 @@ async function removeTag(tag) {
     flex-direction: column;
     gap: 8px;
     padding-top: 16px;
-    box-shadow: inset 0 1px 0 0 var(--ds-gray-100);
+    box-shadow: inset 0 1px 0 0 var(--border-color);
 }
 .section-title {
     font-size: 12px;
@@ -543,7 +554,7 @@ async function removeTag(tag) {
     align-items: center;
     gap: 4px;
     padding: 2px 8px;
-    background: var(--ds-gray-100);
+    background: var(--bg-tertiary);
     border-radius: 9999px;
     font-size: 12px;
     color: var(--text-secondary);
@@ -561,6 +572,11 @@ async function removeTag(tag) {
 }
 .tag-remove:hover { color: var(--ds-red); }
 .tag-add { display: flex; gap: 6px; align-items: center; }
+.tag-empty-hint {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-style: italic;
+}
 
 /* Balance history */
 .balance-history { max-height: 180px; overflow-y: auto; }
@@ -568,7 +584,7 @@ async function removeTag(tag) {
     display: flex;
     justify-content: space-between;
     padding: 6px 0;
-    box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
+    box-shadow: inset 0 -1px 0 0 var(--border-color);
     font-size: 12px;
 }
 .snap-time    { color: var(--text-secondary); }
@@ -578,7 +594,7 @@ async function removeTag(tag) {
 .model-list { max-height: 180px; overflow-y: auto; }
 .model-item {
     padding: 5px 0;
-    box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
+    box-shadow: inset 0 -1px 0 0 var(--border-color);
     font-size: 12px;
     font-family: var(--font-mono);
     color: var(--text-secondary);

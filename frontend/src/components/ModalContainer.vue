@@ -80,7 +80,7 @@ const activeModalComponent = computed(() => {
     :deep(.modal-content),
     :deep(.model-selector-content),
     :deep(.detail-modal) {
-        background: var(--ds-white);
+        background: var(--bg-surface);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-full-card);
     }

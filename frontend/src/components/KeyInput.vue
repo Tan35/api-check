@@ -289,26 +289,26 @@ const finishImport = (cleanLines, fileName) => {
         gap: 6px;
         height: 30px;
         padding: 0 10px;
-        background: var(--ds-white);
+        background: var(--bg-input);
         box-shadow: var(--shadow-light-ring);
     }
 
     .import-btn {
-        background: var(--ds-white);
+        background: var(--bg-input);
         color: var(--text-primary);
         box-shadow: var(--shadow-light-ring);
     }
 
     .import-btn:hover:not(:disabled) {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 
     .clear-btn {
-        background: var(--ds-white);
+        background: var(--bg-input);
     }
 
     .clear-btn:hover:not(:disabled) {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 
     textarea:disabled {

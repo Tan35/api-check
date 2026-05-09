@@ -44,7 +44,7 @@ const checkerStore = useCheckerStore();
         display: flex;
         flex-direction: column;
         gap: 12px;
-        background: var(--ds-white);
+        background: var(--bg-surface);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-full-card);
         padding: 16px;
@@ -106,7 +106,7 @@ const checkerStore = useCheckerStore();
     .progress-bar-wrapper {
         width: 100%;
         height: 3px;
-        background-color: var(--ds-gray-100);
+        background-color: var(--bg-tertiary);
         border-radius: 2px;
         overflow: hidden;
     }

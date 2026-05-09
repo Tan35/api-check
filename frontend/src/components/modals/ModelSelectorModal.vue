@@ -70,7 +70,7 @@ const copyAllModels = () => {
     /* 搜索框 */
     .model-selector-search {
         padding: 8px 16px;
-        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
+        box-shadow: inset 0 -1px 0 0 var(--border-color);
     }
 
     .model-selector-search input {
@@ -80,7 +80,7 @@ const copyAllModels = () => {
     /* 复制按钮 */
     .copy-btn {
         padding: 0 16px;
-        background: var(--ds-white);
+        background: var(--bg-surface);
         color: var(--text-primary);
         box-shadow: var(--shadow-light-ring);
         border-radius: var(--radius-sm);
@@ -98,6 +98,6 @@ const copyAllModels = () => {
     }
 
     .copy-btn:hover {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 </style>

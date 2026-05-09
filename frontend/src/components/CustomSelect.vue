@@ -147,7 +147,7 @@ watch(isOpen, (v) => {
         width: 100%;
         height: var(--ctrl-height-md);
         padding: 0 28px 0 12px;
-        background: var(--ds-white);
+        background: var(--bg-input);
         box-shadow: var(--shadow-ring);
         border: none;
         border-radius: var(--radius-md);
@@ -164,11 +164,11 @@ watch(isOpen, (v) => {
     }
 
     .cs-trigger:hover {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 
     .cs-trigger.open {
-        background: var(--ds-white);
+        background: var(--bg-input);
         box-shadow: var(--shadow-ring);
         cursor: text;
     }
@@ -232,7 +232,7 @@ watch(isOpen, (v) => {
         top: calc(100% + 4px);
         left: 0;
         right: 0;
-        background: var(--ds-white);
+        background: var(--bg-surface);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-full-card);
         z-index: 100;
@@ -258,7 +258,7 @@ watch(isOpen, (v) => {
 
     .cs-option:hover,
     .cs-option.highlighted {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 
     .cs-option.selected {

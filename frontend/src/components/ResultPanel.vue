@@ -345,7 +345,7 @@ watch(
         gap: 12px;
         padding: 0 0 10px;
         flex-wrap: wrap;
-        box-shadow: inset 0 -1px 0 0 var(--ds-gray-100);
+        box-shadow: inset 0 -1px 0 0 var(--border-color);
     }
 
     .results-title {
@@ -374,7 +374,7 @@ watch(
 
     /* 结果内容区域 */
     .results-content {
-        background: var(--ds-white);
+        background: var(--bg-surface);
         border-radius: var(--radius-md);
         overflow-y: auto;
         flex: 1;
@@ -450,7 +450,7 @@ watch(
     .view-details-btn {
         min-width: 38px;
         height: 26px;
-        background: var(--ds-white);
+        background: var(--bg-surface);
         box-shadow: var(--shadow-light-ring);
         cursor: pointer;
         font-size: 12px;
@@ -473,7 +473,7 @@ watch(
     .get-models-btn:hover,
     .view-details-btn:hover {
         color: var(--text-primary);
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 
     .view-details-btn:hover {
@@ -500,7 +500,7 @@ watch(
     /* 复制按钮 */
     .copy-btn {
         padding: 0 12px;
-        background: var(--ds-white);
+        background: var(--bg-surface);
         color: var(--text-primary);
         border-radius: var(--radius-md);
         font-size: 13px;
@@ -517,7 +517,7 @@ watch(
     }
 
     .copy-btn:hover {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 
     /* 自定义选择器（排序） */
@@ -544,12 +544,12 @@ watch(
     }
 
     .custom-select-trigger:hover {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 
     .custom-select.open .custom-select-trigger {
         box-shadow: var(--shadow-light-ring);
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 
     .custom-select-trigger .arrow {

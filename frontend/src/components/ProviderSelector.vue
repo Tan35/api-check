@@ -267,7 +267,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .settings-btn:hover {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
         color: var(--text-primary);
     }
 
@@ -291,7 +291,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         width: 100%;
         height: 40px;
         padding: 0 32px 0 12px;
-        background: var(--ds-white);
+        background: var(--bg-surface);
         box-shadow: var(--shadow-ring);
         border-radius: var(--radius-md);
         font-size: 14px;
@@ -303,12 +303,12 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .custom-provider-trigger:hover {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 
     .custom-provider-trigger.open {
         box-shadow: var(--shadow-ring);
-        background: var(--ds-white);
+        background: var(--bg-surface);
         cursor: text;
     }
 
@@ -362,7 +362,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         top: calc(100% + 4px);
         left: 0;
         right: 0;
-        background: var(--ds-white);
+        background: var(--bg-surface);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-full-card);
         z-index: 100;
@@ -385,7 +385,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .provider-option:hover {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
         color: var(--text-primary);
     }
 
@@ -396,7 +396,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
     }
 
     .provider-option.highlighted {
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
     }
 
     .custom-provider-select.disabled {
@@ -414,13 +414,13 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         height: 32px;
         padding: 0 10px;
         border-radius: var(--radius-md);
-        background: var(--ds-gray-50);
+        background: var(--bg-secondary);
         box-shadow: var(--shadow-light-ring);
         transition: background var(--transition-fast), box-shadow var(--transition-fast);
     }
 
     .switch-label:hover {
-        background: var(--ds-gray-100);
+        background: var(--bg-tertiary);
     }
 
     .switch-label input[type="checkbox"] {
@@ -435,7 +435,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         border-radius: var(--radius-badge);
         transition: background-color var(--transition-fast);
         flex-shrink: 0;
-        box-shadow: inset 0 0 0 1px var(--ds-gray-100);
+        box-shadow: inset 0 0 0 1px var(--border-color);
     }
 
     .slider::before {
@@ -445,7 +445,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         width: 14px;
         left: 2px;
         top: 2px;
-        background-color: var(--ds-white);
+        background-color: var(--bg-surface);
         border-radius: 50%;
         transition: transform var(--transition-fast);
         box-shadow: 0 1px 2px rgba(0,0,0,0.1);

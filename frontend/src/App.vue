@@ -94,6 +94,7 @@ const handleEscKey = (e) => {
  * @description 组件挂载时添加键盘事件监听器并初始化会话。
  */
 onMounted(() => {
+    uiStore.initTheme();
     checkerStore.initSession();
     keyManager.loadKeys();
     document.addEventListener('keydown', handleEscKey);
@@ -124,6 +125,31 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="topbar-actions">
+                <!-- 深色模式切换按鈕 -->
+                <button
+                    class="theme-toggle-btn"
+                    @click="uiStore.toggleDarkMode()"
+                    :title="uiStore.isDarkMode ? '切换到浅色模式' : '切换到深色模式'"
+                    :aria-label="uiStore.isDarkMode ? '切换到浅色模式' : '切换到深色模式'"
+                >
+                    <!-- 浅色模式显示月亮图标 -->
+                    <svg v-if="!uiStore.isDarkMode" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                    </svg>
+                    <!-- 深色模式显示太阳图标 -->
+                    <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+
                 <div v-if="checkerStore.isChecking || checkerStore.isPaused"
                     class="run-status"
                     :class="{ active: checkerStore.isChecking && !checkerStore.isPaused, paused: checkerStore.isPaused }">
@@ -199,8 +225,28 @@ onBeforeUnmount(() => {
     /* 内容分隔线 */
     .input-divider {
         height: 1px;
-        background: var(--ds-gray-100);
+        background: var(--border-color);
         margin: 14px 0;
+    }
+
+    /* 深色模式切换按鈕 */
+    .theme-toggle-btn {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-md);
+        color: var(--text-tertiary);
+        cursor: pointer;
+        transition: color var(--transition-fast), background var(--transition-fast);
+        flex-shrink: 0;
+    }
+    .theme-toggle-btn:hover {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
     }
 
     /* 合并后的单一卡片内层布局 */

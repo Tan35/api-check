@@ -110,16 +110,16 @@ async function confirmDelete() {
 
 <style scoped>
 .key-card {
-    background: var(--ds-white);
+    background: var(--bg-surface);
     border-radius: var(--radius-md);
     padding: 10px 12px;
     cursor: pointer;
     transition: box-shadow var(--transition-fast), background var(--transition-fast);
     box-shadow: var(--shadow-light-ring);
 }
-.key-card:hover { background: var(--ds-gray-50); box-shadow: var(--shadow-card); }
+.key-card:hover { background: var(--bg-secondary); box-shadow: var(--shadow-card); }
 .key-card.selected {
-    box-shadow: var(--shadow-card), 0 0 0 2px var(--ds-white), 0 0 0 3px var(--ds-gray-400);
+    box-shadow: var(--shadow-card), 0 0 0 2px var(--bg-surface), 0 0 0 3px var(--ds-gray-400);
 }
 
 .key-card-header {
@@ -166,13 +166,13 @@ async function confirmDelete() {
     align-items: center;
     gap: 5px;
     padding: 5px 8px;
-    background: var(--ds-gray-50);
+    background: var(--bg-secondary);
     border-radius: var(--radius-sm);
     margin-bottom: 8px;
     cursor: pointer;
     transition: background var(--transition-fast);
 }
-.key-card-token:hover { background: var(--ds-gray-100); }
+.key-card-token:hover { background: var(--bg-tertiary); }
 .token-icon { color: var(--ds-gray-400); flex-shrink: 0; }
 .token-text {
     font-family: var(--font-mono);

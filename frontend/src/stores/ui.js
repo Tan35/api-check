@@ -9,6 +9,8 @@ let modalCloseTimer = null;
  */
 export const useUiStore = defineStore('ui', {
     state: () => ({
+        /** @type {boolean} 是否开启深色模式。*/
+        isDarkMode: false,
         /** @type {boolean} 提供商下拉菜单是否打开。*/
         providerDropdownOpen: false,
         /** @type {boolean} 是否正在获取模型列表。*/
@@ -37,6 +39,26 @@ export const useUiStore = defineStore('ui', {
         isModalActive: (state) => !!state.activeModal,
     },
     actions: {
+        /**
+         * @description 切换深色/浅色模式。
+         */
+        toggleDarkMode() {
+            this.isDarkMode = !this.isDarkMode;
+            const theme = this.isDarkMode ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            try { localStorage.setItem('theme', theme); } catch {}
+        },
+        /**
+         * @description 初始化主题，从 localStorage 读取上次的设置。
+         */
+        initTheme() {
+            let saved = null;
+            try { saved = localStorage.getItem('theme'); } catch {}
+            const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+            const isDark = saved === 'dark' || (!saved && prefersDark);
+            this.isDarkMode = isDark;
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        },
         /**
          * @description 获取模态关闭动画的时长（毫秒）。
          * @returns {number} - 关闭动画时长。
