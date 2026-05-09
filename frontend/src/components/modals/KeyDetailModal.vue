@@ -453,7 +453,7 @@ async function removeTag(tag) {
     color: var(--text-primary);
     transition: box-shadow var(--transition-fast);
 }
-.field-input:focus { outline: none; box-shadow: var(--shadow-ring), var(--shadow-focus); }
+.field-input:focus { outline: none; box-shadow: var(--shadow-ring); }
 
 .field-select {
     width: 100%;
@@ -473,7 +473,7 @@ async function removeTag(tag) {
     background-position: right 8px center;
     transition: box-shadow var(--transition-fast);
 }
-.field-select:focus { outline: none; box-shadow: var(--shadow-ring), var(--shadow-focus); }
+.field-select:focus { outline: none; box-shadow: var(--shadow-ring); }
 
 /* ── Actions ── */
 .detail-actions {

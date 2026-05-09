@@ -430,7 +430,7 @@ watch(() => keyManager.filteredKeys.length, () => {
 }
 .km-search:focus {
     outline: none;
-    box-shadow: var(--shadow-ring), var(--shadow-focus);
+    box-shadow: var(--shadow-ring);
 }
 .km-filter-group {
     display: flex;
@@ -463,7 +463,7 @@ watch(() => keyManager.filteredKeys.length, () => {
 }
 .km-select:focus {
     outline: none;
-    box-shadow: var(--shadow-ring), var(--shadow-focus);
+    box-shadow: var(--shadow-ring);
 }
 .km-select-sort { min-width: 130px; }
 .km-sort-dir {
@@ -524,7 +524,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     margin-bottom: 8px;
     color: var(--text-primary);
 }
-.km-ie-textarea:focus { outline: none; box-shadow: var(--shadow-ring), var(--shadow-focus); }
+.km-ie-textarea:focus { outline: none; box-shadow: var(--shadow-ring); }
 .km-ie-actions { display: flex; gap: 6px; }
 
 /* ── Key list ── */
@@ -637,5 +637,5 @@ watch(() => keyManager.filteredKeys.length, () => {
     font-family: var(--font-sans);
     transition: box-shadow var(--transition-fast);
 }
-.km-input:focus { outline: none; box-shadow: var(--shadow-ring), var(--shadow-focus); }
+.km-input:focus { outline: none; box-shadow: var(--shadow-ring); }
 </style>

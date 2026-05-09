@@ -169,7 +169,7 @@ const handleFetchModels = async () => {
 
     .fetch-models-btn:focus-visible {
         outline: none;
-        box-shadow: var(--shadow-focus);
+        box-shadow: var(--shadow-light-ring);
     }
 
     input:disabled {

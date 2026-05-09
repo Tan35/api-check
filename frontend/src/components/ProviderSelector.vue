@@ -262,7 +262,7 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
 
     .settings-btn:focus-visible {
         outline: none;
-        box-shadow: var(--shadow-focus);
+        box-shadow: var(--shadow-light-ring);
     }
 
     .settings-btn:disabled {

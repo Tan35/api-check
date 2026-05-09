@@ -548,7 +548,8 @@ watch(
     }
 
     .custom-select.open .custom-select-trigger {
-        box-shadow: var(--shadow-light-ring), var(--shadow-focus);
+        box-shadow: var(--shadow-light-ring);
+        background: var(--ds-gray-50);
     }
 
     .custom-select-trigger .arrow {

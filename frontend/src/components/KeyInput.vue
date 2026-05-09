@@ -324,7 +324,7 @@ const finishImport = (cleanLines, fileName) => {
 
     /* 拖放悬停状态样式 */
     textarea.drag-over {
-        box-shadow: var(--shadow-ring), var(--shadow-focus);
+        box-shadow: var(--shadow-ring);
         background-color: var(--bg-selected);
     }
 

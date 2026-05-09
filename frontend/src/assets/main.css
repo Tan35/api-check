@@ -416,7 +416,7 @@ input[type="number"]:focus,
 input[type="search"]:focus,
 select:focus {
     outline: none;
-    box-shadow: var(--shadow-ring), var(--shadow-focus);
+    box-shadow: var(--shadow-ring);
 }
 
 textarea:disabled,
@@ -460,7 +460,7 @@ select {
 
 .button:focus-visible {
     outline: none;
-    box-shadow: var(--shadow-light-ring), var(--shadow-focus);
+    box-shadow: var(--shadow-light-ring);
 }
 
 .button.primary {
