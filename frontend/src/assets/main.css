@@ -94,6 +94,11 @@
 
     /* ── Topbar ── */
     --topbar-bg: rgba(255, 255, 255, 0.92);
+
+    /* ── Scrollbar ── */
+    --scrollbar-track:  transparent;
+    --scrollbar-thumb:  rgba(0, 0, 0, 0.18);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.32);
 }
 
 /* ── Dark mode ── */
@@ -151,6 +156,11 @@
 
     /* Topbar */
     --topbar-bg: rgba(26, 26, 26, 0.92);
+
+    /* Scrollbar */
+    --scrollbar-track:  transparent;
+    --scrollbar-thumb:  rgba(255, 255, 255, 0.14);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.28);
 
     /* Status badges in dark mode */
     --status-valid-bg:   rgba(10, 124, 66, 0.18);
@@ -233,6 +243,31 @@ button { border: 0; }
 ::selection { background: var(--bg-tertiary); }
 
 #app { min-height: 100vh; }
+
+/* ── Custom scrollbar ── */
+/* Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
 
 /* ── Page shell ── */
 .page-wrapper {
