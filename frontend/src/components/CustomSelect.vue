@@ -29,12 +29,6 @@ const selectedLabel = computed(() => {
     return found ? found.label : props.placeholder;
 });
 
-// 触发器显示：打开时显示搜索词（可能为空），关闭时显示选中值
-const displayValue = computed(() => {
-    if (isOpen.value) return searchTerm.value;
-    return selectedLabel.value;
-});
-
 function open() {
     if (props.disabled || isOpen.value) return;
     isOpen.value = true;
@@ -60,13 +54,9 @@ function select(key) {
 
 function handleKeyDown(e) {
     if (!isOpen.value) {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            open();
-        }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
         return;
     }
-
     if (e.key === 'Escape') { close(); return; }
     if (e.key === 'Tab') { close(); return; }
 
@@ -102,7 +92,6 @@ watch(isOpen, (v) => {
 
 <template>
     <div class="cs-wrapper" ref="containerRef" :class="{ disabled }">
-        <!-- 沉浸式触发器：打开时变为 input，关闭时显示选中值 -->
         <div
             class="cs-trigger"
             :class="{ open: isOpen }"
@@ -157,7 +146,7 @@ watch(isOpen, (v) => {
     .cs-trigger {
         width: 100%;
         height: var(--ctrl-height-md);
-        padding: 0 32px 0 12px;
+        padding: 0 28px 0 12px;
         background: var(--ds-white);
         box-shadow: var(--shadow-ring);
         border: none;
@@ -171,8 +160,7 @@ watch(isOpen, (v) => {
         transition: box-shadow var(--transition-fast), background var(--transition-fast);
         text-align: left;
         position: relative;
-        white-space: nowrap;
-        overflow: hidden;
+        box-sizing: border-box;
     }
 
     .cs-trigger:hover {
@@ -185,22 +173,33 @@ watch(isOpen, (v) => {
         cursor: text;
     }
 
-    /* 沉浸式搜索输入框，完全融入触发器 */
+    /* 沉浸式搜索输入框——完全清除浏览器默认样式，融入触发器 */
     .cs-input {
         flex: 1;
+        width: 0;           /* 让 flex 控制宽度，避免撑破容器 */
+        min-width: 0;
         height: 100%;
         border: none;
         outline: none;
+        box-shadow: none;
+        -webkit-appearance: none;
+        appearance: none;
         background: transparent;
         font-size: var(--ctrl-font-md);
         font-family: var(--font-sans);
         color: var(--text-primary);
         padding: 0;
-        min-width: 0;
+        margin: 0;
     }
 
     .cs-input::placeholder {
         color: var(--ds-gray-400);
+    }
+
+    /* 覆盖全局 input:focus 的 box-shadow */
+    .cs-input:focus {
+        box-shadow: none !important;
+        outline: none;
     }
 
     .cs-value {
@@ -212,7 +211,7 @@ watch(isOpen, (v) => {
 
     .cs-chevron {
         position: absolute;
-        right: 12px;
+        right: 10px;
         top: 50%;
         width: 6px;
         height: 6px;
@@ -252,6 +251,9 @@ watch(isOpen, (v) => {
         font-size: 14px;
         font-family: var(--font-sans);
         transition: background var(--transition-fast);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .cs-option:hover,
@@ -272,14 +274,8 @@ watch(isOpen, (v) => {
     }
 
     /* Transition */
-    .cs-drop-enter-active {
-        transition: all 0.15s ease-out;
-    }
-
-    .cs-drop-leave-active {
-        transition: all 0.1s ease-in;
-    }
-
+    .cs-drop-enter-active { transition: all 0.15s ease-out; }
+    .cs-drop-leave-active { transition: all 0.1s ease-in; }
     .cs-drop-enter-from,
     .cs-drop-leave-to {
         opacity: 0;

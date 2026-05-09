@@ -312,18 +312,28 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         cursor: text;
     }
 
-    /* 沉浸式搜索输入框，融入触发器 */
+    /* 沉浸式搜索输入框——完全清除浏览器默认样式，融入触发器 */
     .provider-inline-search {
         flex: 1;
+        width: 0;
+        min-width: 0;
         height: 100%;
         border: none;
         outline: none;
+        box-shadow: none;
+        -webkit-appearance: none;
+        appearance: none;
         background: transparent;
         font-size: 14px;
         font-family: var(--font-sans);
         color: var(--text-primary);
         padding: 0;
-        min-width: 0;
+        margin: 0;
+    }
+
+    .provider-inline-search:focus {
+        box-shadow: none !important;
+        outline: none;
     }
 
     .provider-inline-search::placeholder {
