@@ -225,6 +225,7 @@ async function confirmDelete() {
     font-family: var(--font-mono);
     color: var(--text-primary);
     font-variant-numeric: tabular-nums;
+    padding-left: 8px;
 }
 .meta-chip {
     font-size: 11px;
