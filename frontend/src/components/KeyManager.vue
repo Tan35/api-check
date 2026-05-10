@@ -579,6 +579,8 @@ watch(() => keyManager.filteredKeys.length, () => {
 .km-key-list {
     flex: 1;
     overflow-y: auto;
+    overflow-x: visible;
+    padding-left: 2px;
     padding-right: 2px;
 }
 .km-key-item {
