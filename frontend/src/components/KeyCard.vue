@@ -96,10 +96,10 @@ async function confirmDelete() {
                 <span class="token-text">{{ maskedToken }}</span>
             </div>
 
-            <!-- 第三行：余额 + 模型数 + 日期 -->
+            <!-- 第三行：模型数 + 余额 + 日期 -->
             <div class="key-card-meta">
-                <span v-if="balanceText" class="meta-balance">{{ balanceText }}</span>
                 <span v-if="keyRecord.models.length > 0" class="meta-chip">{{ t('kcModels', { count: keyRecord.models.length }) }}</span>
+                <span v-if="balanceText" class="meta-balance">{{ balanceText }}</span>
                 <span class="meta-date">{{ keyRecord.lastChecked ? formatDate(keyRecord.lastChecked) : t('kcNotChecked') }}</span>
             </div>
 
@@ -225,7 +225,6 @@ async function confirmDelete() {
     font-family: var(--font-mono);
     color: var(--text-primary);
     font-variant-numeric: tabular-nums;
-    padding-left: 8px;
 }
 .meta-chip {
     font-size: 11px;
