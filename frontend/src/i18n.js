@@ -17,7 +17,7 @@ export const LANG_LABELS = {
 
 /** @type {Ref<string>} 当前语言 */
 export const currentLang = ref(
-    localStorage.getItem('keynest_lang') || 'zh-TW'
+    localStorage.getItem('keynest_lang') || 'en'
 );
 
 /**
