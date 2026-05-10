@@ -211,11 +211,9 @@ onBeforeUnmount(() => {
             </p>
             <a class="cloudflare-badge" href="https://www.cloudflare.com" target="_blank" rel="noopener noreferrer" aria-label="Powered by Cloudflare">
                 <span class="cloudflare-badge-icon" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7.95 16.35h9.33c1.69 0 3.06-1.26 3.06-2.82 0-1.43-1.16-2.62-2.67-2.79C17.03 8.33 14.76 6.6 12.1 6.6c-2.13 0-4 1.12-4.95 2.79A3.54 3.54 0 0 0 3.66 12.9c0 1.91 1.92 3.45 4.29 3.45Z" fill="currentColor"/>
-                    </svg>
+                    <img src="/cloudflare-mark.png" alt="" class="cloudflare-badge-mark" loading="lazy" decoding="async" />
                 </span>
-                <span>Powered by Cloudflare</span>
+                <span class="cloudflare-badge-text">Powered by Cloudflare</span>
             </a>
         </footer>
         <ToastContainer />

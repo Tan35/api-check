@@ -671,19 +671,20 @@ select {
     overflow: hidden;
     border-radius: var(--radius-md);
     background: #050505;
-    color: #ffffff;
-    box-shadow: rgba(0, 0, 0, 0.18) 0 1px 2px,
+    color: #9ca3af;
+    box-shadow: rgba(0, 0, 0, 0.14) 0 1px 2px,
                 rgba(255, 255, 255, 0.08) 0 0 0 1px inset;
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0;
     line-height: 1;
-    transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+    transition: transform var(--transition-fast), background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
 }
 .cloudflare-badge:hover {
     transform: translateY(-1px);
-    background: #111111;
-    box-shadow: rgba(0, 0, 0, 0.22) 0 3px 8px,
+    background: #0b0b0b;
+    color: #d1d5db;
+    box-shadow: rgba(0, 0, 0, 0.18) 0 3px 8px,
                 rgba(255, 255, 255, 0.1) 0 0 0 1px inset;
 }
 
@@ -693,11 +694,16 @@ select {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #f38020;
-    border-right: 1px solid rgba(255, 255, 255, 0.16);
+    border-right: 1px solid rgba(255, 255, 255, 0.14);
 }
 
-.cloudflare-badge > span:last-child {
+.cloudflare-badge-mark {
+    width: 20px;
+    height: auto;
+    display: block;
+}
+
+.cloudflare-badge-text {
     padding: 0 11px;
 }
 
