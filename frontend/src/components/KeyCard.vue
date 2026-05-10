@@ -85,7 +85,7 @@ async function confirmDelete() {
         </div>
 
         <div class="key-card-token" @click.stop="copyToken" :title="t('kdCopyHint')">
-            <svg class="token-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+            <svg class="token-icon" width="12" height="12" viewBox="0 -1 12 13" fill="none" stroke="currentColor" stroke-width="1.5">
                 <rect x="1" y="3" width="10" height="7" rx="1.5"/>
                 <path d="M4 3V2a2 2 0 014 0v1"/>
             </svg>
