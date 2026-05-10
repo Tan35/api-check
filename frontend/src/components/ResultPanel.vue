@@ -63,12 +63,17 @@
             </DynamicScroller>
             
             <div v-else class="empty-state">
-                <svg class="empty-icon" width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="16" cy="19" r="8"/>
-                    <circle cx="16" cy="19" r="3"/>
-                    <path d="M22 23l14 14"/>
-                    <path d="M32 33l3 3M32 36l3-3"/>
-                    <path d="M36 29l3 3M36 32l3-3"/>
+                <svg class="empty-icon" width="52" height="52" viewBox="0 0 52 52" fill="none" stroke="rgb(209,209,209)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- 外圆环 -->
+                    <circle cx="18" cy="18" r="10"/>
+                    <!-- 内圆孔 -->
+                    <circle cx="18" cy="18" r="4.5"/>
+                    <!-- 钥匙柄 -->
+                    <line x1="25.4" y1="25.4" x2="44" y2="44"/>
+                    <!-- 钥齿上 -->
+                    <polyline points="37,37 37,41 41,41"/>
+                    <!-- 钥齿下 -->
+                    <polyline points="41,41 41,45 45,45"/>
                 </svg>
                 <p>{{ t('emptyState') }}</p>
             </div>
@@ -468,7 +473,6 @@ watch(
 
     .empty-state .empty-icon {
         margin-bottom: 14px;
-        opacity: 0.3;
     }
 
     /* 复制按钮 */
