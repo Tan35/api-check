@@ -545,7 +545,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     cursor: pointer;
     user-select: none;
 }
-.km-check-all { margin-bottom: 6px; }
+.km-check-all { margin-bottom: 12px; }
 .km-selected-count {
     font-size: 12px;
     color: var(--text-secondary);
