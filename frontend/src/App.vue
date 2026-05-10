@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onBeforeUnmount, watch, ref, computed } from 'vue';
+import { onMounted, onBeforeUnmount, watch, ref, computed, nextTick } from 'vue';
 import { useUiStore } from '@/stores/ui';
 import { useCheckerStore } from '@/stores/checker';
 import { useKeyManagerStore } from '@/stores/keyManager';
@@ -32,6 +32,25 @@ const scrollPosition = ref(0);
 /** 语言切换下拉菜单开关 */
 const langMenuOpen = ref(false);
 
+/** tab 滑块动态尺寸 */
+const tabRefs = ref([]);
+const indicatorStyle = ref({ width: '0px', transform: 'translateX(0px)' });
+
+function updateIndicator() {
+    const tabs = tabRefs.value;
+    if (!tabs || tabs.length < 2) return;
+    const idx = keyManager.showManager ? 1 : 0;
+    const tab = tabs[idx];
+    if (!tab) return;
+    const container = tab.closest('.view-tabs');
+    const containerLeft = container ? container.getBoundingClientRect().left : 0;
+    const tabRect = tab.getBoundingClientRect();
+    indicatorStyle.value = {
+        width: tabRect.width + 'px',
+        transform: `translateX(${tabRect.left - containerLeft - 2}px)`,
+    };
+}
+
 const currentProviderLabel = computed(() => {
     return configStore.providers[configStore.currentProvider]?.label || configStore.currentProvider;
 });
@@ -49,6 +68,9 @@ const statusLabel = computed(() => {
 /**
  * @description 监听 checkerStore 的 lastStatusMessage 变化，并触发 UI Toast 提示。
  */
+watch(() => keyManager.showManager, () => nextTick(updateIndicator));
+watch(currentLang, () => nextTick(updateIndicator));
+
 watch(() => checkerStore.lastStatusMessage, (newMessage) => {
     if (newMessage && newMessage.text) {
         uiStore.showToast(newMessage.text, newMessage.type, newMessage.duration);
@@ -104,12 +126,25 @@ const handleOutsideClick = (e) => {
 /**
  * @description 组件挂载时添加键盘事件监听器并初始化会话。
  */
+let tabResizeObserver = null;
+
 onMounted(() => {
     uiStore.initTheme();
     checkerStore.initSession();
     keyManager.loadKeys();
     document.addEventListener('keydown', handleEscKey);
     document.addEventListener('click', handleOutsideClick);
+    nextTick(() => {
+        updateIndicator();
+        // 字体加载完成后再算一次，避免 Outfit 字体加载前宽度不准
+        if (document.fonts) {
+            document.fonts.ready.then(() => updateIndicator());
+        }
+        if (window.ResizeObserver && tabRefs.value[0]) {
+            tabResizeObserver = new ResizeObserver(() => updateIndicator());
+            tabRefs.value.forEach(el => el && tabResizeObserver.observe(el));
+        }
+    });
 });
 
 /**
@@ -118,6 +153,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleEscKey);
     document.removeEventListener('click', handleOutsideClick);
+    if (tabResizeObserver) tabResizeObserver.disconnect();
     // 完整恢复 body 样式，防止残留
     const body = document.body;
     body.style.position = '';
@@ -201,8 +237,9 @@ onBeforeUnmount(() => {
                 </div>
 
                 <div class="view-tabs" role="tablist" :aria-label="'View / 視圖'">
-                    <div class="tab-indicator" :style="{ transform: keyManager.showManager ? 'translateX(100%)' : 'translateX(0)' }"></div>
+                    <div class="tab-indicator" :style="indicatorStyle"></div>
                 <button
+                    :ref="el => tabRefs.value[0] = el"
                     :class="['view-tab', { active: !keyManager.showManager }]"
                     @click="keyManager.showManager = false"
                     role="tab"
@@ -211,6 +248,7 @@ onBeforeUnmount(() => {
                     {{ t('tabChecker') }}
                 </button>
                 <button
+                    :ref="el => tabRefs.value[1] = el"
                     :class="['view-tab', { active: keyManager.showManager }]"
                     @click="keyManager.showManager = true"
                     role="tab"
