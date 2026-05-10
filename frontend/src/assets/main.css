@@ -75,10 +75,12 @@
     --radius-full:  9999px;
 
     /* ── Typography ── */
-    --font-sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-                 "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
-                 "Noto Sans TC", "PingFang TC", "Hiragino Sans",
-                 Arial, sans-serif;
+    /* 无衷线：界面标签、按鈕、输入框等 UI 元素 */
+    --font-sans: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI",
+                 Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    /* 衷线：内容文本、标题等，中文优先使用 Noto Serif SC/TC，与 Manus 一致 */
+    --font-serif: "Noto Serif SC", "Noto Serif TC", LibreBaskerville, Georgia, Cambria,
+                  ui-serif, "Times New Roman", Times, serif;
     --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, "Roboto Mono", Menlo, Monaco, monospace;
 
     /* ── Transitions ── */
