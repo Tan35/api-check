@@ -130,7 +130,7 @@ onBeforeUnmount(() => {
 <template>
     <div class="page-wrapper">
         <header class="topbar">
-            <div class="brand-lockup">
+            <div class="brand-lockup" @click="keyManager.showManager = false" role="button" :title="t('navChecker')" style="cursor:pointer">
                 <span class="brand-mark" aria-hidden="true"></span>
                 <div class="brand-text">
                     <h1>KeyNest</h1>
