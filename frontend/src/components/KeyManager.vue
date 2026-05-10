@@ -250,27 +250,29 @@ watch(() => keyManager.filteredKeys.length, () => {
 
         <!-- ── Key list ── -->
         <div class="km-key-list" v-if="keyManager.keys.length > 0">
-            <label class="km-check-label km-check-all" v-if="keyManager.filteredKeys.length > 0">
-                <input type="checkbox" :checked="selectAll" @change="toggleSelectAll" />
-                <span>全选</span>
-            </label>
-            <div
-                v-for="key in keyManager.filteredKeys"
-                :key="key.id"
-                class="km-key-item"
-            >
-                <input
-                    type="checkbox"
-                    :checked="selectedIds.has(key.id)"
-                    @change="toggleSelect(key.id)"
-                    class="km-key-checkbox"
-                />
-                <div class="km-key-card-wrapper" @click="openDetail(key.id)">
-                    <KeyCard
-                        :key-record="key"
-                        :selected="selectedIds.has(key.id)"
-                        @delete="handleDeleteKey"
+            <div class="km-key-list-inner">
+                <label class="km-check-label km-check-all" v-if="keyManager.filteredKeys.length > 0">
+                    <input type="checkbox" :checked="selectAll" @change="toggleSelectAll" />
+                    <span>全选</span>
+                </label>
+                <div
+                    v-for="key in keyManager.filteredKeys"
+                    :key="key.id"
+                    class="km-key-item"
+                >
+                    <input
+                        type="checkbox"
+                        :checked="selectedIds.has(key.id)"
+                        @change="toggleSelect(key.id)"
+                        class="km-key-checkbox"
                     />
+                    <div class="km-key-card-wrapper" @click="openDetail(key.id)">
+                        <KeyCard
+                            :key-record="key"
+                            :selected="selectedIds.has(key.id)"
+                            @delete="handleDeleteKey"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -578,10 +580,12 @@ watch(() => keyManager.filteredKeys.length, () => {
 /* ── Key list ── */
 .km-key-list {
     flex: 1;
+    overflow: hidden;  /* outer: just clips, no scroll */
+}
+.km-key-list-inner {
+    height: 100%;
     overflow-y: auto;
-    overflow-x: visible;
-    padding-left: 2px;
-    padding-right: 2px;
+    padding: 3px 3px 3px 3px;  /* room for box-shadow on all sides */
 }
 .km-key-item {
     display: flex;
