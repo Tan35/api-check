@@ -35,7 +35,7 @@
 .modal-icon.info { background: var(--accent-primary); color: var(--ds-white); }
 .modal-icon.success { background: var(--accent-success); color: #ffffff; }
 .modal-icon.warning { background: var(--accent-warning); }
-.modal-icon.error { background: var(--ds-ship-red); }
+.modal-icon.error { background: var(--ds-red); color: #ffffff; }
 
 .modal-title {
     font-family: var(--font-sans);
