@@ -210,9 +210,6 @@ onBeforeUnmount(() => {
                 <span class="footer-heart" aria-label="love">❤</span>
             </p>
             <a class="cloudflare-badge" href="https://www.cloudflare.com" target="_blank" rel="noopener noreferrer" aria-label="Powered by Cloudflare">
-                <span class="cloudflare-badge-icon" aria-hidden="true">
-                    <img src="/cloudflare-mark.png" alt="" class="cloudflare-badge-mark" loading="lazy" decoding="async" />
-                </span>
                 <span class="cloudflare-badge-text">Powered by Cloudflare</span>
             </a>
         </footer>
