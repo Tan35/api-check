@@ -63,7 +63,7 @@
             </DynamicScroller>
             
             <div v-else class="empty-state">
-                <svg class="empty-icon" width="52" height="52" viewBox="0 0 52 52" fill="none" stroke="rgb(209,209,209)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="empty-icon" width="52" height="52" viewBox="0 0 52 52" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                     <!-- 外圆环 -->
                     <circle cx="18" cy="18" r="10"/>
                     <!-- 内圆孔 -->
@@ -473,6 +473,10 @@ watch(
 
     .empty-state .empty-icon {
         margin-bottom: 14px;
+        stroke: rgb(209, 209, 209);
+    }
+    :global([data-theme="dark"]) .empty-state .empty-icon {
+        stroke: rgb(70, 70, 70);
     }
 
     /* 复制按钮 */
