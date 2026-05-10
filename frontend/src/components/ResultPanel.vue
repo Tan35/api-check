@@ -12,6 +12,7 @@
                         :aria-expanded="uiStore.sortDropdownOpen[category]"
                         :aria-label="t('ariaSort')">
                         <span>{{ currentSortOption.text }}</span>
+                        <span class="arrow"></span>
                     </div>
                     <div class="custom-options t-dropdown" data-origin="top-right"
                         :class="{ 'is-open': uiStore.sortDropdownOpen[category], 'is-closing': sortDropdownClosing }"
