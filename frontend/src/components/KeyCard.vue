@@ -198,7 +198,7 @@ async function confirmDelete() {
     align-items: center;
     gap: 5px;
     padding: 4px 8px;
-    background: var(--bg-tertiary);
+    background: var(--token-bg);
     border-radius: var(--radius-sm);
 }
 .token-icon { color: var(--ds-gray-400); flex-shrink: 0; }

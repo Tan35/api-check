@@ -30,6 +30,7 @@
     --bg-surface:    var(--ds-white);
     --bg-secondary:  var(--ds-gray-50);
     --bg-tertiary:   var(--ds-gray-100);
+    --token-bg:      #f2f2f2;
     --bg-input:      var(--ds-white);
     --bg-selected:   var(--ds-gray-50);
     --bg-disabled:   var(--ds-gray-100);
@@ -129,6 +130,7 @@
     --bg-surface:    #1f1f1f;
     --bg-secondary:  #242424;
     --bg-tertiary:   #2a2a2a;
+    --token-bg:      #272727;
     --bg-input:      #1f1f1f;
     --bg-selected:   #242424;
     --bg-disabled:   #242424;
