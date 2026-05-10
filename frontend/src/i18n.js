@@ -175,6 +175,16 @@ const messages = {
         labelMaxTokens: '最大 Token 數',
         labelMaxOutputTokens: '最大輸出 Token',
         labelPrompt: '提示詞',
+        // ── Regions ──
+        regionWnam: '北美西部',
+        regionEnam: '北美東部',
+        regionSam: '南美洲',
+        regionWeur: '西歐',
+        regionEeur: '東歐',
+        regionApac: '亞太',
+        regionOc: '大洋洲',
+        regionAfr: '非洲',
+        regionMe: '中東',
 
         // ── Model Selector Modal ──
         placeholderSearchModelSelector: '搜尋模型...',
@@ -433,6 +443,16 @@ const messages = {
         labelMaxTokens: '最大 Token 数',
         labelMaxOutputTokens: '最大输出 Token',
         labelPrompt: '提示词',
+        // ── Regions ──
+        regionWnam: '北美西部',
+        regionEnam: '北美东部',
+        regionSam: '南美洲',
+        regionWeur: '西欧',
+        regionEeur: '东欧',
+        regionApac: '亚太',
+        regionOc: '大洋洲',
+        regionAfr: '非洲',
+        regionMe: '中东',
 
         // ── Model Selector Modal ──
         placeholderSearchModelSelector: '搜索模型...',
@@ -690,6 +710,16 @@ const messages = {
         labelMaxTokens: 'Max Tokens',
         labelMaxOutputTokens: 'Max Output Tokens',
         labelPrompt: 'Prompt',
+        // ── Regions ──
+        regionWnam: 'NA West',
+        regionEnam: 'NA East',
+        regionSam: 'South America',
+        regionWeur: 'Western Europe',
+        regionEeur: 'Eastern Europe',
+        regionApac: 'Asia Pacific',
+        regionOc: 'Oceania',
+        regionAfr: 'Africa',
+        regionMe: 'Middle East',
 
         // ── Model Selector Modal ──
         placeholderSearchModelSelector: 'Search models...',

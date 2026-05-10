@@ -14,7 +14,7 @@
                 <ul class="model-list region-list">
                     <li v-for="(label, key) in configStore.regions" :key="key"
                         :class="{ selected: key === configStore.currentRegion }" @click="configStore.selectRegion(key)">
-                        {{ label }}
+                        {{ t('region' + key.charAt(0).toUpperCase() + key.slice(1)) || label }}
                     </li>
                 </ul>
             </div>
@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
     .settings-title {
         font-size: 1rem;
         font-weight: 600;
-        font-family: var(--font-serif);
+        font-family: var(--font-sans);
         color: var(--text-primary);
         margin-bottom: 12px;
         padding-bottom: 8px;

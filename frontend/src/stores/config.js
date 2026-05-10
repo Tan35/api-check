@@ -65,7 +65,9 @@ export const useConfigStore = defineStore('config', () => {
     function selectRegion(key) {
         currentRegion.value = key;
         const uiStore = useUiStore();
-        uiStore.showToast(`${t('settingsSectionRegion')}: ${regions[key]}`, 'info');
+        const regionI18nKey = 'region' + key.charAt(0).toUpperCase() + key.slice(1);
+        const regionLabel = t(regionI18nKey) || regions[key];
+        uiStore.showToast(`${t('settingsSectionRegion')}: ${regionLabel}`, 'info');
     }
 
     /**
