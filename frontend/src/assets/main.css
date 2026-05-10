@@ -366,7 +366,6 @@ h1 {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 2px;
     height: 34px;
     padding: 2px;
     border-radius: var(--radius-tabs);
@@ -376,22 +375,27 @@ h1 {
 
 .tab-indicator {
     position: absolute;
-    left: 0;
     top: 2px;
-    /* width 和 transform 由 JS 动态设置，自动跟随各 tab 实际宽度 */
-    height: 30px;
+    bottom: 2px;
+    left: 2px;
+    /* 宽度跟随左侧 tab，由于两个 tab flex:1 等宽，所以 50%-4px 即为单个 tab 宽度 */
+    width: calc(50% - 4px);
     background: var(--bg-surface);
     border-radius: var(--radius-tabs);
     box-shadow: var(--shadow-light-ring);
-    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
     z-index: 0;
+    transform: translateX(0);
+}
+.tab-indicator.is-right {
+    transform: translateX(calc(100% + 4px));
 }
 
 .view-tab {
     position: relative;
     z-index: 1;
+    flex: 1;                    /* 两个 tab 等宽，文字居中 */
     height: 30px;
     padding: 0 14px;
     border-radius: var(--radius-tabs);
@@ -402,6 +406,7 @@ h1 {
     font-weight: 500;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     transition: color var(--transition-fast);
     white-space: nowrap;
