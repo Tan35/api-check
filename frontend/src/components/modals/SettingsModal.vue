@@ -11,12 +11,11 @@
         <div class="model-selector-body">
             <div class="settings-section">
                 <h4 class="settings-title">{{ t('settingsSectionRegion') }}</h4>
-                <select class="region-select" :value="configStore.currentRegion"
-                    @change="configStore.selectRegion($event.target.value)">
-                    <option v-for="(label, key) in configStore.regions" :key="key" :value="key">
-                        {{ t('region' + key.charAt(0).toUpperCase() + key.slice(1)) || label }}
-                    </option>
-                </select>
+                <CustomSelect
+                    :modelValue="configStore.currentRegion"
+                    :options="regionOptions"
+                    @update:modelValue="configStore.selectRegion($event)"
+                />
             </div>
             <div class="settings-section">
                 <h4 class="settings-title">{{ t('settingsSectionParams') }}</h4>
@@ -55,12 +54,23 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount } from 'vue';
+import { computed, onBeforeUnmount } from 'vue';
 import { useUiStore } from '@/stores/ui';
 import { useConfigStore } from '@/stores/config';
 import { t } from '@/i18n';
+import CustomSelect from '@/components/CustomSelect.vue';
 const uiStore = useUiStore();
 const configStore = useConfigStore();
+
+/**
+ * @description 将 regions 对象转换为 CustomSelect 所需的 [{ key, label }] 格式。
+ */
+const regionOptions = computed(() =>
+    Object.entries(configStore.regions).map(([key]) => ({
+        key,
+        label: t('region' + key.charAt(0).toUpperCase() + key.slice(1)) || configStore.regions[key],
+    }))
+);
 
 /**
  * @description 存储 onblur 事件处理器引用，用于组件卸载时清理。
@@ -133,32 +143,6 @@ onBeforeUnmount(() => {
         margin-bottom: 12px;
         padding-bottom: 8px;
         box-shadow: inset 0 -1px 0 0 var(--border-color);
-    }
-
-    /* 区域下拉 */
-    .region-select {
-        width: 100%;
-        height: var(--ctrl-height-md);
-        padding: 0 12px;
-        border: none;
-        border-radius: var(--radius-md);
-        background: var(--bg-input);
-        color: var(--text-primary);
-        box-shadow: var(--shadow-ring);
-        font-family: var(--font-sans);
-        font-size: 13px;
-        cursor: pointer;
-        appearance: none;
-        -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 12px center;
-        padding-right: 32px;
-    }
-
-    .region-select:focus {
-        outline: none;
-        box-shadow: var(--shadow-ring);
     }
 
     /* 高级设置网格布局 */
