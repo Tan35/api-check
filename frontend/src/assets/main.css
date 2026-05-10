@@ -631,15 +631,75 @@ select {
     width: min(100%, 1440px);
     margin: 0 auto;
     padding: 0 32px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     color: var(--text-tertiary);
     font-size: 12px;
 }
 
 .footer a {
-    color: var(--text-secondary);
+    color: inherit;
     text-decoration: none;
 }
-.footer a:hover { text-decoration: underline; }
+.footer a:hover { text-decoration: none; }
+
+.footer-credit {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.footer-author {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+}
+.footer-author:hover { color: var(--text-primary); }
+
+.footer-heart {
+    color: #e11d48;
+    transform: translateY(-0.5px);
+}
+
+.cloudflare-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: #050505;
+    color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.18) 0 1px 2px,
+                rgba(255, 255, 255, 0.08) 0 0 0 1px inset;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1;
+    transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+.cloudflare-badge:hover {
+    transform: translateY(-1px);
+    background: #111111;
+    box-shadow: rgba(0, 0, 0, 0.22) 0 3px 8px,
+                rgba(255, 255, 255, 0.1) 0 0 0 1px inset;
+}
+
+.cloudflare-badge-icon {
+    width: 31px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #f38020;
+    border-right: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.cloudflare-badge > span:last-child {
+    padding: 0 11px;
+}
 
 /* ── Modal lock ── */
 html.modal-open,
@@ -675,6 +735,9 @@ body.modal-open {
     .view-tabs { flex: 1; min-width: 0; }
     .view-tab  { flex: 1; padding: 0 10px; }
     .workspace { padding: 16px; }
+    .footer {
+        padding: 0 16px 16px;
+    }
     .main-grid,
     .main-content { gap: 10px; }
     .input-section { padding: 14px; }
@@ -688,6 +751,12 @@ body.modal-open {
 @media (max-width: 480px) {
     .run-status { display: none; }
     .workspace  { padding: 12px; }
+    .footer {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        padding: 0 12px 16px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

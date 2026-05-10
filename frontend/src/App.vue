@@ -28,10 +28,6 @@ const keyManager = useKeyManagerStore();
 const configStore = useConfigStore();
 const scrollPosition = ref(0);
 
-/**
- * @description 动态计算当前年份，用于 Footer 版权信息。
- */
-const currentYear = computed(() => new Date().getFullYear());
 
 const currentProviderLabel = computed(() => {
     return configStore.providers[configStore.currentProvider]?.label || configStore.currentProvider;
@@ -207,10 +203,21 @@ onBeforeUnmount(() => {
             </div>
         </main>
 
-        <div class="footer">
-            <p>© {{ currentYear }} KeyNest · <a href="https://github.com/Tan35/api-check" target="_blank"
-                    rel="noopener noreferrer">GitHub</a></p>
-        </div>
+        <footer class="footer">
+            <p class="footer-credit">
+                © <a class="footer-author" href="https://tanxy.club" target="_blank" rel="noopener noreferrer">SeanTan</a>
+                <span>2026</span>
+                <span class="footer-heart" aria-label="love">❤</span>
+            </p>
+            <a class="cloudflare-badge" href="https://www.cloudflare.com" target="_blank" rel="noopener noreferrer" aria-label="Powered by Cloudflare">
+                <span class="cloudflare-badge-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.95 16.35h9.33c1.69 0 3.06-1.26 3.06-2.82 0-1.43-1.16-2.62-2.67-2.79C17.03 8.33 14.76 6.6 12.1 6.6c-2.13 0-4 1.12-4.95 2.79A3.54 3.54 0 0 0 3.66 12.9c0 1.91 1.92 3.45 4.29 3.45Z" fill="currentColor"/>
+                    </svg>
+                </span>
+                <span>Powered by Cloudflare</span>
+            </a>
+        </footer>
         <ToastContainer />
         <ModalContainer />
     </div>
