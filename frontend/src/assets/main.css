@@ -591,27 +591,24 @@ select {
 
 .button.primary {
     background: var(--ds-gray-1000);
-    color: var(--ds-white);
+    color: #ffffff;
     box-shadow: none;
 }
-.button.primary:hover { background: var(--ds-black); }
-
+.button.primary:hover { background: var(--ds-black); color: #ffffff; }
 .button.stop {
     background: var(--ds-red);
-    color: var(--ds-white);
+    color: #ffffff;
     box-shadow: none;
 }
-.button.stop:hover { background: var(--ds-red-dark); }
-
+.button.stop:hover { background: var(--ds-red-dark); color: #ffffff; }
 .button.pause {
     background: var(--ds-gray-600);
-    color: var(--ds-white);
+    color: #ffffff;
     box-shadow: none;
 }
-
 .button.resume {
     background: var(--ds-gray-1000);
-    color: var(--ds-white);
+    color: #ffffff;
     box-shadow: none;
 }
 
@@ -634,7 +631,7 @@ select {
     width: 14px;
     height: 14px;
     border: 2px solid rgba(255, 255, 255, 0.35);
-    border-top-color: var(--ds-white);
+    border-top-color: #ffffff;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
 }

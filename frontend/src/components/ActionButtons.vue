@@ -68,17 +68,17 @@ const checkerStore = useCheckerStore();
 
     .button.stop {
         background: var(--ds-ship-red);
-        color: var(--ds-white);
+        color: #ffffff;
     }
 
     .button.pause {
         background: var(--ds-gray-500);
-        color: var(--ds-white);
+        color: #ffffff;
     }
 
     .button.resume {
         background: var(--ds-gray-1000);
-        color: var(--ds-white);
+        color: #ffffff;
     }
 
     .button-fade-enter-active,
