@@ -364,10 +364,11 @@ h1 {
 /* ── View tabs (segmented control) ── */
 .view-tabs {
     position: relative;
-    display: inline-flex;
+    display: flex;              /* 非 inline-flex，让 flex:1 子项真正等分 */
     align-items: center;
     height: 34px;
     padding: 2px;
+    min-width: 160px;           /* 保证桌面端胶囊有足够宽度容纳两个 tab */
     border-radius: var(--radius-tabs);
     background: var(--bg-secondary);
     box-shadow: var(--shadow-light-ring);
