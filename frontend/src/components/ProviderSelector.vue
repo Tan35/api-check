@@ -462,10 +462,12 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
 
     .switch-label input:checked + .slider {
         background-color: var(--ds-gray-900);
+        box-shadow: none;
     }
 
     .switch-label input:checked + .slider::before {
         transform: translateX(16px);
+        box-shadow: none;
     }
 
     .switch-title {
