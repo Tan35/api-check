@@ -475,9 +475,6 @@ watch(
         margin-bottom: 14px;
         stroke: rgb(209, 209, 209);
     }
-    :global([data-theme="dark"]) .empty-state .empty-icon {
-        stroke: rgb(70, 70, 70);
-    }
 
     /* 复制按钮 */
     .copy-btn {
