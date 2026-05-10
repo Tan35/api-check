@@ -78,51 +78,64 @@ async function confirmDelete() {
 
 <template>
     <div class="key-card" :class="{ selected }" @click="emit('select', keyRecord.id)">
-        <div class="key-card-header">
-            <span class="provider-pill">{{ providerLabel }}</span>
-            <span class="status-pill" :class="statusClass">{{ statusText }}</span>
-            <span v-if="keyRecord.alias" class="alias-text">{{ keyRecord.alias }}</span>
-        </div>
+        <!-- 左侧：主内容区 -->
+        <div class="key-card-body">
+            <!-- 第一行：服务商 + 状态 + 别名 -->
+            <div class="key-card-header">
+                <span class="provider-pill">{{ providerLabel }}</span>
+                <span class="status-pill" :class="statusClass">{{ statusText }}</span>
+                <span v-if="keyRecord.alias" class="alias-text">{{ keyRecord.alias }}</span>
+            </div>
 
-        <div class="key-card-token" @click.stop="copyToken" :title="t('kdCopyHint')">
-            <svg class="token-icon" width="12" height="12" viewBox="0 -1 12 13" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="1" y="3" width="10" height="7" rx="1.5"/>
-                <path d="M4 3V2a2 2 0 014 0v1"/>
-            </svg>
-            <span class="token-text">{{ maskedToken }}</span>
-            <svg class="copy-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="4" y="4" width="6" height="6" rx="1"/>
-                <path d="M8 4V2.5a.5.5 0 00-.5-.5h-5a.5.5 0 00-.5.5v5a.5.5 0 00.5.5H4"/>
-            </svg>
-        </div>
+            <!-- 第二行：脱敏 Key -->
+            <div class="key-card-token">
+                <svg class="token-icon" width="12" height="12" viewBox="0 -1 12 13" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="1" y="3" width="10" height="7" rx="1.5"/>
+                    <path d="M4 3V2a2 2 0 014 0v1"/>
+                </svg>
+                <span class="token-text">{{ maskedToken }}</span>
+            </div>
 
-        <div class="key-card-footer">
+            <!-- 第三行：余额 + 模型数 + 日期 -->
             <div class="key-card-meta">
                 <span v-if="balanceText" class="meta-balance">{{ balanceText }}</span>
                 <span v-if="keyRecord.models.length > 0" class="meta-chip">{{ t('kcModels', { count: keyRecord.models.length }) }}</span>
                 <span class="meta-date">{{ keyRecord.lastChecked ? formatDate(keyRecord.lastChecked) : t('kcNotChecked') }}</span>
             </div>
-            <div class="key-card-actions" @click.stop>
-                <button @click="confirmDelete" class="action-btn" :title="t('btnDelete')">
-                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M2.5 4h9M5 4V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V4M11 4v7.5a1 1 0 01-1 1H4a1 1 0 01-1-1V4"/>
-                    </svg>
-                </button>
+
+            <!-- 第四行：标签 -->
+            <div v-if="keyRecord.tags.length > 0" class="key-card-tags">
+                <span v-for="tag in keyRecord.tags" :key="tag" class="tag-pill">{{ tag }}</span>
             </div>
         </div>
 
-        <div v-if="keyRecord.tags.length > 0" class="key-card-tags">
-            <span v-for="tag in keyRecord.tags" :key="tag" class="tag-pill">{{ tag }}</span>
+        <!-- 右侧：竖排操作区 -->
+        <div class="key-card-actions" @click.stop>
+            <button @click="copyToken" class="action-btn" :title="t('kdCopyHint')">
+                <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="4" y="4" width="6" height="6" rx="1"/>
+                    <path d="M8 4V2.5a.5.5 0 00-.5-.5h-5a.5.5 0 00-.5.5v5a.5.5 0 00.5.5H4"/>
+                </svg>
+            </button>
+            <button @click="confirmDelete" class="action-btn action-btn-delete" :title="t('btnDelete')">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M2.5 4h9M5 4V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V4M11 4v7.5a1 1 0 01-1 1H4a1 1 0 01-1-1V4"/>
+                </svg>
+            </button>
         </div>
     </div>
 </template>
 
 <style scoped>
+/* ── 卡片外层：左内容 + 右操作 ── */
 .key-card {
     background: var(--bg-surface);
     border-radius: var(--radius-md);
-    padding: 10px 12px;
+    padding: 10px 10px 10px 12px;
     cursor: pointer;
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
     transition: box-shadow var(--transition-fast), background var(--transition-fast);
     box-shadow: var(--shadow-light-ring);
 }
@@ -131,11 +144,20 @@ async function confirmDelete() {
     box-shadow: var(--shadow-card), 0 0 0 2px var(--bg-surface), 0 0 0 3px var(--ds-gray-400);
 }
 
+/* ── 左侧内容区 ── */
+.key-card-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* 第一行：服务商 + 状态 + 别名 */
 .key-card-header {
     display: flex;
     align-items: center;
     gap: 5px;
-    margin-bottom: 7px;
     flex-wrap: wrap;
 }
 
@@ -170,38 +192,26 @@ async function confirmDelete() {
     min-width: 0;
 }
 
+/* 第二行：脱敏 Key */
 .key-card-token {
     display: flex;
     align-items: center;
     gap: 5px;
-    padding: 5px 8px;
+    padding: 4px 8px;
     background: var(--bg-secondary);
     border-radius: var(--radius-sm);
-    margin-bottom: 8px;
-    cursor: pointer;
-    overflow: visible;
-    transition: background var(--transition-fast);
 }
-.key-card-token:hover { background: var(--bg-tertiary); }
 .token-icon { color: var(--ds-gray-400); flex-shrink: 0; }
 .token-text {
     font-family: var(--font-mono);
     font-size: 12px;
     color: var(--text-secondary);
-    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.copy-icon { color: var(--ds-gray-400); flex-shrink: 0; }
 
-.key-card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding-left: 8px;
-}
+/* 第三行：余额 + 模型数 + 日期 */
 .key-card-meta {
     display: flex;
     align-items: baseline;
@@ -229,25 +239,10 @@ async function confirmDelete() {
     font-variant-numeric: tabular-nums;
 }
 
-.key-card-actions { display: flex; gap: 2px; }
-.action-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: var(--radius-sm);
-    color: var(--text-tertiary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color var(--transition-fast), background var(--transition-fast);
-}
-.action-btn:hover { color: var(--ds-red); background: #fff1f0; }
-
+/* 第四行：标签 */
 .key-card-tags {
     display: flex;
     gap: 4px;
-    margin-top: 8px;
     flex-wrap: wrap;
 }
 .tag-pill {
@@ -258,4 +253,30 @@ async function confirmDelete() {
     color: var(--ds-gray-600);
     font-weight: 500;
 }
+
+/* ── 右侧竖排操作区 ── */
+.key-card-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border-color);
+    padding-left: 8px;
+}
+.action-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: var(--radius-sm);
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+.action-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+.action-btn-delete:hover { color: var(--ds-red); background: #fff1f0; }
 </style>
