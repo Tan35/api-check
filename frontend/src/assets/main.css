@@ -523,7 +523,11 @@ textarea {
     font-size: 12px;
 }
 
-textarea::placeholder,
+textarea::placeholder {
+    color: var(--ds-gray-400);
+    font-family: var(--font-sans);
+    font-size: 13px;
+}
 input::placeholder { color: var(--ds-gray-400); }
 
 textarea:focus,
