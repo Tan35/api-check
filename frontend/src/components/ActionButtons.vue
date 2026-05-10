@@ -78,7 +78,7 @@ const checkerStore = useCheckerStore();
 
     .button.resume {
         background: var(--ds-gray-1000);
-        color: var(--ds-black);
+        color: var(--ds-white);
     }
 
     .button-fade-enter-active,

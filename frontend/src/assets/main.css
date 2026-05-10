@@ -591,7 +591,7 @@ select {
 
 .button.primary {
     background: var(--ds-gray-1000);
-    color: var(--ds-black);
+    color: var(--ds-white);
     box-shadow: none;
 }
 .button.primary:hover { background: var(--ds-black); color: var(--ds-white); }
@@ -608,7 +608,7 @@ select {
 }
 .button.resume {
     background: var(--ds-gray-1000);
-    color: var(--ds-black);
+    color: var(--ds-white);
     box-shadow: none;
 }
 
@@ -812,11 +812,13 @@ body.modal-open {
     background: var(--provider-pill-bg) !important;
     color: var(--provider-pill-text) !important;
 }
-/* Dark mode: danger button red outline */
+/* Dark mode: danger button keeps red fill with white text */
 [data-theme="dark"] .detail-btn.danger {
-    box-shadow: 0 0 0 1px #f87171 !important;
-    color: #f87171 !important;
+    background: var(--ds-red) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
 }
 [data-theme="dark"] .detail-btn.danger:hover {
-    background: rgba(248, 113, 113, 0.1) !important;
+    background: var(--ds-red-dark) !important;
+    color: #ffffff !important;
 }
