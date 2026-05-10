@@ -284,5 +284,5 @@ async function confirmDelete() {
     transition: color var(--transition-fast), background var(--transition-fast);
 }
 .action-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
-.action-btn-delete:hover { color: var(--ds-red); background: #fff1f0; }
+.action-btn-delete:hover { color: var(--ds-red); background: var(--bg-tertiary); }
 </style>
