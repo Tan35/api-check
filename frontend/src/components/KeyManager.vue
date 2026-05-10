@@ -403,8 +403,8 @@ watch(() => keyManager.filteredKeys.length, () => {
     transition: background var(--transition-fast), box-shadow var(--transition-fast);
 }
 .km-btn:hover { background: var(--bg-secondary); }
-.km-btn.primary { background: var(--ds-gray-1000); color: #ffffff; box-shadow: none; }
-.km-btn.primary:hover { background: var(--ds-black); color: #ffffff; }
+.km-btn.primary { background: var(--ds-gray-1000); color: var(--ds-black); box-shadow: none; }
+.km-btn.primary:hover { background: var(--ds-black); color: var(--ds-white); }
 .km-btn.danger  { background: var(--ds-red); color: #ffffff; box-shadow: none; }
 .km-btn.danger:hover  { background: var(--ds-red-dark); color: #ffffff; }
 .km-btn-sm { height: var(--ctrl-height-sm); padding: 0 10px; font-size: var(--ctrl-font-sm); }
@@ -620,7 +620,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     padding: 0 16px;
     border-radius: var(--radius-md);
     background: var(--ds-gray-1000);
-    color: #ffffff;
+    color: var(--ds-black);
     font-size: var(--ctrl-font-md);
     font-family: var(--font-sans);
     font-weight: 500;
@@ -632,7 +632,7 @@ watch(() => keyManager.filteredKeys.length, () => {
     margin-top: 4px;
     transition: background var(--transition-fast);
 }
-.km-empty-cta:hover { background: var(--ds-black); color: #ffffff; }
+.km-empty-cta:hover { background: var(--ds-black); color: var(--ds-white); }
 
 /* ── Modal overlay ── */
 .km-overlay {

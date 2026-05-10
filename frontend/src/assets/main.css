@@ -591,10 +591,10 @@ select {
 
 .button.primary {
     background: var(--ds-gray-1000);
-    color: #ffffff;
+    color: var(--ds-black);
     box-shadow: none;
 }
-.button.primary:hover { background: var(--ds-black); color: #ffffff; }
+.button.primary:hover { background: var(--ds-black); color: var(--ds-white); }
 .button.stop {
     background: var(--ds-red);
     color: #ffffff;
@@ -608,7 +608,7 @@ select {
 }
 .button.resume {
     background: var(--ds-gray-1000);
-    color: #ffffff;
+    color: var(--ds-black);
     box-shadow: none;
 }
 

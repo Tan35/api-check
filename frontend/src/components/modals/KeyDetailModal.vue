@@ -510,8 +510,8 @@ async function removeTag(tag) {
     transition: background var(--transition-fast);
 }
 .detail-btn:hover { background: var(--bg-secondary); }
-.detail-btn.primary { background: var(--ds-gray-1000); color: #ffffff; box-shadow: none; }
-.detail-btn.primary:hover { background: var(--ds-black); color: #ffffff; }
+.detail-btn.primary { background: var(--ds-gray-1000); color: var(--ds-black); box-shadow: none; }
+.detail-btn.primary:hover { background: var(--ds-black); color: var(--ds-white); }
 .detail-btn.danger  { background: var(--ds-red); color: #ffffff; box-shadow: none; }
 .detail-btn.danger:hover  { background: var(--ds-red-dark); color: #ffffff; }
 .detail-btn:disabled { opacity: 0.5; cursor: not-allowed; }
