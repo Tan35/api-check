@@ -44,6 +44,7 @@
 
     --accent-primary:       var(--ds-gray-1000);
     --accent-primary-hover: var(--ds-black);
+    --accent-success:       var(--ds-green);
     --accent-error:         var(--ds-red);
     --accent-error-hover:   var(--ds-red-dark);
     --accent-warning:       var(--ds-pink);
