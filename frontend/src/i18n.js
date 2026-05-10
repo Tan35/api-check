@@ -42,22 +42,22 @@ const messages = {
         statusIdle: '待命',
 
         // ── Provider Selector ──
-        labelProvider: 'Provider',
-        labelStream: 'Stream',
+        labelProvider: '提供商',
+        labelStream: '串流',
         titleStream: '啟用串流檢測 (Stream Mode)',
         titleSettings: '檢測設定',
         ariaSearchProvider: '搜尋提供商',
         ariaProviderList: 'API 提供商列表',
 
         // ── Api Config ──
-        labelBaseUrl: 'Base URL',
-        labelModel: 'Model',
+        labelBaseUrl: '基礎 URL',
+        labelModel: '模型',
         placeholderBaseUrl: 'API Base URL',
         placeholderModel: '測試用的模型名稱',
         btnFetch: '獲取',
 
         // ── Key Input ──
-        labelApiKeys: 'API Keys',
+        labelApiKeys: 'API 金鑰',
         btnImportFile: '匯入檔案',
         btnImporting: '匯入中',
         btnClearInput: '清空輸入',
@@ -120,7 +120,7 @@ const messages = {
         modalAddKeyTitle: '新增 Key',
         labelPlatform: '平台',
         placeholderSelectPlatform: '選擇平台',
-        labelApiKeyRequired: 'API Key',
+        labelApiKeyRequired: 'API 金鑰',
         placeholderApiKey: 'sk-...',
         labelAlias: '別名（可選）',
         placeholderAlias: '方便識別的名稱',
@@ -139,14 +139,14 @@ const messages = {
         kcNotChecked: '未檢測',
 
         // ── Key Detail Modal ──
-        kdFieldApiKey: 'API Key',
+        kdFieldApiKey: 'API 金鑰',
         kdCopyHint: '複製',
         kdFieldAlias: '別名',
         kdPlaceholderAlias: '輸入別名',
         kdFieldPlatform: '平台',
         kdFieldBalance: '餘額',
         kdFieldModel: '模型',
-        kdFieldBaseUrl: 'Base URL',
+        kdFieldBaseUrl: '基礎 URL',
         kdFieldCreatedAt: '建立時間',
         kdFieldLastChecked: '最近檢測',
         btnEdit: '編輯',
@@ -300,22 +300,22 @@ const messages = {
         statusIdle: '待命',
 
         // ── Provider Selector ──
-        labelProvider: 'Provider',
-        labelStream: 'Stream',
+        labelProvider: '提供商',
+        labelStream: '流式',
         titleStream: '启用流式检测 (Stream Mode)',
         titleSettings: '检测设置',
         ariaSearchProvider: '搜索提供商',
         ariaProviderList: 'API 提供商列表',
 
         // ── Api Config ──
-        labelBaseUrl: 'Base URL',
-        labelModel: 'Model',
+        labelBaseUrl: '基础 URL',
+        labelModel: '模型',
         placeholderBaseUrl: 'API Base URL',
         placeholderModel: '测试用的模型名称',
         btnFetch: '获取',
 
         // ── Key Input ──
-        labelApiKeys: 'API Keys',
+        labelApiKeys: 'API 密钥',
         btnImportFile: '导入文件',
         btnImporting: '导入中',
         btnClearInput: '清空输入',
@@ -378,7 +378,7 @@ const messages = {
         modalAddKeyTitle: '添加 Key',
         labelPlatform: '平台',
         placeholderSelectPlatform: '选择平台',
-        labelApiKeyRequired: 'API Key',
+        labelApiKeyRequired: 'API 密钥',
         placeholderApiKey: 'sk-...',
         labelAlias: '别名（可选）',
         placeholderAlias: '方便识别的名称',
@@ -397,14 +397,14 @@ const messages = {
         kcNotChecked: '未检测',
 
         // ── Key Detail Modal ──
-        kdFieldApiKey: 'API Key',
+        kdFieldApiKey: 'API 密钥',
         kdCopyHint: '复制',
         kdFieldAlias: '别名',
         kdPlaceholderAlias: '输入别名',
         kdFieldPlatform: '平台',
         kdFieldBalance: '余额',
         kdFieldModel: '模型',
-        kdFieldBaseUrl: 'Base URL',
+        kdFieldBaseUrl: '基础 URL',
         kdFieldCreatedAt: '创建时间',
         kdFieldLastChecked: '最近检测',
         btnEdit: '编辑',
