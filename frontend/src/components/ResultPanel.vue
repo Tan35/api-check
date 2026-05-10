@@ -314,7 +314,7 @@ watch(
         justify-content: space-between;
         align-items: center;
         gap: 12px;
-        padding: 0 0 10px;
+        padding: 8px 12px 10px;
         flex-wrap: wrap;
         box-shadow: inset 0 -1px 0 0 var(--border-color);
     }
@@ -322,7 +322,7 @@ watch(
     .results-title {
         font-size: 13px;
         font-weight: 500;
-        font-family: var(--font-serif);
+        font-family: var(--font-sans);
         color: var(--text-secondary);
         white-space: nowrap;
     }
@@ -332,7 +332,6 @@ watch(
         align-items: center;
         gap: 8px;
         flex-shrink: 0;
-        margin-left: auto;
     }
 
     /* 搜索输入框样式 */
@@ -370,7 +369,7 @@ watch(
         box-sizing: border-box;
         border-radius: var(--radius-md);
         transition: background-color var(--transition-fast);
-        font-family: var(--font-mono);
+        font-family: var(--font-sans);
         font-size: 12px;
         color: var(--text-primary);
     }
@@ -384,11 +383,13 @@ watch(
         padding-right: 12px;
         white-space: normal;
         line-height: 1.4;
+        font-family: var(--font-mono);
     }
 
     :deep(.key-text .message) {
         color: var(--text-secondary);
         margin-left: 4px;
+        font-family: var(--font-sans);
     }
 
     :deep(.key-text .balance-high) {
