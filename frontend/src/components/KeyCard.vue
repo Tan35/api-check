@@ -202,7 +202,7 @@ async function confirmDelete() {
 }
 .key-card-meta {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 6px;
     flex-wrap: wrap;
     min-width: 0;
