@@ -826,7 +826,3 @@ body.modal-open {
     color: #ffffff !important;
 }
 
-/* 空状态钥匙图标 — 深色模式下更暗 */
-[data-theme="dark"] .empty-icon {
-    stroke: rgb(70, 70, 70) !important;
-}
