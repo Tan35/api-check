@@ -146,11 +146,16 @@ async function copyToken() {
 async function handleDelete() {
     const idToDelete = keyId.value;
     if (!idToDelete) return;
+
+    const detailModalData = { ...uiStore.modalData };
     const confirmed = await uiStore.showConfirmation('确定删除这个 Key？');
+
     if (confirmed) {
         await keyManager.deleteKey(idToDelete);
         uiStore.closeModal();
         uiStore.showToast('已删除', 'success');
+    } else {
+        uiStore.openModal('keyDetail', detailModalData);
     }
 }
 
