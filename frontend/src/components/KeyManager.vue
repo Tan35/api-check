@@ -477,6 +477,48 @@ watch(() => keyManager.filteredKeys.length, () => {
     flex-shrink: 0;
 }
 
+/* ── Custom checkbox ── */
+/* Hide native checkbox */
+.km-check-label input[type="checkbox"],
+.km-key-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    border-radius: 4px;
+    border: none;
+    box-shadow: var(--shadow-ring);
+    background: var(--bg-input);
+    cursor: pointer;
+    position: relative;
+    transition: background var(--transition-fast), box-shadow var(--transition-fast);
+    flex-shrink: 0;
+}
+.km-check-label input[type="checkbox"]:hover,
+.km-key-checkbox:hover {
+    box-shadow: 0 0 0 1px var(--text-tertiary);
+}
+.km-check-label input[type="checkbox"]:checked,
+.km-key-checkbox:checked {
+    background: var(--accent-primary);
+    box-shadow: none;
+}
+/* Checkmark via pseudo-element */
+.km-check-label input[type="checkbox"]:checked::after,
+.km-key-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 2px;
+    width: 5px;
+    height: 8px;
+    border: 1.75px solid var(--bg-paper);
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+
 /* ── Batch bar ── */
 .km-batch-bar {
     display: flex;
@@ -543,9 +585,9 @@ watch(() => keyManager.filteredKeys.length, () => {
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
 }
-.km-key-checkbox { margin-top: 12px; cursor: pointer; flex-shrink: 0; }
+.km-key-checkbox { margin-top: 14px; }
 .km-key-card-wrapper { flex: 1; min-width: 0; }
 
 /* ── Empty state ── */
