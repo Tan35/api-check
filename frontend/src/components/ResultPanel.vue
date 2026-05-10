@@ -63,10 +63,12 @@
             </DynamicScroller>
             
             <div v-else class="empty-state">
-                <svg class="empty-icon" width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.25">
-                    <rect x="4" y="8" width="28" height="22" rx="3"/>
-                    <path d="M12 8V6a2 2 0 012-2h8a2 2 0 012 2v2"/>
-                    <path d="M12 18h12M12 23h8"/>
+                <svg class="empty-icon" width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="16" cy="19" r="8"/>
+                    <circle cx="16" cy="19" r="3"/>
+                    <path d="M22 23l14 14"/>
+                    <path d="M32 33l3 3M32 36l3-3"/>
+                    <path d="M36 29l3 3M36 32l3-3"/>
                 </svg>
                 <p>{{ t('emptyState') }}</p>
             </div>
