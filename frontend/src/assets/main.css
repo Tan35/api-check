@@ -148,10 +148,9 @@
     --shadow-light-ring: rgba(255, 255, 255, 0.07) 0 0 0 1px;
     --shadow-card:       rgba(0, 0, 0, 0.4) 0 0 0 1px,
                          rgba(0, 0, 0, 0.2) 0 2px 4px;
-    --shadow-full-card:  rgba(0, 0, 0, 0.5) 0 0 0 1px,
+    --shadow-full-card:  rgba(255, 255, 255, 0.07) 0 0 0 1px,
                          rgba(0, 0, 0, 0.3) 0 2px 4px,
-                         rgba(0, 0, 0, 0.2) 0 8px 8px -8px,
-                         #1f1f1f 0 0 0 1px inset;
+                         rgba(0, 0, 0, 0.2) 0 8px 8px -8px;
     --shadow-focus:      0 0 0 2px #1a1a1a,
                          0 0 0 4px rgba(237, 237, 237, 0.4);
 
