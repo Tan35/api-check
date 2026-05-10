@@ -223,7 +223,7 @@ async function confirmDelete() {
 .meta-balance {
     font-size: 11px;
     font-weight: 600;
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     color: var(--text-primary);
     font-variant-numeric: tabular-nums;
 }
