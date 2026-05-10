@@ -208,7 +208,7 @@ async function confirmDelete() {
     min-width: 0;
 }
 .meta-balance {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     font-family: var(--font-mono);
     color: var(--text-primary);
