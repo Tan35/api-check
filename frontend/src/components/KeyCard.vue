@@ -218,6 +218,7 @@ async function confirmDelete() {
     gap: 6px;
     flex-wrap: wrap;
     min-width: 0;
+    padding-left: 8px;
 }
 .meta-balance {
     font-size: 11px;
@@ -244,6 +245,7 @@ async function confirmDelete() {
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
+    padding-left: 8px;
 }
 .tag-pill {
     font-size: 11px;
