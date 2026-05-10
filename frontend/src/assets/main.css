@@ -305,8 +305,8 @@ button { border: 0; }
     width: 24px;
     height: 24px;
     flex: 0 0 auto;
-    border-radius: 50%;
-    background: url('/favicon.png') center / cover no-repeat;
+    border-radius: var(--radius-md);
+    background: url('/favicon.png') center / contain no-repeat;
 }
 
 .brand-text { min-width: 0; }

@@ -120,7 +120,7 @@ onBeforeUnmount(() => {
             <div class="brand-lockup">
                 <span class="brand-mark" aria-hidden="true"></span>
                 <div class="brand-text">
-                    <h1>API Check</h1>
+                    <h1>KeyNest</h1>
                 </div>
             </div>
 
@@ -208,7 +208,7 @@ onBeforeUnmount(() => {
         </main>
 
         <div class="footer">
-            <p>© {{ currentYear }} API Check · <a href="https://github.com/Tan35/api-check" target="_blank"
+            <p>© {{ currentYear }} KeyNest · <a href="https://github.com/Tan35/api-check" target="_blank"
                     rel="noopener noreferrer">GitHub</a></p>
         </div>
         <ToastContainer />
