@@ -179,6 +179,7 @@ async function confirmDelete() {
     border-radius: var(--radius-sm);
     margin-bottom: 8px;
     cursor: pointer;
+    overflow: visible;
     transition: background var(--transition-fast);
 }
 .key-card-token:hover { background: var(--bg-tertiary); }
@@ -199,6 +200,7 @@ async function confirmDelete() {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+    padding-left: 8px;
 }
 .key-card-meta {
     display: flex;
