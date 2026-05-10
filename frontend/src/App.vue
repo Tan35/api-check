@@ -42,12 +42,11 @@ function updateIndicator() {
     const idx = keyManager.showManager ? 1 : 0;
     const tab = tabs[idx];
     if (!tab) return;
-    const container = tab.closest('.view-tabs');
-    const containerLeft = container ? container.getBoundingClientRect().left : 0;
-    const tabRect = tab.getBoundingClientRect();
+    // 用 offsetLeft/offsetWidth 相对父容器计算，不受页面滚动和屏幕坐标影响
+    // tab-indicator 的 CSS left:2px 已包含内边距，这里用 offsetLeft 就是相对父元素的偏移
     indicatorStyle.value = {
-        width: tabRect.width + 'px',
-        transform: `translateX(${tabRect.left - containerLeft - 2}px)`,
+        width: tab.offsetWidth + 'px',
+        transform: `translateX(${tab.offsetLeft}px)`,
     };
 }
 

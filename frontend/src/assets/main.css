@@ -376,7 +376,7 @@ h1 {
 
 .tab-indicator {
     position: absolute;
-    left: 2px;
+    left: 0;
     top: 2px;
     /* width 和 transform 由 JS 动态设置，自动跟随各 tab 实际宽度 */
     height: 30px;
