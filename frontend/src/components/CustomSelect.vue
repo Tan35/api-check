@@ -207,6 +207,8 @@ watch(isOpen, (v) => {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        pointer-events: none;  /* let clicks fall through to cs-trigger */
+        user-select: none;
     }
 
     .cs-chevron {

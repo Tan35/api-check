@@ -340,6 +340,15 @@ watch(() => uiStore.providerDropdownOpen, (isOpen) => {
         color: var(--ds-gray-400);
     }
 
+    #providerDisplay {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        pointer-events: none;  /* let clicks fall through to trigger */
+        user-select: none;
+    }
+
     .trigger-chevron {
         position: absolute;
         right: 12px;
