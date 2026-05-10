@@ -6,6 +6,7 @@ import { useConfigStore } from '@/stores/config';
 import { useCheckerStore } from '@/stores/checker';
 import KeyCard from './KeyCard.vue';
 import CustomSelect from './CustomSelect.vue';
+import { t, currentLang } from '@/i18n';
 
 const keyManager   = useKeyManagerStore();
 const uiStore      = useUiStore();
@@ -43,37 +44,42 @@ const providerOptions = computed(() =>
 );
 
 const filterProviderOptions = computed(() => {
-    const options = [{ key: '', label: '全部平台' }];
+    void currentLang.value;
+    const options = [{ key: '', label: t('filterAllProviders') }];
     for (const [key, val] of Object.entries(configStore.providers)) {
         options.push({ key, label: val.label });
     }
     return options;
 });
 
-const filterStatusOptions = [
-    { key: '',        label: '全部状态' },
-    { key: 'valid',     label: '有效' },
-    { key: 'invalid',   label: '无效' },
-    { key: 'rateLimit', label: '限流' },
-    { key: 'unknown',   label: '未知' },
-];
+const filterStatusOptions = computed(() => {
+    void currentLang.value;
+    return [
+        { key: '',           label: t('filterAllStatus') },
+        { key: 'valid',      label: t('statusValid') },
+        { key: 'invalid',    label: t('statusInvalid') },
+        { key: 'rateLimit',  label: t('statusRateLimit') },
+        { key: 'unknown',    label: t('statusUnknown') },
+    ];
+});
 
-const sortOptions = [
-    { key: 'createdAt',   label: '创建时间' },
-    { key: 'lastChecked', label: '最近检测' },
-    { key: 'balance',     label: '余额' },
-    { key: 'provider',    label: '平台' },
-];
-
-const sortOptionsForSelect = sortOptions.map(o => ({ key: o.key, label: '排序: ' + o.label }));
+const sortOptionsForSelect = computed(() => {
+    void currentLang.value;
+    return [
+        { key: 'createdAt',   label: t('sortPrefix') + t('sortCreatedAt') },
+        { key: 'lastChecked', label: t('sortPrefix') + t('sortLastChecked') },
+        { key: 'balance',     label: t('sortPrefix') + t('sortBalance') },
+        { key: 'provider',    label: t('sortPrefix') + t('sortProvider') },
+    ];
+});
 
 onMounted(() => { keyManager.loadKeys(); });
 
 async function handleAddKey() {
     const token = newKeyText.value.trim();
-    if (!token) { uiStore.showToast('请输入 API Key', 'warning'); return; }
+    if (!token) { uiStore.showToast(t('toastPleaseEnterKey'), 'warning'); return; }
     const existing = keyManager.keys.find(k => k.token === token);
-    if (existing) { uiStore.showToast('该 Key 已存在', 'warning'); return; }
+    if (existing) { uiStore.showToast(t('toastKeyExists'), 'warning'); return; }
     await keyManager.addKey({
         token,
         alias:    newKeyAlias.value.trim(),
@@ -83,12 +89,12 @@ async function handleAddKey() {
     });
     newKeyText.value = newKeyAlias.value = newKeyBaseUrl.value = newKeyModel.value = '';
     addModalOpen.value = false;
-    uiStore.showToast('Key 已添加', 'success');
+    uiStore.showToast(t('toastKeyAdded'), 'success');
 }
 
 async function handleBatchImport() {
     const lines = importText.value.split('\n').map(l => l.trim()).filter(l => l);
-    if (lines.length === 0) { uiStore.showToast('没有有效的 Key', 'warning'); return; }
+    if (lines.length === 0) { uiStore.showToast(t('toastNoValidKey'), 'warning'); return; }
     const records = lines.map(token => ({
         token,
         provider: newKeyProvider.value,
@@ -98,7 +104,7 @@ async function handleBatchImport() {
     const count = await keyManager.addKeysBatch(records);
     importText.value = '';
     showImportExport.value = false;
-    uiStore.showToast(`成功导入 ${count} 个 Key`, 'success');
+    uiStore.showToast(t('toastImportedCount', { count }), 'success');
 }
 
 function toggleSelect(id) {
@@ -115,13 +121,15 @@ function toggleSelectAll() {
 }
 
 async function handleBatchDelete() {
-    if (selectedIds.value.size === 0) { uiStore.showToast('请先选择要删除的 Key', 'warning'); return; }
-    const confirmed = await uiStore.showConfirmation(`确定删除选中的 ${selectedIds.value.size} 个 Key？`);
+    if (selectedIds.value.size === 0) { uiStore.showToast(t('toastSelectFirst'), 'warning'); return; }
+    const confirmed = await uiStore.showConfirmation(
+        t('batchSelected', { count: selectedIds.value.size })
+    );
     if (confirmed) {
         await keyManager.deleteKeysBatch([...selectedIds.value]);
         selectedIds.value = new Set();
         selectAll.value = false;
-        uiStore.showToast('已删除', 'success');
+        uiStore.showToast(t('toastDeleted'), 'success');
     }
 }
 
@@ -129,11 +137,11 @@ async function handleExport() {
     const json = await keyManager.exportKeys();
     try {
         await navigator.clipboard.writeText(json);
-        uiStore.showToast('已复制到剪贴板', 'success');
+        uiStore.showToast(t('toastCopiedClipboard'), 'success');
     } catch {
         showImportExport.value = true;
         importText.value = json;
-        uiStore.showToast('请手动复制下方内容', 'info');
+        uiStore.showToast(t('toastManualCopy'), 'info');
     }
 }
 
@@ -141,7 +149,7 @@ async function handleDeleteKey(id) {
     await keyManager.deleteKey(id);
     selectedIds.value.delete(id);
     selectedIds.value = new Set(selectedIds.value);
-    uiStore.showToast('已删除', 'success');
+    uiStore.showToast(t('toastDeleted'), 'success');
 }
 
 function openDetail(id) {
@@ -165,13 +173,13 @@ watch(() => keyManager.filteredKeys.length, () => {
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.75">
                         <path d="M7 2v10M2 7h10"/>
                     </svg>
-                    添加 Key
+                    {{ t('btnAddKey') }}
                 </button>
                 <button @click="showImportExport = !showImportExport" class="km-btn">
-                    导入/导出
+                    {{ t('btnImportExport') }}
                 </button>
             </div>
-            <span class="km-count">{{ keyManager.filteredKeys.length }} / {{ keyManager.keys.length }} 个 Key</span>
+            <span class="km-count">{{ t('kmCount', { filtered: keyManager.filteredKeys.length, total: keyManager.keys.length }) }}</span>
         </div>
 
         <!-- ── Filter bar ── -->
@@ -185,32 +193,32 @@ watch(() => keyManager.filteredKeys.length, () => {
                     v-model="keyManager.searchTerm"
                     type="text"
                     class="km-search"
-                    placeholder="搜索 Key、别名、标签..."
+                    :placeholder="t('placeholderSearchKm')"
                 />
             </div>
             <div class="km-filter-group">
                 <CustomSelect
                     v-model="keyManager.filterProvider"
                     :options="filterProviderOptions"
-                    placeholder="全部平台"
+                    :placeholder="t('filterAllProviders')"
                     class="km-custom-select"
                 />
                 <CustomSelect
                     v-model="keyManager.filterStatus"
                     :options="filterStatusOptions"
-                    placeholder="全部状态"
+                    :placeholder="t('filterAllStatus')"
                     class="km-custom-select"
                 />
                 <CustomSelect
                     v-model="keyManager.sortBy"
                     :options="sortOptionsForSelect"
-                    placeholder="排序: 创建时间"
+                    :placeholder="t('sortPrefix') + t('sortCreatedAt')"
                     class="km-custom-select km-custom-select-sort"
                 />
                 <button
                     @click="keyManager.sortDir = keyManager.sortDir === 'asc' ? 'desc' : 'asc'"
                     class="km-btn km-sort-dir"
-                    :title="keyManager.sortDir === 'asc' ? '升序' : '降序'"
+                    :title="keyManager.sortDir === 'asc' ? t('titleAsc') : t('titleDesc')"
                 >
                     <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path v-if="keyManager.sortDir === 'asc'" d="M7 2v10M3 8l4 4 4-4"/>
@@ -224,27 +232,27 @@ watch(() => keyManager.filteredKeys.length, () => {
         <div v-if="selectedIds.size > 0" class="km-batch-bar">
             <label class="km-check-label">
                 <input type="checkbox" :checked="selectAll" @change="toggleSelectAll" />
-                <span>全选</span>
+                <span>{{ t('batchSelectAll') }}</span>
             </label>
-            <span class="km-selected-count">已选 {{ selectedIds.size }} 个</span>
-            <button @click="handleBatchDelete" class="km-btn danger km-btn-sm">批量删除</button>
+            <span class="km-selected-count">{{ t('batchSelected', { count: selectedIds.size }) }}</span>
+            <button @click="handleBatchDelete" class="km-btn danger km-btn-sm">{{ t('btnBatchDelete') }}</button>
         </div>
 
         <!-- ── Import/Export panel ── -->
         <div v-if="showImportExport" class="km-ie-panel">
             <div class="km-ie-header">
-                <span class="km-ie-title">导入 / 导出</span>
-                <button @click="showImportExport = false" class="km-btn km-btn-sm">关闭</button>
+                <span class="km-ie-title">{{ t('ieTitle') }}</span>
+                <button @click="showImportExport = false" class="km-btn km-btn-sm">{{ t('btnClose') }}</button>
             </div>
             <textarea
                 v-model="importText"
                 class="km-ie-textarea"
-                placeholder="导入：每行一个 API Key，或粘贴 JSON 数组&#10;导出：点击下方按钮复制所有 Key"
+                :placeholder="t('iePlaceholder')"
                 rows="5"
             ></textarea>
             <div class="km-ie-actions">
-                <button @click="handleBatchImport" class="km-btn primary km-btn-sm">导入</button>
-                <button @click="handleExport" class="km-btn km-btn-sm">导出全部</button>
+                <button @click="handleBatchImport" class="km-btn primary km-btn-sm">{{ t('btnImport') }}</button>
+                <button @click="handleExport" class="km-btn km-btn-sm">{{ t('btnExportAll') }}</button>
             </div>
         </div>
 
@@ -253,7 +261,7 @@ watch(() => keyManager.filteredKeys.length, () => {
             <div class="km-key-list-inner">
                 <label class="km-check-label km-check-all" v-if="keyManager.filteredKeys.length > 0">
                     <input type="checkbox" :checked="selectAll" @change="toggleSelectAll" />
-                    <span>全选</span>
+                    <span>{{ t('batchSelectAll') }}</span>
                 </label>
                 <div
                     v-for="key in keyManager.filteredKeys"
@@ -284,13 +292,13 @@ watch(() => keyManager.filteredKeys.length, () => {
                 <path d="M14 10V8a2 2 0 012-2h8a2 2 0 012 2v2"/>
                 <path d="M20 19v6M17 22h6"/>
             </svg>
-            <p class="km-empty-title">还没有 Key</p>
-            <p class="km-empty-hint">添加你的第一个 API 密钥，开始管理和检测</p>
+            <p class="km-empty-title">{{ t('kmEmptyTitle') }}</p>
+            <p class="km-empty-hint">{{ t('kmEmptyHint') }}</p>
             <button @click="openAddModal" class="km-empty-cta">
                 <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.75">
                     <path d="M7 2v10M2 7h10"/>
                 </svg>
-                添加第一个 Key
+                {{ t('kmEmptyCta') }}
             </button>
         </div>
 
@@ -301,8 +309,8 @@ watch(() => keyManager.filteredKeys.length, () => {
         <div v-if="addModalOpen" class="km-overlay" @click.self="addModalOpen = false">
             <div class="km-modal">
                 <div class="km-modal-header">
-                    <h3>添加 Key</h3>
-                    <button @click="addModalOpen = false" class="km-modal-close" aria-label="关闭">
+                    <h3>{{ t('modalAddKeyTitle') }}</h3>
+                    <button @click="addModalOpen = false" class="km-modal-close" :aria-label="t('btnClose')">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75">
                             <path d="M3 3l10 10M13 3L3 13"/>
                         </svg>
@@ -310,41 +318,41 @@ watch(() => keyManager.filteredKeys.length, () => {
                 </div>
                 <div class="km-modal-body">
                     <div class="km-form-group">
-                        <label>平台</label>
+                        <label>{{ t('labelPlatform') }}</label>
                         <CustomSelect
                             v-model="newKeyProvider"
                             :options="providerOptions"
-                            placeholder="选择平台"
+                            :placeholder="t('placeholderSelectPlatform')"
                         />
                     </div>
                     <div class="km-form-group">
-                        <label>API Key <span class="km-required">*</span></label>
+                        <label>{{ t('labelApiKeyRequired') }} <span class="km-required">*</span></label>
                         <input
                             v-model="newKeyText"
                             type="text"
                             class="km-input"
-                            placeholder="sk-..."
+                            :placeholder="t('placeholderApiKey')"
                             @keydown.enter="handleAddKey"
                         />
                     </div>
                     <div class="km-form-group">
-                        <label>别名（可选）</label>
-                        <input v-model="newKeyAlias" type="text" class="km-input" placeholder="方便识别的名称" />
+                        <label>{{ t('labelAlias') }}</label>
+                        <input v-model="newKeyAlias" type="text" class="km-input" :placeholder="t('placeholderAlias')" />
                     </div>
                     <div class="km-form-row">
                         <div class="km-form-group">
-                            <label>Base URL</label>
+                            <label>{{ t('labelBaseUrl') }}</label>
                             <input v-model="newKeyBaseUrl" type="text" class="km-input" placeholder="https://..." />
                         </div>
                         <div class="km-form-group">
-                            <label>模型</label>
-                            <input v-model="newKeyModel" type="text" class="km-input" placeholder="gpt-4o-mini" />
+                            <label>{{ t('labelModel2') }}</label>
+                            <input v-model="newKeyModel" type="text" class="km-input" :placeholder="t('placeholderModel2')" />
                         </div>
                     </div>
                 </div>
                 <div class="km-modal-footer">
-                    <button @click="addModalOpen = false" class="km-btn">取消</button>
-                    <button @click="handleAddKey" class="km-btn primary">添加</button>
+                    <button @click="addModalOpen = false" class="km-btn">{{ t('btnCancel') }}</button>
+                    <button @click="handleAddKey" class="km-btn primary">{{ t('btnAdd') }}</button>
                 </div>
             </div>
         </div>
@@ -450,7 +458,6 @@ watch(() => keyManager.filteredKeys.length, () => {
 /* CustomSelect width overrides inside filter group */
 .km-custom-select { min-width: 100px; max-width: 160px; flex: 1 1 100px; }
 .km-custom-select-sort { min-width: 120px; max-width: 170px; flex: 1 1 120px; }
-/* Unified select — matches km-btn height */
 .km-select {
     height: var(--ctrl-height-md);
     padding: 0 28px 0 10px;
@@ -480,7 +487,6 @@ watch(() => keyManager.filteredKeys.length, () => {
 }
 
 /* ── Custom checkbox ── */
-/* Hide native checkbox */
 .km-check-label input[type="checkbox"],
 .km-key-checkbox {
     appearance: none;
@@ -506,7 +512,6 @@ watch(() => keyManager.filteredKeys.length, () => {
     background: var(--accent-primary);
     box-shadow: none;
 }
-/* Checkmark via pseudo-element */
 .km-check-label input[type="checkbox"]:checked::after,
 .km-key-checkbox:checked::after {
     content: '';
@@ -580,12 +585,12 @@ watch(() => keyManager.filteredKeys.length, () => {
 /* ── Key list ── */
 .km-key-list {
     flex: 1;
-    overflow: hidden;  /* outer: just clips, no scroll */
+    overflow: hidden;
 }
 .km-key-list-inner {
     height: 100%;
     overflow-y: auto;
-    padding: 3px 3px 3px 3px;  /* room for box-shadow on all sides */
+    padding: 3px 3px 3px 3px;
 }
 .km-key-item {
     display: flex;

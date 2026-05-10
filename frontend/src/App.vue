@@ -5,6 +5,7 @@ import { useCheckerStore } from '@/stores/checker';
 import { useKeyManagerStore } from '@/stores/keyManager';
 import { useConfigStore } from '@/stores/config';
 import { RESULT_TAB_CONFIG } from '@/constants';
+import { currentLang, setLang, SUPPORTED_LANGS, LANG_LABELS, t } from '@/i18n';
 
 // 导入组件
 import ProviderSelector from './components/ProviderSelector.vue';
@@ -28,6 +29,8 @@ const keyManager = useKeyManagerStore();
 const configStore = useConfigStore();
 const scrollPosition = ref(0);
 
+/** 语言切换下拉菜单开关 */
+const langMenuOpen = ref(false);
 
 const currentProviderLabel = computed(() => {
     return configStore.providers[configStore.currentProvider]?.label || configStore.currentProvider;
@@ -38,9 +41,9 @@ const currentRegionLabel = computed(() => {
 });
 
 const statusLabel = computed(() => {
-    if (checkerStore.isPaused) return '已暂停';
-    if (checkerStore.isChecking) return `检测中 ${checkerStore.progress}%`;
-    return '待命';
+    if (checkerStore.isPaused) return t('statusPaused');
+    if (checkerStore.isChecking) return `${t('statusChecking')} ${checkerStore.progress}%`;
+    return t('statusIdle');
 });
 
 /**
@@ -78,11 +81,23 @@ watch(() => uiStore.isModalActive, (isActive) => {
  * @param {KeyboardEvent} e - 键盘事件对象。
  */
 const handleEscKey = (e) => {
-    if (e.key !== 'Escape' || !uiStore.activeModal) return;
-    if (uiStore.activeModal === 'modelSelector' && uiStore.modelSearch) {
-        uiStore.modelSearch = '';
-    } else {
-        uiStore.closeModal();
+    if (e.key === 'Escape') {
+        if (langMenuOpen.value) { langMenuOpen.value = false; return; }
+        if (!uiStore.activeModal) return;
+        if (uiStore.activeModal === 'modelSelector' && uiStore.modelSearch) {
+            uiStore.modelSearch = '';
+        } else {
+            uiStore.closeModal();
+        }
+    }
+};
+
+/**
+ * @description 点击外部关闭语言菜单。
+ */
+const handleOutsideClick = (e) => {
+    if (!e.target.closest('.lang-switcher')) {
+        langMenuOpen.value = false;
     }
 };
 
@@ -94,6 +109,7 @@ onMounted(() => {
     checkerStore.initSession();
     keyManager.loadKeys();
     document.addEventListener('keydown', handleEscKey);
+    document.addEventListener('click', handleOutsideClick);
 });
 
 /**
@@ -101,6 +117,7 @@ onMounted(() => {
  */
 onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleEscKey);
+    document.removeEventListener('click', handleOutsideClick);
     // 完整恢复 body 样式，防止残留
     const body = document.body;
     body.style.position = '';
@@ -121,12 +138,42 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="topbar-actions">
-                <!-- 深色模式切换按鈕 -->
+                <!-- 语言切换 -->
+                <div class="lang-switcher" :class="{ open: langMenuOpen }">
+                    <button
+                        class="lang-btn"
+                        @click.stop="langMenuOpen = !langMenuOpen"
+                        :aria-label="'Language / 語言 / 语言'"
+                        :title="'Language / 語言 / 语言'"
+                    >
+                        <!-- Globe icon -->
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+                        </svg>
+                        <span class="lang-label">{{ LANG_LABELS[currentLang] }}</span>
+                    </button>
+                    <div v-if="langMenuOpen" class="lang-menu" role="listbox">
+                        <button
+                            v-for="lang in SUPPORTED_LANGS"
+                            :key="lang"
+                            class="lang-option"
+                            :class="{ active: lang === currentLang }"
+                            role="option"
+                            :aria-selected="lang === currentLang"
+                            @click.stop="setLang(lang); langMenuOpen = false"
+                        >
+                            {{ LANG_LABELS[lang] }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 深色模式切换按钮 -->
                 <button
                     class="theme-toggle-btn"
                     @click="uiStore.toggleDarkMode()"
-                    :title="uiStore.isDarkMode ? '切换到浅色模式' : '切换到深色模式'"
-                    :aria-label="uiStore.isDarkMode ? '切换到浅色模式' : '切换到深色模式'"
+                    :title="uiStore.isDarkMode ? '切換到淺色模式 / Switch to Light' : '切換到深色模式 / Switch to Dark'"
+                    :aria-label="uiStore.isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
                 >
                     <!-- 浅色模式显示月亮图标 -->
                     <svg v-if="!uiStore.isDarkMode" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -153,7 +200,7 @@ onBeforeUnmount(() => {
                     <span>{{ statusLabel }}</span>
                 </div>
 
-                <div class="view-tabs" role="tablist" aria-label="视图切换">
+                <div class="view-tabs" role="tablist" :aria-label="'View / 視圖'">
                     <div class="tab-indicator" :style="{ transform: keyManager.showManager ? 'translateX(100%)' : 'translateX(0)' }"></div>
                 <button
                     :class="['view-tab', { active: !keyManager.showManager }]"
@@ -161,7 +208,7 @@ onBeforeUnmount(() => {
                     role="tab"
                     :aria-selected="!keyManager.showManager"
                 >
-                    检测台
+                    {{ t('tabChecker') }}
                 </button>
                 <button
                     :class="['view-tab', { active: keyManager.showManager }]"
@@ -169,7 +216,7 @@ onBeforeUnmount(() => {
                     role="tab"
                     :aria-selected="keyManager.showManager"
                 >
-                    Key
+                    {{ t('tabKey') }}
                     <span class="tab-count" v-if="keyManager.keys.length > 0">{{ keyManager.keys.length }}</span>
                 </button>
                 </div>
@@ -231,7 +278,70 @@ onBeforeUnmount(() => {
         margin: 14px 0;
     }
 
-    /* 深色模式切换按鈕 */
+    /* ── 语言切换器 ── */
+    .lang-switcher {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+    }
+    .lang-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 34px;
+        padding: 0 8px;
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-md);
+        color: var(--text-tertiary);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        font-family: var(--font-sans);
+        transition: color var(--transition-fast), background var(--transition-fast);
+        flex-shrink: 0;
+    }
+    .lang-btn:hover,
+    .lang-switcher.open .lang-btn {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+    }
+    .lang-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+    .lang-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        background: var(--bg-surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-full-card);
+        z-index: 200;
+        overflow: hidden;
+        min-width: 72px;
+        padding: 4px 0;
+    }
+    .lang-option {
+        display: block;
+        width: 100%;
+        padding: 7px 14px;
+        background: transparent;
+        border: none;
+        text-align: left;
+        font-size: 13px;
+        font-family: var(--font-sans);
+        font-weight: 400;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: background var(--transition-fast), color var(--transition-fast);
+        white-space: nowrap;
+    }
+    .lang-option:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    .lang-option.active { color: var(--text-primary); font-weight: 600; }
+
+    /* 深色模式切换按钮 */
     .theme-toggle-btn {
         width: 34px;
         height: 34px;

@@ -1,15 +1,15 @@
 <template>
     <div class="model-selector-content">
         <div class="model-selector-header">
-            <h3 id="modelSelectorTitle">选择一个模型</h3>
-            <button class="model-selector-close" @click="uiStore.closeModal()" aria-label="关闭">
+            <h3 id="modelSelectorTitle">{{ t('labelModel') }}</h3>
+            <button class="model-selector-close" @click="uiStore.closeModal()" :aria-label="t('btnClose')">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75">
                     <path d="M3 3l10 10M13 3L3 13"/>
                 </svg>
             </button>
         </div>
         <div class="model-selector-search">
-            <input type="search" v-model="uiStore.modelSearch" placeholder="搜索模型...">
+            <input type="search" v-model="uiStore.modelSearch" :placeholder="t('placeholderSearchModelSelector')">
         </div>
         <div class="model-selector-body">
             <ul class="model-list">
@@ -17,8 +17,8 @@
             </ul>
         </div>
         <div class="model-selector-footer">
-            <span id="modelCount">显示: {{ filteredModels.length }} / {{ uiStore.modalData.models?.length || 0 }}</span>
-            <button class="copy-btn" @click="copyAllModels">复制全部</button>
+            <span id="modelCount">{{ t('modelCount', { visible: filteredModels.length, total: uiStore.modalData.models?.length || 0 }) }}</span>
+            <button class="copy-btn" @click="copyAllModels">{{ t('btnCopyAll') }}</button>
         </div>
     </div>
 </template>
@@ -27,47 +27,35 @@
 import { computed } from 'vue';
 import { useUiStore } from '@/stores/ui';
 import { useConfigStore } from '@/stores/config';
+import { t } from '@/i18n';
 
 const uiStore = useUiStore();
 const configStore = useConfigStore();
 
-/**
- * @description 计算属性，根据搜索关键词过滤模型列表。
- * @returns {string[]} - 过滤后的模型 ID 数组。
- */
 const filteredModels = computed(() => {
     if (!uiStore.modalData.models) return [];
     const searchTerm = uiStore.modelSearch.toLowerCase();
     return uiStore.modalData.models.filter(m => m.toLowerCase().includes(searchTerm));
 });
 
-/**
- * @description 选择一个模型并更新配置，然后关闭模态框。
- * @param {string} model - 选中的模型 ID。
- */
 const selectModel = (model) => {
     configStore.getCurrentProviderConfig().model = model;
-    uiStore.showToast(`已选择模型: ${model}`, "info", 2000);
+    uiStore.showToast(t('toastModelSelected', { model }), 'info', 2000);
     uiStore.closeModal();
 };
 
-/**
- * @description 复制所有可见的模型 ID 到剪贴板。
- */
 const copyAllModels = () => {
-    navigator.clipboard.writeText(filteredModels.value.join("\n")).then(() => {
-        uiStore.showToast(`已复制 ${filteredModels.value.length} 个可见模型ID`, "success");
+    navigator.clipboard.writeText(filteredModels.value.join('\n')).then(() => {
+        uiStore.showToast(t('toastModelsCopied', { count: filteredModels.value.length }), 'success');
     });
 };
 </script>
 
 <style scoped>
-    /* 模型选择器特定样式 */
     .model-selector-content {
         max-width: 500px;
     }
 
-    /* 搜索框 */
     .model-selector-search {
         padding: 8px 16px;
         box-shadow: inset 0 -1px 0 0 var(--border-color);
@@ -77,7 +65,6 @@ const copyAllModels = () => {
         height: 40px;
     }
 
-    /* 复制按钮 */
     .copy-btn {
         padding: 0 16px;
         background: var(--bg-surface);

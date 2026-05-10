@@ -13,6 +13,7 @@ import {
     RESULT_CATEGORIES
 } from '@/constants';
 import { parseKeys } from '@/utils/keyParser';
+import { t } from '@/i18n';
 
 /**
  * @description checker Store 用于管理 API Key 检测的核心逻辑和状态。
@@ -100,7 +101,7 @@ export const useCheckerStore = defineStore('checker', () => {
         currentBatch = { batch, providerConfig: jobQueue.providerConfig, concurrency: jobQueue.concurrency };
         jobQueue.remainingKeys = remaining;
 
-        _postStatus(`正在处理 ${totalTasks.value - remaining.length} / ${totalTasks.value} 个 Key...`, "info");
+        _postStatus(t('toastProcessing', { done: totalTasks.value - remaining.length, total: totalTasks.value }), 'info');
 
         try {
             // 确保 WebSocket 连接可用
@@ -174,7 +175,7 @@ export const useCheckerStore = defineStore('checker', () => {
                     batchDoneResolve = null;
                 }
             } else if (message.type === 'error') {
-                _postStatus(`后端错误: ${message.message}`, "error");
+                _postStatus(t('toastBackendError', { msg: message.message }), 'error');
                 stopCheck();
             }
         };
@@ -219,7 +220,7 @@ export const useCheckerStore = defineStore('checker', () => {
     function _handleConnectionFailure() {
         if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS && currentBatch && currentBatch.batch.length > 0) {
             reconnectAttempts++;
-            _postStatus(`连接断开，正在重试 (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`, "warning");
+            _postStatus(t('toastReconnecting', { cur: reconnectAttempts, max: MAX_RECONNECT_ATTEMPTS }), 'warning');
             _cleanupSocket();
 
             // 过滤掉已完成的 Key，避免重复检测
@@ -237,7 +238,7 @@ export const useCheckerStore = defineStore('checker', () => {
                 }
             }, 1000 * reconnectAttempts);
         } else {
-            _postStatus("检测连接意外关闭，重连失败，任务已停止。", "error");
+            _postStatus(t('toastReconnectFailed'), 'error');
             stopCheck();
         }
     }
@@ -357,27 +358,29 @@ export const useCheckerStore = defineStore('checker', () => {
         currentBatch = null;
         completedOrders.clear();
 
-        // 定义分类 ID 到中文名称的映射
-        const categoryMap = {
-            valid: '有效',
-            lowBalance: '低额',
-            zeroBalance: '零额',
-            rateLimit: '限流',
-            invalid: '无效',
-            duplicate: '重复'
-        };
+        // Build i18n-aware summary
+        const categoryKeys = [
+            { id: 'valid',       i18nKey: 'catValid' },
+            { id: 'lowBalance',  i18nKey: 'catLowBalance' },
+            { id: 'zeroBalance', i18nKey: 'catZeroBalance' },
+            { id: 'rateLimit',   i18nKey: 'catRateLimit' },
+            { id: 'invalid',     i18nKey: 'catInvalid' },
+            { id: 'duplicate',   i18nKey: 'catDuplicate' },
+        ];
 
         const summaryParts = [];
-        // 遍历映射，按顺序生成摘要部分
-        for (const category in categoryMap) {
-            const count = resultsStore.results[category].length;
+        for (const { id, i18nKey } of categoryKeys) {
+            const count = resultsStore.results[id].length;
             if (count > 0) {
-                summaryParts.push(`${categoryMap[category]} ${count}`);
+                summaryParts.push(`${t(i18nKey)} ${count}`);
             }
         }
 
-        const summaryString = summaryParts.join('，');
-        const finalMessage = summaryString ? `检测完成！${summaryString}` : '检测完成！没有有效结果。';
+        const sep = t('toastFinished').includes(',') ? ', ' : '，';
+        const summaryString = summaryParts.join(sep);
+        const finalMessage = summaryString
+            ? t('toastFinished', { summary: summaryString })
+            : t('toastFinishedEmpty');
 
         _postStatus(finalMessage, "success", 8000); // 延长显示时间以便用户阅读
     }
@@ -401,7 +404,7 @@ export const useCheckerStore = defineStore('checker', () => {
      */
     function startCheck() {
         if (configStore.tokensInput.trim() === '') {
-            _postStatus("请输入至少一个 API KEY", "warning");
+            _postStatus(t('toastNoKey'), 'warning');
             return;
         }
 
@@ -415,7 +418,7 @@ export const useCheckerStore = defineStore('checker', () => {
 
         // 检查 Key 数量限制
         if (tokensRaw.length > MAX_KEYS_LIMIT) {
-            _postStatus(`Key 数量超过限制（最多 ${MAX_KEYS_LIMIT.toLocaleString()} 个），请分批检测`, "error", 5000);
+            _postStatus(t('toastKeyLimit', { max: MAX_KEYS_LIMIT.toLocaleString() }), 'error', 5000);
             return;
         }
 
@@ -437,11 +440,11 @@ export const useCheckerStore = defineStore('checker', () => {
         // 批量添加重复 Key 到结果
         if (duplicateResults.length > 0) {
             resultsStore.addResults(duplicateResults);
-            _postStatus(`已过滤 ${duplicateResults.length} 个重复 Key`, "info", 2000);
+            _postStatus(t('toastDuplicateFiltered', { count: duplicateResults.length }), 'info', 2000);
         }
 
         if (keysToProcess.length === 0) {
-            _postStatus("没有需要检测的 KEY（已去除重复项）", "info");
+            _postStatus(t('toastNoDuplicate'), 'info');
             return;
         }
 
@@ -469,7 +472,7 @@ export const useCheckerStore = defineStore('checker', () => {
             concurrency: configStore.concurrency,
         };
 
-        _postStatus(`开始检测 ${keysToProcess.length} 个 Key...`, "info");
+        _postStatus(t('toastStarting', { count: keysToProcess.length }), 'info');
         processNextBatch();
     }
 
@@ -485,7 +488,7 @@ export const useCheckerStore = defineStore('checker', () => {
         currentBatch = null;
         completedOrders.clear();
         _closeSocket('stop');
-        _postStatus("检测已手动停止", "info");
+        _postStatus(t('toastStopped'), 'info');
     }
 
     /**
@@ -503,7 +506,7 @@ export const useCheckerStore = defineStore('checker', () => {
             jobQueue.remainingKeys = [...currentBatch.batch, ...jobQueue.remainingKeys];
         }
 
-        _postStatus("检测已暂停", "info");
+        _postStatus(t('toastPaused'), 'info');
         currentBatch = null;
     }
 
@@ -514,7 +517,7 @@ export const useCheckerStore = defineStore('checker', () => {
         if (!isChecking.value || !isPaused.value) return;
 
         isPaused.value = false;
-        _postStatus("检测已恢复", "info");
+        _postStatus(t('toastResumed'), 'info');
 
         processNextBatch();
     }

@@ -5,11 +5,12 @@ import { useUiStore } from '@/stores/ui';
 import { useCheckerStore } from '@/stores/checker';
 import { useConfigStore } from '@/stores/config';
 import { fetchModels } from '@/api';
+import { t, currentLang } from '@/i18n';
 
-const keyManager  = useKeyManagerStore();
-const uiStore     = useUiStore();
+const keyManager   = useKeyManagerStore();
+const uiStore      = useUiStore();
 const checkerStore = useCheckerStore();
-const configStore = useConfigStore();
+const configStore  = useConfigStore();
 
 const keyId = computed(() => uiStore.modalData?.keyId || null);
 
@@ -28,9 +29,15 @@ const providerLabel = computed(() =>
     !keyRecord.value ? '' : (configStore.providers[keyRecord.value.provider]?.label || keyRecord.value.provider)
 );
 
-const statusText = computed(() => ({
-    valid: '有效', invalid: '无效', rateLimit: '限流', unknown: '未知',
-}[keyRecord.value?.status] || '未知'));
+const statusText = computed(() => {
+    void currentLang.value;
+    return ({
+        valid:     t('statusValid'),
+        invalid:   t('statusInvalid'),
+        rateLimit: t('statusRateLimit'),
+        unknown:   t('statusUnknown'),
+    }[keyRecord.value?.status] || t('statusUnknown'));
+});
 
 const statusClass = computed(() => ({
     valid: 'status-valid', invalid: 'status-invalid',
@@ -46,7 +53,9 @@ const filteredModels = computed(() => {
 
 function formatDate(iso) {
     if (!iso) return '-';
-    return new Date(iso).toLocaleString('zh-CN');
+    const lang = currentLang.value;
+    const locale = lang === 'en' ? 'en-US' : lang === 'zh-CN' ? 'zh-CN' : 'zh-TW';
+    return new Date(iso).toLocaleString(locale);
 }
 
 function formatBalance(balance, currency) {
@@ -68,7 +77,7 @@ async function saveEdit() {
         provider: editProvider.value,
     });
     isEditing.value = false;
-    uiStore.showToast('已保存', 'success');
+    uiStore.showToast(t('toastKdSaved'), 'success');
 }
 
 async function testConnection() {
@@ -89,7 +98,7 @@ async function testConnection() {
         const host = window.location.host;
         const result = await new Promise((resolve, reject) => {
             const ws = new WebSocket(`${protocol}//${host}/check`);
-            const timeout = setTimeout(() => { ws.close(); reject(new Error('测试超时')); }, 30000);
+            const timeout = setTimeout(() => { ws.close(); reject(new Error(t('kdTestTimeout'))); }, 30000);
             ws.onopen = () => ws.send(JSON.stringify({
                 command: 'start',
                 data: { tokens: [{ token: keyRecord.value.token, order: 0 }], providerConfig, concurrency: 1 },
@@ -99,22 +108,22 @@ async function testConnection() {
                 if (msg.type === 'result') { clearTimeout(timeout); ws.close(); resolve(msg.data); }
                 else if (msg.type === 'error') { clearTimeout(timeout); ws.close(); reject(new Error(msg.message)); }
             };
-            ws.onerror = () => { clearTimeout(timeout); reject(new Error('WebSocket 连接失败')); };
+            ws.onerror = () => { clearTimeout(timeout); reject(new Error(t('kdWsConnFailed'))); };
             ws.onclose = () => { clearTimeout(timeout); };
         });
         await keyManager.updateKeyFromCheck(keyRecord.value.token, result);
         if (result.isValid) {
             const balMsg = result.balance !== undefined && result.balance !== -1
-                ? `，余额: ${formatBalance(result.balance, result.currency)}` : '';
-            uiStore.showToast(`测试通过${balMsg}`, 'success');
+                ? t('kdBalanceMsg', { balance: formatBalance(result.balance, result.currency) }) : '';
+            uiStore.showToast(t('toastKdTestPassed', { balMsg }), 'success');
         } else {
-            uiStore.showToast(`测试失败: ${result.message || 'Key 无效'}`, 'error');
+            uiStore.showToast(t('toastKdTestFailed', { msg: result.message || t('statusInvalid') }), 'error');
         }
     } catch (err) {
-        const msg = err.message || '未知错误';
-        if (msg.includes('WebSocket') || msg.includes('连接失败') || msg.includes('超时'))
-            uiStore.showToast('测试失败：后端服务未运行', 'error', 5000);
-        else uiStore.showToast(`测试失败: ${msg}`, 'error');
+        const msg = err.message || '';
+        if (msg === t('kdWsConnFailed') || msg === t('kdTestTimeout'))
+            uiStore.showToast(t('toastKdTestBackendDown'), 'error', 5000);
+        else uiStore.showToast(t('toastKdTestFailed', { msg }), 'error');
     } finally { isTesting.value = false; }
 }
 
@@ -129,9 +138,9 @@ async function handleFetchModels() {
         };
         const models = await fetchModels(keyRecord.value.token, providerConfig);
         await keyManager.updateKeyModels(keyId.value, models);
-        uiStore.showToast(`获取到 ${models.length} 个模型`, 'success');
+        uiStore.showToast(t('toastKdModelsCount', { count: models.length }), 'success');
     } catch (err) {
-        uiStore.showToast(`获取模型失败: ${err.message || '未知错误'}`, 'error', 5000);
+        uiStore.showToast(t('toastKdModelsFailed', { msg: err.message || '' }), 'error', 5000);
     } finally { isLoadingModels.value = false; }
 }
 
@@ -139,8 +148,8 @@ async function copyToken() {
     if (!keyRecord.value) return;
     try {
         await navigator.clipboard.writeText(keyRecord.value.token);
-        uiStore.showToast('已复制', 'success', 1500);
-    } catch { uiStore.showToast('复制失败', 'error'); }
+        uiStore.showToast(t('toastKdCopied'), 'success', 1500);
+    } catch { uiStore.showToast(t('toastKdCopyFailed'), 'error'); }
 }
 
 async function handleDelete() {
@@ -148,12 +157,12 @@ async function handleDelete() {
     if (!idToDelete) return;
 
     const detailModalData = { ...uiStore.modalData };
-    const confirmed = await uiStore.showConfirmation('确定删除这个 Key？');
+    const confirmed = await uiStore.showConfirmation(t('kdConfirmDelete'));
 
     if (confirmed) {
         await keyManager.deleteKey(idToDelete);
         uiStore.closeModal();
-        uiStore.showToast('已删除', 'success');
+        uiStore.showToast(t('toastKdDeleted'), 'success');
     } else {
         uiStore.openModal('keyDetail', detailModalData);
     }
@@ -178,7 +187,7 @@ async function removeTag(tag) {
                 <span class="provider-pill">{{ providerLabel }}</span>
                 <span class="status-badge" :class="statusClass">{{ statusText }}</span>
             </div>
-            <button @click="uiStore.closeModal()" class="detail-close" aria-label="关闭">
+            <button @click="uiStore.closeModal()" class="detail-close" :aria-label="t('btnClose')">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75">
                     <path d="M3 3l10 10M13 3L3 13"/>
                 </svg>
@@ -191,27 +200,27 @@ async function removeTag(tag) {
             <div class="detail-grid">
                 <!-- Token -->
                 <div class="detail-field full-width">
-                    <span class="field-label">API Key</span>
-                    <div class="token-row" @click="copyToken" title="点击复制">
+                    <span class="field-label">{{ t('kdFieldApiKey') }}</span>
+                    <div class="token-row" @click="copyToken" :title="t('kdCopyHint')">
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
                             <rect x="1" y="3" width="10" height="7" rx="1.5"/>
                             <path d="M4 3V2a2 2 0 014 0v1"/>
                         </svg>
                         <span class="token-text">{{ keyRecord.token.substring(0, 20) }}...</span>
-                        <span class="copy-hint">复制</span>
+                        <span class="copy-hint">{{ t('kdCopyHint') }}</span>
                     </div>
                 </div>
 
                 <!-- Alias -->
                 <div class="detail-field">
-                    <span class="field-label">别名</span>
+                    <span class="field-label">{{ t('kdFieldAlias') }}</span>
                     <span v-if="!isEditing" class="field-value">{{ keyRecord.alias || '—' }}</span>
-                    <input v-else v-model="editAlias" class="field-input" placeholder="输入别名" />
+                    <input v-else v-model="editAlias" class="field-input" :placeholder="t('kdPlaceholderAlias')" />
                 </div>
 
                 <!-- Provider -->
                 <div class="detail-field">
-                    <span class="field-label">平台</span>
+                    <span class="field-label">{{ t('kdFieldPlatform') }}</span>
                     <span v-if="!isEditing" class="field-value">{{ providerLabel }}</span>
                     <select v-else v-model="editProvider" class="field-select">
                         <option v-for="(val, key) in configStore.providers" :key="key" :value="key">{{ val.label }}</option>
@@ -220,29 +229,29 @@ async function removeTag(tag) {
 
                 <!-- Balance -->
                 <div class="detail-field" v-if="keyRecord.balance !== null && keyRecord.balance !== undefined">
-                    <span class="field-label">余额</span>
+                    <span class="field-label">{{ t('kdFieldBalance') }}</span>
                     <span class="field-value balance-value">{{ formatBalance(keyRecord.balance, keyRecord.currency) }}</span>
                 </div>
 
                 <!-- Model -->
                 <div class="detail-field" v-if="keyRecord.model">
-                    <span class="field-label">模型</span>
+                    <span class="field-label">{{ t('kdFieldModel') }}</span>
                     <span class="field-value mono">{{ keyRecord.model }}</span>
                 </div>
 
                 <!-- Base URL -->
                 <div class="detail-field full-width" v-if="keyRecord.baseUrl">
-                    <span class="field-label">Base URL</span>
+                    <span class="field-label">{{ t('kdFieldBaseUrl') }}</span>
                     <span class="field-value mono small">{{ keyRecord.baseUrl }}</span>
                 </div>
 
                 <!-- Dates -->
                 <div class="detail-field">
-                    <span class="field-label">创建时间</span>
+                    <span class="field-label">{{ t('kdFieldCreatedAt') }}</span>
                     <span class="field-value small">{{ formatDate(keyRecord.createdAt) }}</span>
                 </div>
                 <div class="detail-field">
-                    <span class="field-label">最近检测</span>
+                    <span class="field-label">{{ t('kdFieldLastChecked') }}</span>
                     <span class="field-value small">{{ formatDate(keyRecord.lastChecked) }}</span>
                 </div>
             </div>
@@ -250,49 +259,49 @@ async function removeTag(tag) {
             <!-- ── Actions ── -->
             <div class="detail-actions">
                 <template v-if="!isEditing">
-                    <button @click="isEditing = true" class="detail-btn">编辑</button>
+                    <button @click="isEditing = true" class="detail-btn">{{ t('btnEdit') }}</button>
                 </template>
                 <template v-else>
-                    <button @click="saveEdit" class="detail-btn primary">保存</button>
-                    <button @click="isEditing = false" class="detail-btn">取消</button>
+                    <button @click="saveEdit" class="detail-btn primary">{{ t('btnSave') }}</button>
+                    <button @click="isEditing = false" class="detail-btn">{{ t('btnCancelEdit') }}</button>
                 </template>
                 <button @click="testConnection" :disabled="isTesting" class="detail-btn primary">
                     <svg v-if="isTesting" class="spin-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.75">
                         <path d="M6 1a5 5 0 100 10A5 5 0 006 1z" opacity=".25"/>
                         <path d="M11 6a5 5 0 00-5-5"/>
                     </svg>
-                    {{ isTesting ? '测试中...' : '测试连接' }}
+                    {{ isTesting ? t('btnTesting') : t('btnTestConn') }}
                 </button>
                 <button @click="handleFetchModels" :disabled="isLoadingModels" class="detail-btn">
-                    {{ isLoadingModels ? '获取中...' : '获取模型' }}
+                    {{ isLoadingModels ? t('btnFetchingModels') : t('btnFetchModels') }}
                 </button>
-                <button @click="handleDelete" class="detail-btn danger">删除</button>
+                <button @click="handleDelete" class="detail-btn danger">{{ t('btnDelete') }}</button>
             </div>
 
             <!-- ── Tags ── -->
             <div class="detail-section">
-                <h4 class="section-title">标签</h4>
+                <h4 class="section-title">{{ t('sectionTags') }}</h4>
                 <div class="tag-list" v-if="keyRecord.tags.length > 0">
                     <span v-for="tag in keyRecord.tags" :key="tag" class="tag-item">
                         {{ tag }}
-                        <button @click="removeTag(tag)" class="tag-remove" aria-label="移除标签">
+                        <button @click="removeTag(tag)" class="tag-remove" :aria-label="t('btnDelete')">
                             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
                                 <path d="M2 2l6 6M8 2L2 8"/>
                             </svg>
                         </button>
                     </span>
                 </div>
-                <p v-else class="tag-empty-hint">暂无标签，在下方输入后按 Enter 添加</p>
+                <p v-else class="tag-empty-hint">{{ t('tagEmptyHint') }}</p>
                 <div class="tag-add">
-                    <input v-model="newTag" class="field-input" placeholder="输入标签名称..." @keyup.enter="addTag" />
-                    <button @click="addTag" class="detail-btn detail-btn-sm">添加</button>
+                    <input v-model="newTag" class="field-input" :placeholder="t('placeholderTag')" @keyup.enter="addTag" />
+                    <button @click="addTag" class="detail-btn detail-btn-sm">{{ t('btnAddTag') }}</button>
                 </div>
             </div>
 
             <!-- ── Balance history ── -->
             <div class="detail-section" v-if="keyManager.balanceHistory.length > 0">
                 <button class="section-toggle" @click="showBalanceHistory = !showBalanceHistory">
-                    <span class="section-title">余额历史 ({{ keyManager.balanceHistory.length }})</span>
+                    <span class="section-title">{{ t('sectionBalanceHistory') }} ({{ keyManager.balanceHistory.length }})</span>
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"
                          :style="{ transform: showBalanceHistory ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }">
                         <path d="M2 4l4 4 4-4"/>
@@ -308,8 +317,8 @@ async function removeTag(tag) {
 
             <!-- ── Models ── -->
             <div class="detail-section" v-if="keyRecord.models.length > 0">
-                <h4 class="section-title">可用模型 ({{ keyRecord.models.length }})</h4>
-                <input v-model="modelSearch" class="field-input" placeholder="搜索模型..." style="margin-bottom:8px;" />
+                <h4 class="section-title">{{ t('sectionModels') }} ({{ keyRecord.models.length }})</h4>
+                <input v-model="modelSearch" class="field-input" :placeholder="t('placeholderSearchModel')" style="margin-bottom:8px;" />
                 <div class="model-list">
                     <div v-for="model in filteredModels" :key="model" class="model-item">{{ model }}</div>
                 </div>
@@ -448,82 +457,68 @@ async function removeTag(tag) {
 /* Inputs */
 .field-input {
     width: 100%;
-    height: var(--ctrl-height-md);
+    height: 34px;
     padding: 0 10px;
     border: none;
     border-radius: var(--radius-sm);
     background: var(--bg-input);
+    color: var(--text-primary);
     box-shadow: var(--shadow-ring);
     font-size: 13px;
     font-family: var(--font-sans);
-    color: var(--text-primary);
     transition: box-shadow var(--transition-fast);
+    box-sizing: border-box;
 }
 .field-input:focus { outline: none; box-shadow: var(--shadow-ring); }
 
 .field-select {
-    width: 100%;
-    height: var(--ctrl-height-md);
-    padding: 0 28px 0 10px;
+    height: 34px;
+    padding: 0 8px;
     border: none;
     border-radius: var(--radius-sm);
     background: var(--bg-input);
+    color: var(--text-primary);
     box-shadow: var(--shadow-ring);
     font-size: 13px;
     font-family: var(--font-sans);
-    color: var(--text-primary);
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%238a8a8a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    transition: box-shadow var(--transition-fast);
+    cursor: pointer;
 }
-.field-select:focus { outline: none; box-shadow: var(--shadow-ring); }
+.field-select:focus { outline: none; }
 
 /* ── Actions ── */
 .detail-actions {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
-    align-items: center;
-}
-/* 删除按鈕推到最右，与其他操作按鈕明确隔离 */
-.detail-actions .detail-btn.danger {
-    margin-left: auto;
 }
 .detail-btn {
-    height: var(--ctrl-height-md);
-    padding: 0 14px;
+    height: 32px;
+    padding: 0 12px;
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     background: var(--bg-surface);
     color: var(--text-primary);
     box-shadow: var(--shadow-light-ring);
-    font-size: var(--ctrl-font-md);
+    font-size: 12px;
     font-family: var(--font-sans);
     font-weight: 500;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     white-space: nowrap;
-    transition: background var(--transition-fast), box-shadow var(--transition-fast);
+    transition: background var(--transition-fast);
 }
 .detail-btn:hover { background: var(--bg-secondary); }
 .detail-btn.primary { background: var(--ds-gray-1000); color: var(--ds-white); box-shadow: none; }
 .detail-btn.primary:hover { background: var(--ds-black); }
-/* 删除按鈕：红色轮廓 + 红色文字，警示感更强 */
-.detail-btn.danger  {
-    background: var(--bg-surface);
-    color: var(--ds-red-dark);
-    box-shadow: 0 0 0 1px var(--ds-red-dark);
-}
-.detail-btn.danger:hover  { background: #fff1f0; }
+.detail-btn.danger  { background: var(--ds-red); color: var(--ds-white); box-shadow: none; }
+.detail-btn.danger:hover  { background: var(--ds-red-dark); }
 .detail-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.detail-btn-sm { height: var(--ctrl-height-sm); padding: 0 10px; font-size: var(--ctrl-font-sm); }
+.detail-btn-sm { height: 28px; padding: 0 10px; font-size: 11px; }
 
-.spin-icon { animation: spin 0.7s linear infinite; }
+/* Spin animation */
+.spin-icon { animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Sections ── */
@@ -531,78 +526,95 @@ async function removeTag(tag) {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding-top: 16px;
-    box-shadow: inset 0 1px 0 0 var(--border-color);
 }
 .section-title {
     font-size: 12px;
     font-weight: 600;
     color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    margin: 0;
 }
 .section-toggle {
-    background: transparent;
+    background: none;
     border: none;
     cursor: pointer;
+    padding: 0;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0;
-    width: 100%;
+    gap: 6px;
+    color: var(--text-primary);
 }
 
-/* Tags */
-.tag-list { display: flex; gap: 6px; flex-wrap: wrap; }
+/* ── Tags ── */
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
 .tag-item {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 2px 8px;
-    background: var(--bg-tertiary);
+    padding: 3px 8px;
+    background: var(--ds-gray-100);
     border-radius: 9999px;
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--ds-gray-700);
 }
 .tag-remove {
-    background: transparent;
+    background: none;
     border: none;
     cursor: pointer;
-    color: var(--text-tertiary);
+    padding: 0;
     display: flex;
     align-items: center;
-    padding: 1px;
-    border-radius: 2px;
+    color: var(--ds-gray-400);
     transition: color var(--transition-fast);
 }
 .tag-remove:hover { color: var(--ds-red); }
-.tag-add { display: flex; gap: 6px; align-items: center; }
 .tag-empty-hint {
     font-size: 12px;
     color: var(--text-tertiary);
-    font-style: italic;
+    margin: 0;
+}
+.tag-add {
+    display: flex;
+    gap: 6px;
+    align-items: center;
 }
 
-/* Balance history */
-.balance-history { max-height: 180px; overflow-y: auto; }
+/* ── Balance history ── */
+.balance-history {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 160px;
+    overflow-y: auto;
+}
 .balance-snap {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0;
-    box-shadow: inset 0 -1px 0 0 var(--border-color);
     font-size: 12px;
+    padding: 4px 0;
+    box-shadow: inset 0 -1px 0 0 var(--border-color);
 }
-.snap-time    { color: var(--text-secondary); }
-.snap-balance { font-weight: 600; font-family: var(--font-mono); color: var(--text-primary); }
+.snap-time { color: var(--text-tertiary); }
+.snap-balance { font-family: var(--font-mono); color: var(--text-primary); }
 
-/* Model list */
-.model-list { max-height: 180px; overflow-y: auto; }
-.model-item {
-    padding: 5px 0;
-    box-shadow: inset 0 -1px 0 0 var(--border-color);
-    font-size: 12px;
-    font-family: var(--font-mono);
-    color: var(--text-secondary);
+/* ── Models list ── */
+.model-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 200px;
+    overflow-y: auto;
 }
-.model-item:last-child { box-shadow: none; }
+.model-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    transition: background var(--transition-fast);
+}
+.model-item:hover { background: var(--bg-secondary); }
 </style>

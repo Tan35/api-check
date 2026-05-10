@@ -1,8 +1,8 @@
 <template>
     <div class="model-selector-content">
         <div class="model-selector-header">
-            <h3 id="regionSelectorTitle">检测设置</h3>
-            <button class="model-selector-close" @click="uiStore.closeModal()" aria-label="关闭">
+            <h3 id="regionSelectorTitle">{{ t('settingsTitle') }}</h3>
+            <button class="model-selector-close" @click="uiStore.closeModal()" :aria-label="t('btnClose')">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75">
                     <path d="M3 3l10 10M13 3L3 13"/>
                 </svg>
@@ -10,7 +10,7 @@
         </div>
         <div class="model-selector-body">
             <div class="settings-section">
-                <h4 class="settings-title">区域</h4>
+                <h4 class="settings-title">{{ t('settingsSectionRegion') }}</h4>
                 <ul class="model-list region-list">
                     <li v-for="(label, key) in configStore.regions" :key="key"
                         :class="{ selected: key === configStore.currentRegion }" @click="configStore.selectRegion(key)">
@@ -19,33 +19,33 @@
                 </ul>
             </div>
             <div class="settings-section">
-                <h4 class="settings-title">验证参数</h4>
+                <h4 class="settings-title">{{ t('settingsSectionParams') }}</h4>
                 <div class="advanced-settings-grid">
                     <div class="config-item">
-                        <label for="threshold">最低余额</label>
+                        <label for="threshold">{{ t('labelThreshold') }}</label>
                         <input id="threshold" type="number" v-model.number="configStore.threshold" min="0" step="0.1">
                     </div>
                     <div class="config-item">
                         <div class="label-with-hint">
-                            <label for="concurrency">并发数</label>
-                            <span class="config-hint">(1-20)</span>
+                            <label for="concurrency">{{ t('labelConcurrency') }}</label>
+                            <span class="config-hint">{{ t('hintConcurrency') }}</span>
                         </div>
                         <input id="concurrency" type="number" :value="configStore.concurrency"
                             @input="handleConcurrencyInput" min="1" max="20">
                     </div>
 
                     <div class="config-item">
-                        <label for="max-tokens">最大 Token 数</label>
+                        <label for="max-tokens">{{ t('labelMaxTokens') }}</label>
                         <input id="max-tokens" type="number" v-model.number="configStore.validationMaxTokens" min="1">
                     </div>
                     
                     <div class="config-item">
-                        <label for="max-output-tokens">最大输出 Token</label>
+                        <label for="max-output-tokens">{{ t('labelMaxOutputTokens') }}</label>
                         <input id="max-output-tokens" type="number" v-model.number="configStore.validationMaxOutputTokens" min="1">
                     </div>
 
                     <div class="config-item prompt-item">
-                        <label for="prompt">提示词</label>
+                        <label for="prompt">{{ t('labelPrompt') }}</label>
                         <input id="prompt" type="text" v-model="configStore.validationPrompt">
                     </div>
                 </div>
@@ -58,6 +58,7 @@
 import { onBeforeUnmount } from 'vue';
 import { useUiStore } from '@/stores/ui';
 import { useConfigStore } from '@/stores/config';
+import { t } from '@/i18n';
 const uiStore = useUiStore();
 const configStore = useConfigStore();
 

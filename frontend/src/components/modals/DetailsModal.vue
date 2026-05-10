@@ -2,7 +2,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <div class="modal-icon info">i</div>
-            <h3 class="modal-title">接口返回详情</h3>
+            <h3 class="modal-title">{{ t('detailsTitle') }}</h3>
         </div>
         <div class="modal-message raw-data">
             <div v-for="(value, key) in uiStore.modalData" :key="key">
@@ -11,14 +11,15 @@
             </div>
         </div>
         <div class="modal-actions">
-            <button class="modal-btn copy-btn" @click="copyDetails">复制详情</button>
-            <button class="modal-btn primary" @click="uiStore.closeModal()">确定</button>
+            <button class="modal-btn copy-btn" @click="copyDetails">{{ t('btnCopyDetails') }}</button>
+            <button class="modal-btn primary" @click="uiStore.closeModal()">{{ t('btnConfirm') }}</button>
         </div>
     </div>
 </template>
 
 <script setup>
 import { useUiStore } from '@/stores/ui';
+import { t } from '@/i18n';
 const uiStore = useUiStore();
 
 /**
@@ -50,8 +51,8 @@ const copyDetails = () => {
         textToCopy += `${key.toUpperCase()}:\n${formatValue(value)}`;
     }
 
-    navigator.clipboard.writeText(textToCopy.trim()).then(() => {
-        uiStore.showToast("详情已复制到剪贴板", "success");
+        navigator.clipboard.writeText(textToCopy.trim()).then(() => {
+        uiStore.showToast(t('toastDetailsCopied'), 'success');
     });
 };
 </script>

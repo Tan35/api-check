@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { t } from '@/i18n';
 
 /** @type {number} Toast ID 自增计数器 */
 let toastIdCounter = 0;
@@ -84,7 +85,12 @@ export const useUiStore = defineStore('ui', {
          */
         showToast(message, type = 'success', duration = 3500) {
             const icons = { success: "✓", error: "×", warning: "!", info: "i" };
-            const titles = { success: "成功", error: "错误", warning: "警告", info: "提示" };
+            const titles = {
+                success: t('toastSuccess'),
+                error:   t('toastError'),
+                warning: t('toastWarning'),
+                info:    t('toastInfo'),
+            };
             const id = ++toastIdCounter;
 
             const toast = { id, message, type, icon: icons[type], title: titles[type], show: false };

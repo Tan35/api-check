@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref, reactive } from 'vue';
 import { PROVIDERS, REGIONS } from '@/api';
 import { useUiStore } from './ui';
+import { t } from '@/i18n';
 
 /**
  * @description config Store 用于管理应用程序的全局配置，包括提供商、区域、输入 Key 等。
@@ -64,7 +65,7 @@ export const useConfigStore = defineStore('config', () => {
     function selectRegion(key) {
         currentRegion.value = key;
         const uiStore = useUiStore();
-        uiStore.showToast(`检测区域已切换至: ${regions[key]}`, "info");
+        uiStore.showToast(`${t('settingsSectionRegion')}: ${regions[key]}`, 'info');
     }
 
     /**
@@ -73,7 +74,7 @@ export const useConfigStore = defineStore('config', () => {
     function clearTokens() {
         tokensInput.value = '';
         const uiStore = useUiStore();
-        uiStore.showToast("输入内容已清除", "info", 2000);
+        uiStore.showToast(t('btnClearInput'), 'info', 2000);
     }
 
     /**

@@ -2,7 +2,7 @@
     <div class="results-panel t-panel-slide" :class="{ active: resultsStore.activeTab === category }"
         :data-open="resultsStore.activeTab === category ? 'true' : 'false'">
         <div class="panel-header" v-show="results.length > 0">
-            <span class="results-title">{{ title }} KEY</span>
+            <span class="results-title">{{ tabName }} KEY</span>
             <div class="panel-actions">
                 <div class="custom-select" v-if="sortable" :class="{ open: uiStore.sortDropdownOpen[category] }"
                     ref="sortSelectWrapper">
@@ -10,12 +10,12 @@
                         role="combobox"
                         aria-haspopup="listbox"
                         :aria-expanded="uiStore.sortDropdownOpen[category]"
-                        aria-label="排序方式">
+                        :aria-label="t('ariaSort')">
                         <span>{{ currentSortOption.text }}</span>
                     </div>
                     <div class="custom-options t-dropdown" data-origin="top-right"
                         :class="{ 'is-open': uiStore.sortDropdownOpen[category], 'is-closing': sortDropdownClosing }"
-                        role="listbox" aria-label="排序选项">
+                        role="listbox" :aria-label="t('ariaSortOptions')">
                         <span v-for="option in sortOptions" :key="option.value" class="custom-option"
                             :class="{ selected: option.value === resultsStore.sortState[category] }"
                             @click="setSort(option.value)"
@@ -23,12 +23,12 @@
                             :aria-selected="option.value === resultsStore.sortState[category]">{{ option.text }}</span>
                     </div>
                 </div>
-                <button class="copy-btn" @click="copyTokens(category, title)">复制</button>
+                <button class="copy-btn" @click="copyTokens(category, tabName)">{{ t('btnCopy') }}</button>
             </div>
         </div>
-        <input type="search" class="search-input" v-model="searchTerm" placeholder="在结果中搜索..."
+        <input type="search" class="search-input" v-model="searchTerm" :placeholder="t('placeholderSearch')"
             v-show="results.length > 0"
-            aria-label="在结果中搜索">
+            :aria-label="t('placeholderSearch')">
         <div class="results-content">
             <DynamicScroller
                 v-if="sortedResultsForCategory && sortedResultsForCategory.length > 0"
@@ -43,18 +43,18 @@
                         :item="result"
                         :active="active"
                         :size-dependencies="[
-                            result.displayText, // 依赖项：仅当 displayText 变化时才重新计算高度，提升性能
+                            result.displayText,
                         ]"
                         :data-index="index"
                     >
                         <div class="result-line" :data-token="result.token">
                             <span class="key-text" v-html="result.displayText"></span>
                             <div class="result-line-actions">
-                                <button v-if="result.details" class="view-details-btn" title="查看接口返回详情"
-                                    @click="uiStore.openModal('details', result.details)">详情</button>
-                                <button v-if="category === 'valid'" class="get-models-btn" title="获取可用模型"
-                                    @click="handleFetchModelsForToken(result.token, $event)">模型</button>
-                                <button class="copy-key-btn" title="复制此 KEY" @click="copySingleToken(result.token, $event)">复制</button>
+                                <button v-if="result.details" class="view-details-btn"
+                                    @click="uiStore.openModal('details', result.details)">{{ t('btnDetails') }}</button>
+                                <button v-if="category === 'valid'" class="get-models-btn"
+                                    @click="handleFetchModelsForToken(result.token, $event)">{{ t('btnModels') }}</button>
+                                <button class="copy-key-btn" @click="copySingleToken(result.token, $event)">{{ t('btnCopy') }}</button>
                             </div>
                         </div>
                     </DynamicScrollerItem>
@@ -67,7 +67,7 @@
                     <path d="M12 8V6a2 2 0 012-2h8a2 2 0 012 2v2"/>
                     <path d="M12 18h12M12 23h8"/>
                 </svg>
-                <p>检测结果将显示在这里</p>
+                <p>{{ t('emptyState') }}</p>
             </div>
         </div>
     </div>
@@ -75,12 +75,12 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
-// 导入支持动态高度的虚拟滚动组件
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller';
 import { useResultsStore } from '@/stores/results';
 import { useUiStore } from '@/stores/ui';
 import { useConfigStore } from '@/stores/config';
 import { fetchModels } from '@/api';
+import { t, currentLang } from '@/i18n';
 
 const props = defineProps({
     category: { type: String, required: true },
@@ -92,25 +92,33 @@ const resultsStore = useResultsStore();
 const uiStore = useUiStore();
 const configStore = useConfigStore();
 
-/** @type {Ref<HTMLElement|null>} 排序选择器包装元素的引用。*/
+/** 标签 ID 到 i18n key 的映射 */
+const TAB_I18N_KEYS = {
+    valid:       'tabValid',
+    lowBalance:  'tabLowBalance',
+    zeroBalance: 'tabZeroBalance',
+    rateLimit:   'tabRateLimit',
+    invalid:     'tabInvalid',
+    duplicate:   'tabDuplicate',
+};
+
+/** 当前面板的翻译名称（响应式，随语言切换更新） */
+const tabName = computed(() => {
+    void currentLang.value;
+    return t(TAB_I18N_KEYS[props.category] || props.category);
+});
+
 const sortSelectWrapper = ref(null);
-/** @type {Ref<InstanceType<typeof DynamicScroller>|null>} 虚拟滚动组件的引用。*/
 const scrollerRef = ref(null);
 const sortDropdownClosing = ref(false);
 let sortDropdownCloseTimer = null;
-/** @type {ComputedRef<Array<object>>} 当前类别下的结果列表。*/
 const results = computed(() => resultsStore.results[props.category]);
 
-/**
- * @description 当前类别下已排序的结果列表。
- * 直接在组件中计算，确保响应式依赖正确追踪。
- */
 const sortedResultsForCategory = computed(() => {
     const data = resultsStore.results[props.category] || [];
     const searchTerm = resultsStore.searchTerms[props.category]?.toLowerCase() || '';
     const sortKey = resultsStore.sortState[props.category];
 
-    // 1. 过滤
     let filtered;
     if (!searchTerm) {
         filtered = data;
@@ -121,34 +129,34 @@ const sortedResultsForCategory = computed(() => {
         );
     }
 
-    // 2. 排序
     if (!sortKey || sortKey === 'default') {
         return [...filtered].sort((a, b) => a.order - b.order);
     }
 
-    // 余额排序
     return [...filtered].sort((a, b) => {
         const balanceA = a.balance ?? -Infinity;
         const balanceB = b.balance ?? -Infinity;
         return sortKey === 'balance-desc' ? balanceB - balanceA : balanceA - balanceB;
     });
 });
-/**
- * @description 计算属性，用于双向绑定搜索关键词。
- */
+
 const searchTerm = computed({
     get: () => resultsStore.searchTerms[props.category],
     set: (value) => { resultsStore.searchTerms[props.category] = value; }
 });
-/** @type {Array<object>} 排序选项的配置。*/
-const sortOptions = [
-    { value: 'default', text: '默认排序' },
-    { value: 'balance-desc', text: '余额高' },
-    { value: 'balance-asc', text: '余额低' },
-];
-/** @type {ComputedRef<object>} 当前选中的排序选项。*/
+
+/** 排序选项（响应式，随语言切换更新） */
+const sortOptions = computed(() => {
+    void currentLang.value;
+    return [
+        { value: 'default',      text: t('sortDefault') },
+        { value: 'balance-desc', text: t('sortBalanceDesc') },
+        { value: 'balance-asc',  text: t('sortBalanceAsc') },
+    ];
+});
+
 const currentSortOption = computed(() => {
-    return sortOptions.find(opt => opt.value === resultsStore.sortState[props.category]) || sortOptions[0];
+    return sortOptions.value.find(opt => opt.value === resultsStore.sortState[props.category]) || sortOptions.value[0];
 });
 
 const getDropdownCloseMs = () => {
@@ -187,9 +195,6 @@ const closeSortDropdown = () => {
     }, getDropdownCloseMs());
 };
 
-/**
- * @description 切换排序下拉菜单的显示状态。
- */
 const toggleSortDropdown = () => {
     if (uiStore.sortDropdownOpen[props.category]) {
         closeSortDropdown();
@@ -198,72 +203,49 @@ const toggleSortDropdown = () => {
     }
 };
 
-/**
- * @description 设置当前类别的排序方式。
- * @param {string} value - 排序值。
- */
 const setSort = (value) => {
     resultsStore.setSort(props.category, value);
     closeSortDropdown();
 };
 
-/**
- * @description 点击外部时关闭排序下拉菜单。
- * @param {Event} e - 点击事件对象。
- */
 const closeDropdown = (e) => {
     if (sortSelectWrapper.value && !sortSelectWrapper.value.contains(e.target)) {
         closeSortDropdown();
     }
 };
 
-/**
- * @description 复制当前类别下所有 Key 到剪贴板。
- * @param {string} category - 结果类别。
- * @param {string} title - 类别标题。
- */
 const copyTokens = (category, title) => {
     const tokensToCopy = sortedResultsForCategory.value.map(r => r.token);
     if (tokensToCopy.length === 0) {
-        uiStore.showToast(`没有可复制的 ${title}`, "warning");
+        uiStore.showToast(t('toastNoCopy', { title }), "warning");
         return;
     }
     navigator.clipboard.writeText(tokensToCopy.join("\n")).then(() => {
-        uiStore.showToast(`${title} 已复制到剪贴板 (共 ${tokensToCopy.length} 个)`, "success");
+        uiStore.showToast(t('toastCopied', { title, count: tokensToCopy.length }), "success");
     }).catch((err) => {
-        console.error('复制失败:', err);
-        uiStore.showToast("复制失败，请检查浏览器权限", "error");
+        console.error('Copy failed:', err);
+        uiStore.showToast(t('toastCopyFailed'), "error");
     });
 };
 
-/**
- * @description 复制单个 Key 到剪贴板，并提供视觉反馈。
- * @param {string} token - 要复制的 Key。
- * @param {Event} event - 点击事件对象。
- */
 const copySingleToken = (token, event) => {
     const btn = event.target.closest('button');
     const originalContent = btn.innerHTML;
     navigator.clipboard.writeText(token).then(() => {
-        btn.textContent = '已复制';
+        btn.textContent = t('btnCopied');
         setTimeout(() => { btn.innerHTML = originalContent; }, 1500);
     }).catch((err) => {
-        console.error('复制失败:', err);
-        btn.textContent = '失败';
+        console.error('Copy failed:', err);
+        btn.textContent = t('btnCopyFailed');
         setTimeout(() => { btn.innerHTML = originalContent; }, 1500);
     });
 };
 
-/**
- * @description 为单个 Key 获取可用模型列表。
- * @param {string} token - 要获取模型的 Key。
- * @param {Event} event - 点击事件对象。
- */
 const handleFetchModelsForToken = async (token, event) => {
     const button = event.target.closest('button');
     const originalContent = button.innerHTML;
-    button.innerHTML = '<span class="loader"></span>'; // 显示加载动画
-    button.disabled = true; // 禁用按钮
+    button.innerHTML = '<span class="loader"></span>';
+    button.disabled = true;
     try {
         const providerConfigForFetch = {
             currentProvider: configStore.currentProvider,
@@ -276,26 +258,20 @@ const handleFetchModelsForToken = async (token, event) => {
         if (models && models.length > 0) {
             uiStore.openModal('modelSelector', { models });
         } else {
-            uiStore.showToast("未能获取到模型列表", "warning");
+            uiStore.showToast(t('toastNoModelList'), "warning");
         }
     } catch (error) {
-        uiStore.showToast(`获取模型失败: ${error.message}`, "error");
+        uiStore.showToast(t('toastFetchModelsFailed', { msg: error.message }), "error");
     } finally {
-        button.innerHTML = originalContent; // 恢复按钮文本
-        button.disabled = false; // 启用按钮
+        button.innerHTML = originalContent;
+        button.disabled = false;
     }
 };
 
-/**
- * @description 组件挂载时添加点击事件监听器。
- */
 onMounted(() => {
     document.addEventListener('click', closeDropdown);
 });
 
-/**
- * @description 组件卸载前移除点击事件监听器。
- */
 onBeforeUnmount(() => {
     document.removeEventListener('click', closeDropdown);
     if (sortDropdownCloseTimer) {
@@ -304,16 +280,11 @@ onBeforeUnmount(() => {
     }
 });
 
-/**
- * @description 监听面板激活状态变化。
- * 当面板从隐藏变为显示时，刷新虚拟滚动组件以修复尺寸计算问题。
- */
 watch(
     () => resultsStore.activeTab,
     (newTab) => {
         if (newTab === props.category && scrollerRef.value) {
             nextTick(() => {
-                // 强制刷新虚拟滚动组件
                 scrollerRef.value.forceUpdate && scrollerRef.value.forceUpdate();
             });
         }
@@ -415,7 +386,6 @@ watch(
         line-height: 1.4;
     }
 
-    /* 深度选择器，用于样式化 v-html 渲染的内容 */
     :deep(.key-text .message) {
         color: var(--text-secondary);
         margin-left: 4px;

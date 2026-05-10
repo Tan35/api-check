@@ -2,18 +2,19 @@
     <div class="modal-content">
         <div class="modal-header">
             <div class="modal-icon info">i</div>
-            <h3 class="modal-title">请确认</h3>
+            <h3 class="modal-title">{{ t('confirmTitle') }}</h3>
         </div>
         <div class="modal-message">{{ uiStore.modalData.message }}</div>
         <div class="modal-actions confirmation">
-            <button class="modal-btn secondary" @click="uiStore.handleConfirmation(false)">取消</button>
-            <button class="modal-btn primary" @click="uiStore.handleConfirmation(true)">确定</button>
+            <button class="modal-btn secondary" @click="uiStore.handleConfirmation(false)">{{ t('btnConfirmNo') }}</button>
+            <button class="modal-btn primary" @click="uiStore.handleConfirmation(true)">{{ t('btnConfirmYes') }}</button>
         </div>
     </div>
 </template>
 
 <script setup>
 import { useUiStore } from '@/stores/ui';
+import { t } from '@/i18n';
 const uiStore = useUiStore();
 </script>
 

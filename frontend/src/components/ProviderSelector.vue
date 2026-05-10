@@ -1,13 +1,13 @@
 <template>
     <div class="provider-header">
-        <label for="providerSelect">Provider</label>
+        <label for="providerSelect">{{ t('labelProvider') }}</label>
         <div class="header-actions">
-            <label class="switch-label" title="启用流式检测 (Stream Mode)">
-                <span class="switch-title">Stream</span>
+            <label class="switch-label" :title="t('titleStream')">
+                <span class="switch-title">{{ t('labelStream') }}</span>
                 <input type="checkbox" v-model="currentConfig.enableStream" :disabled="checkerStore.isChecking">
                 <span class="slider"></span>
             </label>
-            <button @click="uiStore.openModal('regionSelector')" class="settings-btn" title="检测设置"
+            <button @click="uiStore.openModal('regionSelector')" class="settings-btn" :title="t('titleSettings')"
                 :disabled="checkerStore.isChecking">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
@@ -34,7 +34,7 @@
                 v-model="providerSearchTerm"
                 :placeholder="configStore.providers[configStore.currentProvider].label"
                 @click.stop
-                aria-label="搜索提供商"
+                :aria-label="t('ariaSearchProvider')"
             />
             <span v-else id="providerDisplay">{{ configStore.providers[configStore.currentProvider].label }}</span>
             <span class="trigger-chevron"></span>
@@ -45,7 +45,7 @@
             :class="{ 'is-open': uiStore.providerDropdownOpen, 'is-closing': dropdownClosing }"
             ref="dropdownContainer"
             role="listbox"
-            aria-label="API 提供商列表">
+            :aria-label="t('ariaProviderList')">
             <div v-for="(provider, key) in filteredProviders" :key="key" class="provider-option"
                 :class="{ selected: key === configStore.currentProvider, highlighted: providerKeys[highlightedIndex] === key }" @mousedown.prevent="handleProviderSelect(key)"
                 role="option"
@@ -62,6 +62,7 @@ import { useConfigStore } from '@/stores/config';
 import { useUiStore } from '@/stores/ui';
 import { useResultsStore } from '@/stores/results';
 import { useCheckerStore } from '@/stores/checker';
+import { t } from '@/i18n';
 
 const configStore = useConfigStore();
 const uiStore = useUiStore();

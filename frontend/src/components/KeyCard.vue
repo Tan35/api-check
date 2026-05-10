@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useKeyManagerStore } from '@/stores/keyManager';
 import { useUiStore } from '@/stores/ui';
+import { t, currentLang } from '@/i18n';
 
 const props = defineProps({
     keyRecord: { type: Object, required: true },
@@ -13,9 +14,9 @@ const keyManager = useKeyManagerStore();
 const uiStore    = useUiStore();
 
 const maskedToken = computed(() => {
-    const t = props.keyRecord.token;
-    if (t.length <= 8) return '****';
-    return t.substring(0, 4) + '****' + t.substring(t.length - 4);
+    const tok = props.keyRecord.token;
+    if (tok.length <= 8) return '****';
+    return tok.substring(0, 4) + '****' + tok.substring(tok.length - 4);
 });
 
 const statusClass = computed(() => ({
@@ -25,9 +26,15 @@ const statusClass = computed(() => ({
     unknown:   'status-unknown',
 }[props.keyRecord.status] || 'status-unknown'));
 
-const statusText = computed(() => ({
-    valid: '有效', invalid: '无效', rateLimit: '限流', unknown: '未知',
-}[props.keyRecord.status] || '未知'));
+const statusText = computed(() => {
+    void currentLang.value;
+    return ({
+        valid:     t('statusValid'),
+        invalid:   t('statusInvalid'),
+        rateLimit: t('statusRateLimit'),
+        unknown:   t('statusUnknown'),
+    }[props.keyRecord.status] || t('statusUnknown'));
+});
 
 const balanceText = computed(() => {
     const b = props.keyRecord.balance;
@@ -47,7 +54,9 @@ const providerLabel = computed(() => {
 
 function formatDate(iso) {
     if (!iso) return '-';
-    return new Date(iso).toLocaleString('zh-CN', {
+    const lang = currentLang.value;
+    const locale = lang === 'en' ? 'en-US' : lang === 'zh-CN' ? 'zh-CN' : 'zh-TW';
+    return new Date(iso).toLocaleString(locale, {
         month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
     });
 }
@@ -55,14 +64,14 @@ function formatDate(iso) {
 async function copyToken() {
     try {
         await navigator.clipboard.writeText(props.keyRecord.token);
-        uiStore.showToast('已复制到剪贴板', 'success', 1500);
+        uiStore.showToast(t('toastKcCopied'), 'success', 1500);
     } catch {
-        uiStore.showToast('复制失败', 'error');
+        uiStore.showToast(t('toastKcCopyFailed'), 'error');
     }
 }
 
 async function confirmDelete() {
-    const confirmed = await uiStore.showConfirmation(`确定删除这个 Key？\n${maskedToken.value}`);
+    const confirmed = await uiStore.showConfirmation(`${t('kdConfirmDelete')}\n${maskedToken.value}`);
     if (confirmed) emit('delete', props.keyRecord.id);
 }
 </script>
@@ -75,7 +84,7 @@ async function confirmDelete() {
             <span v-if="keyRecord.alias" class="alias-text">{{ keyRecord.alias }}</span>
         </div>
 
-        <div class="key-card-token" @click.stop="copyToken" title="点击复制">
+        <div class="key-card-token" @click.stop="copyToken" :title="t('kdCopyHint')">
             <svg class="token-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
                 <rect x="1" y="3" width="10" height="7" rx="1.5"/>
                 <path d="M4 3V2a2 2 0 014 0v1"/>
@@ -90,11 +99,11 @@ async function confirmDelete() {
         <div class="key-card-footer">
             <div class="key-card-meta">
                 <span v-if="balanceText" class="meta-balance">{{ balanceText }}</span>
-                <span v-if="keyRecord.models.length > 0" class="meta-chip">{{ keyRecord.models.length }} 模型</span>
-                <span class="meta-date">{{ keyRecord.lastChecked ? formatDate(keyRecord.lastChecked) : '未检测' }}</span>
+                <span v-if="keyRecord.models.length > 0" class="meta-chip">{{ t('kcModels', { count: keyRecord.models.length }) }}</span>
+                <span class="meta-date">{{ keyRecord.lastChecked ? formatDate(keyRecord.lastChecked) : t('kcNotChecked') }}</span>
             </div>
             <div class="key-card-actions" @click.stop>
-                <button @click="confirmDelete" class="action-btn" title="删除">
+                <button @click="confirmDelete" class="action-btn" :title="t('btnDelete')">
                     <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M2.5 4h9M5 4V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V4M11 4v7.5a1 1 0 01-1 1H4a1 1 0 01-1-1V4"/>
                     </svg>

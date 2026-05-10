@@ -1,13 +1,13 @@
 <template>
     <div class="input-header">
-        <label for="tokens">API Keys</label>
+        <label for="tokens">{{ t('labelApiKeys') }}</label>
         <div class="input-header-actions">
             <button type="button" class="import-btn" @click="triggerFileInput" :disabled="checkerStore.isChecking || isImporting">
                 <span v-if="isImporting" class="import-spinner"></span>
-                {{ isImporting ? '导入中' : '导入文件' }}
+                {{ isImporting ? t('btnImporting') : t('btnImportFile') }}
             </button>
             <button type="button" class="clear-btn" @click="configStore.clearTokens"
-                :disabled="checkerStore.isChecking || isImporting">清空输入</button>
+                :disabled="checkerStore.isChecking || isImporting">{{ t('btnClearInput') }}</button>
         </div>
         <input type="file" ref="fileInput" @change="handleFileImport" accept=".txt" style="display: none;">
     </div>
@@ -25,7 +25,7 @@
         @dragleave.prevent="isDragOver = false"
         @drop.prevent="handleFileDrop"
         :class="{ 'drag-over': isDragOver, 'importing': isImporting }"
-        placeholder="粘贴 API Key，或拖入 .txt 文件。多个 Key 可用逗号、分号或换行分隔。" :disabled="checkerStore.isChecking || isImporting"></textarea>
+        :placeholder="t('placeholderKeys')" :disabled="checkerStore.isChecking || isImporting"></textarea>
 </template>
 
 <script setup>
@@ -34,6 +34,7 @@ import { useConfigStore } from '@/stores/config';
 import { useUiStore } from '@/stores/ui';
 import { useCheckerStore } from '@/stores/checker';
 import { MAX_KEYS_LIMIT, MAX_FILE_SIZE } from '@/constants';
+import { t } from '@/i18n';
 
 const configStore = useConfigStore();
 const uiStore = useUiStore();
@@ -71,15 +72,14 @@ const triggerFileInput = () => {
 const handleFileImport = (event) => {
     const file = event.target.files[0];
     if (file) {
-        // 检查文件类型
         if (!file.name.endsWith('.txt') && file.type !== 'text/plain') {
-            uiStore.showToast("仅支持 .txt 文本文件", "warning");
+            uiStore.showToast(t('toastOnlyTxt'), "warning");
             event.target.value = '';
             return;
         }
         readFile(file);
     }
-    event.target.value = ''; // 重置文件输入框
+    event.target.value = '';
 };
 
 /**
@@ -90,9 +90,8 @@ const handleFileDrop = (event) => {
     isDragOver.value = false;
     const file = event.dataTransfer.files[0];
     if (file) {
-        // 检查文件类型
         if (!file.name.endsWith('.txt') && file.type !== 'text/plain') {
-            uiStore.showToast("仅支持 .txt 文本文件", "warning");
+            uiStore.showToast(t('toastOnlyTxt'), "warning");
             return;
         }
         readFile(file);
@@ -112,36 +111,35 @@ const formatFileSize = (bytes) => {
 
 /**
  * @description 读取文件内容并更新 tokensInput。
- * 支持大文件分片读取，显示进度。
  * @param {File} file - 要读取的文件对象。
  */
 const readFile = (file) => {
-    // 文件大小限制检查
     if (file.size > MAX_FILE_SIZE) {
         const maxSizeMB = (MAX_FILE_SIZE / (1024 * 1024)).toFixed(0);
-        uiStore.showToast(`文件过大（最大 ${maxSizeMB}MB），当前 ${formatFileSize(file.size)}`, "error");
+        uiStore.showToast(t('toastFileTooBig', { max: maxSizeMB, size: formatFileSize(file.size) }), "error");
         return;
     }
 
     isImporting.value = true;
     importProgress.value = 0;
-    importProgressText.value = `正在读取 ${file.name} (${formatFileSize(file.size)})...`;
+    importProgressText.value = t('importProgressReading', { name: file.name, size: formatFileSize(file.size) });
 
     const reader = new FileReader();
 
     reader.onprogress = (event) => {
         if (event.lengthComputable) {
-            const percent = Math.round((event.loaded / event.total) * 50); // 读取占 50%
+            const percent = Math.round((event.loaded / event.total) * 50);
             importProgress.value = percent;
-            importProgressText.value = `正在读取... ${formatFileSize(event.loaded)} / ${formatFileSize(event.total)}`;
+            importProgressText.value = t('importProgressReadingProgress', {
+                loaded: formatFileSize(event.loaded),
+                total: formatFileSize(event.total),
+            });
         }
     };
 
     reader.onload = (e) => {
         importProgress.value = 50;
-        importProgressText.value = '正在解析内容...';
-
-        // 使用 setTimeout 让 UI 有机会更新
+        importProgressText.value = t('importProgressParsing');
         setTimeout(() => {
             processFileContent(e.target.result, file.name);
         }, 50);
@@ -150,7 +148,7 @@ const readFile = (file) => {
     reader.onerror = () => {
         isImporting.value = false;
         importProgress.value = 0;
-        uiStore.showToast("文件读取失败", "error");
+        uiStore.showToast(t('toastFileReadFailed'), "error");
     };
 
     reader.readAsText(file);
@@ -163,10 +161,9 @@ const readFile = (file) => {
  */
 const processFileContent = (content, fileName) => {
     try {
-        importProgressText.value = '正在清洗数据...';
+        importProgressText.value = t('importProgressCleaning');
         importProgress.value = 60;
 
-        // 分批处理大文件，避免阻塞 UI
         const lines = content.split(/[\n\r]+/);
         const totalLines = lines.length;
         const cleanLines = [];
@@ -184,15 +181,16 @@ const processFileContent = (content, fileName) => {
             }
 
             currentIndex = endIndex;
-            const parseProgress = Math.round((currentIndex / totalLines) * 30) + 60; // 解析占 60-90%
+            const parseProgress = Math.round((currentIndex / totalLines) * 30) + 60;
             importProgress.value = parseProgress;
-            importProgressText.value = `正在解析... ${currentIndex.toLocaleString()} / ${totalLines.toLocaleString()} 行`;
+            importProgressText.value = t('importProgressParsingLine', {
+                cur: currentIndex.toLocaleString(),
+                total: totalLines.toLocaleString(),
+            });
 
             if (currentIndex < totalLines) {
-                // 还有更多行要处理
                 setTimeout(processBatch, 0);
             } else {
-                // 处理完成
                 finishImport(cleanLines, fileName);
             }
         };
@@ -202,7 +200,7 @@ const processFileContent = (content, fileName) => {
     } catch (error) {
         isImporting.value = false;
         importProgress.value = 0;
-        uiStore.showToast("文件解析失败: " + error.message, "error");
+        uiStore.showToast(t('toastFileParseFailed', { msg: error.message }), "error");
     }
 };
 
@@ -213,49 +211,45 @@ const processFileContent = (content, fileName) => {
  */
 const finishImport = (cleanLines, fileName) => {
     importProgress.value = 95;
-    importProgressText.value = '正在验证...';
+    importProgressText.value = t('importProgressValidating');
 
     const keyCount = cleanLines.length;
 
     if (keyCount === 0) {
         isImporting.value = false;
         importProgress.value = 0;
-        uiStore.showToast("文件内容为空", "warning");
+        uiStore.showToast(t('toastFileEmpty'), "warning");
         return;
     }
 
-    // 检查数量限制
     if (keyCount > MAX_KEYS_LIMIT) {
         isImporting.value = false;
         importProgress.value = 0;
         uiStore.showToast(
-            `Key 数量超过限制！文件包含 ${keyCount.toLocaleString()} 个 Key，最多支持 ${MAX_KEYS_LIMIT.toLocaleString()} 个`,
+            t('toastFileKeyLimit', { count: keyCount.toLocaleString(), max: MAX_KEYS_LIMIT.toLocaleString() }),
             "error",
             6000
         );
         return;
     }
 
-    // 更新输入
     importProgress.value = 100;
-    importProgressText.value = '导入完成！';
+    importProgressText.value = t('importProgressDone');
 
     configStore.tokensInput = cleanLines.join("\n");
 
-    // 延迟隐藏进度条，让用户看到 100%
     setTimeout(() => {
         isImporting.value = false;
         importProgress.value = 0;
 
-        // 根据数量给出不同提示
         if (keyCount > 10000) {
             uiStore.showToast(
-                `导入成功！共 ${keyCount.toLocaleString()} 个 Key，数量较多，检测可能需要较长时间`,
+                t('toastImportSuccessLarge', { count: keyCount.toLocaleString() }),
                 "success",
                 5000
             );
         } else {
-            uiStore.showToast(`文件导入成功！共导入 ${keyCount.toLocaleString()} 个 Key`, "success");
+            uiStore.showToast(t('toastImportSuccess', { count: keyCount.toLocaleString() }), "success");
         }
     }, 300);
 };

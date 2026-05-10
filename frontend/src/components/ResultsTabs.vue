@@ -1,5 +1,5 @@
 <template>
-    <div class="results-tabs" role="tablist" aria-label="结果分类">
+    <div class="results-tabs" role="tablist" :aria-label="t('tabChecker')">
         <button
             v-for="tab in resultTabs"
             :key="tab.id"
@@ -21,15 +21,28 @@ import { computed } from 'vue';
 import { useResultsStore } from '@/stores/results';
 import { useConfigStore } from '@/stores/config';
 import { RESULT_TAB_CONFIG } from '@/constants';
+import { t, currentLang } from '@/i18n';
 
 const resultsStore = useResultsStore();
 const configStore  = useConfigStore();
 
+/** 标签 ID 到 i18n key 的映射 */
+const TAB_I18N_KEYS = {
+    valid:       'tabValid',
+    lowBalance:  'tabLowBalance',
+    zeroBalance: 'tabZeroBalance',
+    rateLimit:   'tabRateLimit',
+    invalid:     'tabInvalid',
+    duplicate:   'tabDuplicate',
+};
+
 const resultTabs = computed(() => {
+    // 依赖 currentLang 以便语言切换时重新计算
+    void currentLang.value;
     const hasBalance = configStore.providers[configStore.currentProvider].hasBalance;
     return RESULT_TAB_CONFIG.map(tab => ({
         id:      tab.id,
-        name:    tab.name,
+        name:    t(TAB_I18N_KEYS[tab.id] || tab.id),
         visible: hasBalance || !tab.balanceOnly,
     }));
 });

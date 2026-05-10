@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { t } from '@/i18n';
 
 const props = defineProps({
     modelValue: { type: [String, Number], required: true },
@@ -125,7 +126,7 @@ watch(isOpen, (v) => {
                     >
                         {{ opt.label }}
                     </div>
-                    <div v-if="filteredOptions.length === 0" class="cs-empty">无匹配项</div>
+                    <div v-if="filteredOptions.length === 0" class="cs-empty">{{ t('csNoMatch') }}</div>
                 </div>
             </div>
         </Transition>

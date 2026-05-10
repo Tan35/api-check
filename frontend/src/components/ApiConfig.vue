@@ -2,18 +2,18 @@
     <div class="provider-config-area" v-if="currentConfig">
         <div class="config-grid">
             <div class="config-item">
-                <label :for="configStore.currentProvider + '__base'">Base URL</label>
+                <label :for="configStore.currentProvider + '__base'">{{ t('labelBaseUrl') }}</label>
                 <input type="text" :id="configStore.currentProvider + '__base'" v-model="currentConfig.baseUrl"
-                    placeholder="API Base URL" :disabled="checkerStore.isChecking">
+                    :placeholder="t('placeholderBaseUrl')" :disabled="checkerStore.isChecking">
             </div>
             <div class="config-item">
-                <label :for="configStore.currentProvider + '__model'">Model</label>
+                <label :for="configStore.currentProvider + '__model'">{{ t('labelModel') }}</label>
                 <div class="input-with-button">
                     <input type="text" :id="configStore.currentProvider + '__model'" v-model="currentConfig.model"
-                        placeholder="测试用的模型名称" :disabled="checkerStore.isChecking">
+                        :placeholder="t('placeholderModel')" :disabled="checkerStore.isChecking">
                     <button type="button" class="fetch-models-btn" @click="handleFetchModels"
                         :disabled="uiStore.isFetchingModels || checkerStore.isChecking">
-                        <span v-if="!uiStore.isFetchingModels">获取</span>
+                        <span v-if="!uiStore.isFetchingModels">{{ t('btnFetch') }}</span>
                         <span v-else class="loader"></span>
                     </button>
                 </div>
@@ -29,6 +29,7 @@ import { useUiStore } from '@/stores/ui';
 import { useCheckerStore } from '@/stores/checker';
 import { fetchModels } from '@/api';
 import { parseKeys } from '@/utils/keyParser';
+import { t } from '@/i18n';
 
 const configStore = useConfigStore();
 const uiStore = useUiStore();
@@ -47,37 +48,33 @@ const currentConfig = computed(() => {
  * 最多尝试 5 个 Key，避免等待时间过长。
  */
 const handleFetchModels = async () => {
-    uiStore.isFetchingModels = true; // 设置加载状态
+    uiStore.isFetchingModels = true;
     try {
-        // 解析所有输入的 Key
         const keys = parseKeys(configStore.tokensInput);
         if (keys.length === 0) {
-            uiStore.showToast("请先输入至少一个有效的KEY", "warning");
+            uiStore.showToast(t('toastNoKeyInput'), "warning");
             return;
         }
 
-        // 构造提供商配置对象
         const providerConfig = {
             currentProvider: configStore.currentProvider,
             baseUrl: currentConfig.value.baseUrl,
             currentRegion: configStore.currentRegion,
         };
 
-        // 如果只有一个 Key，则保持原有行为：失败直接显示错误
         if (keys.length === 1) {
             try {
                 const models = await fetchModels(keys[0], providerConfig);
                 if (models && models.length > 0) {
-                    models.sort((a, b) => a.localeCompare(b)); // 排序模型列表
-                    uiStore.openModal('modelSelector', { models, currentModel: currentConfig.value.model }); // 打开模型选择器
+                    models.sort((a, b) => a.localeCompare(b));
+                    uiStore.openModal('modelSelector', { models, currentModel: currentConfig.value.model });
                 } else {
-                    uiStore.showToast("未能获取到模型列表", "warning");
+                    uiStore.showToast(t('toastNoModels'), "warning");
                 }
             } catch (error) {
-                uiStore.showToast(`获取模型失败: ${error.message}`, "error");
+                uiStore.showToast(t('toastFetchModelFailed', { msg: error.message }), "error");
             }
         } else {
-            // 如果有多个 Key，则遍历尝试，最多尝试 5 个
             const maxAttempts = Math.min(keys.length, 5);
             for (let i = 0; i < maxAttempts; i++) {
                 const key = keys[i];
@@ -86,19 +83,19 @@ const handleFetchModels = async () => {
                     if (models && models.length > 0) {
                         models.sort((a, b) => a.localeCompare(b));
                         uiStore.openModal('modelSelector', { models, currentModel: currentConfig.value.model });
-                        return; // 成功获取，立即返回，不再尝试其他 Key
+                        return;
                     }
                 } catch (error) {
-                    // 静默失败，继续尝试下一个 Key，仅在控制台输出日志
                     console.log(`Key ${key.substring(0, 10)}... failed, trying next.`);
                 }
             }
-            // 如果循环结束都没有成功，则提示失败
-            const attemptedMsg = maxAttempts < keys.length ? `前 ${maxAttempts} 个` : '所有';
-            uiStore.showToast(`${attemptedMsg} KEY 均无法获取到模型列表`, "error");
+            const attemptedMsg = maxAttempts < keys.length
+                ? t('toastAllKeysFailedPrefix', { n: maxAttempts })
+                : t('toastAllKeysFailedAll');
+            uiStore.showToast(t('toastAllKeysFailed', { attempted: attemptedMsg }), "error");
         }
     } finally {
-        uiStore.isFetchingModels = false; // 无论成功或失败，都关闭加载状态
+        uiStore.isFetchingModels = false;
     }
 };
 </script>

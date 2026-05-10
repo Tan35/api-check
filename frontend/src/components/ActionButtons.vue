@@ -4,17 +4,17 @@
             <TransitionGroup name="button-fade">
                 <button v-if="!checkerStore.isChecking" key="start" id="checkButton" class="button primary"
                     @click="checkerStore.startCheck">
-                    开始检测
+                    {{ t('btnStartCheck') }}
                 </button>
                 <template v-else>
                     <button key="stop" class="button stop" @click="checkerStore.stopCheck">
-                        停止
+                        {{ t('btnStop') }}
                     </button>
                     <button v-if="!checkerStore.isPaused" key="pause" class="button pause" @click="checkerStore.pauseCheck">
-                        暂停
+                        {{ t('btnPause') }}
                     </button>
                     <button v-else key="resume" class="button resume" @click="checkerStore.resumeCheck">
-                        继续
+                        {{ t('btnResume') }}
                     </button>
                 </template>
             </TransitionGroup>
@@ -25,7 +25,7 @@
                 :aria-valuenow="checkerStore.progress"
                 aria-valuemin="0"
                 aria-valuemax="100"
-                :aria-label="`检测进度: ${checkerStore.progress}%`">
+                :aria-label="`${checkerStore.progress}%`">
                 <div id="progressBar" :style="{ width: checkerStore.progress + '%' }"></div>
             </div>
             <span id="progressText" aria-live="polite">{{ checkerStore.completedCount }} / {{ checkerStore.totalTasks }} ({{ checkerStore.progress }}%)</span>
@@ -35,6 +35,7 @@
 
 <script setup>
 import { useCheckerStore } from '@/stores/checker';
+import { t } from '@/i18n';
 
 const checkerStore = useCheckerStore();
 </script>
