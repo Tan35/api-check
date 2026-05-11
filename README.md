@@ -1,280 +1,184 @@
-# LLM API Key Checker
+# KeyNest
 
-![Vue.js](https://img.shields.io/badge/Vue.js-3.4.21-4FC08D?style=flat-square&logo=vue.js&logoColor=white)
+![Vue 3](https://img.shields.io/badge/Vue.js-3.4-4FC08D?style=flat-square&logo=vue.js&logoColor=white)
 ![Cloudflare Workers](https://img.shields.io/badge/Cloudflare%20Workers-F38020?style=flat-square&logo=cloudflare&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/ssfun/llm-api-key-checker)
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/Tan35/api-check)
 
-一个功能强大的 LLM API 密钥批量检测工具，支持多个主流 LLM 提供商的密钥验证和余额查询。
+A self-hosted tool for validating LLM API keys in bulk and keeping track of them over time. Paste a list of keys, pick a provider, hit start, and get back a categorized report — valid, invalid, rate-limited, low balance, zero balance, duplicates — with real-time progress. Keys worth keeping can be dropped into a local vault where you can tag them, re-test them on demand, and see their balance history.
 
-## ✨ 主要特性
+Forked from [ssfun/llm-api-key-checker](https://github.com/ssfun/llm-api-key-checker); thanks to the original author for the foundation this project was built on.
 
-- 🔑 **批量检测** - 支持同时检测多个 API 密钥，最多支持 50,000 个
-- 🏢 **多平台支持** - 兼容 OpenAI、Anthropic、Google Gemini、DeepSeek、Moonshot、通义千问、智谱 AI 等主流平台
-- 💰 **余额查询** - 精确查询每个有效密钥的余额信息
-- 🌍 **区域选择** - 支持不同地区的服务器节点选择
-- 📊 **实时进度与反馈** - 基于 WebSocket 的实时数据流，提供精确进度和即时状态更新
-- 🎯 **智能分类** - 自动将密钥分类为有效、低额、零额、无效等状态
-- 🚀 **高性能与任务控制** - 后端集中管理并发任务，支持暂停、继续、停止操作
-- 💡 **智能模型获取** - 自动遍历多个 Key 尝试获取模型列表，直至成功或全部失败
-- 🔍 **精细错误展示** - 优化错误信息优先级，优先展示 `reason`、`code` 等更具体信息
-- 📁 **文件导入** - 支持拖拽或选择 .txt 文件导入，带进度显示
-- 💻 **响应式设计** - 完美适配桌面端和移动端
+## Screenshots
 
-## 🖥️ 界面预览
+![Main view](https://pub-47dec4f0f09a445f88ea7082e81a2960.r2.dev/Github/1-1.png)
+![Key Manage](https://pub-47dec4f0f09a445f88ea7082e81a2960.r2.dev/Github/2-1.png)
+![Key Detail](https://pub-47dec4f0f09a445f88ea7082e81a2960.r2.dev/Github/3-1.png)
 
-![项目主页](./preview/01.png)
-![API提供商](./preview/02.png)
-![检测设置](./preview/03.png)
-![模型选择](./preview/04.png)
+## What it does
 
-## 🏗️ 技术架构
+- **Bulk checking up to 50,000 keys per run**, streamed over a single WebSocket so results appear as they come in
+- **Persistent key vault** — any key can be saved locally (IndexedDB) with an alias, tags, and per-key balance snapshots over time
+- **24 providers out of the box**, including OpenAI, Anthropic, Google Gemini, DeepSeek, Moonshot, Groq, xAI, Qwen, Zhipu, SiliconFlow, OpenRouter, NewAPI, Perplexity, Nvidia, GitHub Models, and more
+- **Balance queries** for providers that expose them: DeepSeek, Moonshot, SiliconFlow, OpenRouter, NewAPI
+- **Regional egress** — route outbound requests through one of nine geographic regions via Cloudflare Durable Objects, useful when a provider gates access by country
+- **Task control** — pause, resume, or stop a run at any time; the connection reconnects automatically if it drops mid-batch
+- **Trilingual UI** (English / 繁體 / 简体) with light and dark themes
 
-### 前端技术栈
-- **Vue 3** - 采用 Composition API 的现代前端框架
-- **Pinia** - 轻量级状态管理库
-- **Vite** - 快速的构建工具和开发服务器
-- **CSS3** - The Anthropic Aesthetic 设计系统，温暖人文的视觉风格
-- **vue-virtual-scroller** - 高性能虚拟滚动，支持大批量数据展示
+## How it's built
 
-### 后端技术栈
-- **Cloudflare Workers** - 无服务器边缘计算平台
-- **Durable Objects** - 用于区域代理和状态管理，由主 Worker 协调
-- **WebSocket** - 实时双向数据流传输，替代传统 SSE
-- **现代 JavaScript** - 采用 ES6+ 语法和异步编程
-
-## 🚀 快速开始
-
-### 环境要求
-- Node.js 18.0 或更高版本
-- npm 或 yarn 包管理器
-- Cloudflare 账户（用于部署）
-
-### 安装步骤
-
-1. **克隆项目**
-   ```bash
-   git clone https://github.com/your-username/llm-api-key-checker.git
-   cd llm-api-key-checker
-   ```
-
-2. **安装依赖**
-   ```bash
-   npm install
-   ```
-
-3. **配置环境**
-   
-   复制并编辑配置文件：
-   ```bash
-   cp wrangler.toml.example wrangler.toml
-   ```
-   
-   在 `wrangler.toml` 中配置以下变量：
-   ```toml
-   [vars]
-   ALLOWED_ORIGINS = "[\"https://your-domain.com\"]"
-   ENABLE_UA_RANDOMIZATION = "true"
-   ENABLE_ACCEPT_LANGUAGE_RANDOMIZATION = "true"
-   ```
-
-4. **开发环境运行**
-   ```bash
-   npm run dev
-   ```
-
-5. **构建项目**
-   ```bash
-   npm run build
-   ```
-
-6. **部署到 Cloudflare Workers**
-   ```bash
-   npm run deploy
-   ```
-
-## 📖 使用指南
-
-### 基本使用
-
-1. **选择服务商** - 从下拉菜单中选择要检测的 LLM 提供商
-2. **配置 API** - 输入对应的 Base URL 和选择模型
-3. **输入密钥** - 在文本框中输入要检测的 API 密钥（支持批量输入）
-4. **开始检测** - 点击"开始检测"按钮启动验证流程
-5. **查看结果** - 实时查看检测结果和详细信息
-
-### 任务控制
-
-- **开始检测**：启动新的检测任务。
-- **暂停检测**：暂停当前正在进行的检测，任务状态会保留。
-- **继续检测**：从暂停处恢复检测任务。
-- **停止检测**：终止当前检测任务，并清空所有进度和结果。
-
-### 支持的服务商
-
-| 服务商 | 状态 | 余额查询 | 模型列表 |
-|--------|------|----------|----------|
-| OpenAI | ✅ | 🙅‍♂️ | ✅ |
-| Anthropic Claude | ✅ | 🙅‍♂️ | ✅ |
-| Google Gemini | ✅ | 🙅‍♂️ | ✅ |
-| DeepSeek | ✅ | ✅ | ✅ |
-| Moonshot | ✅ | ✅ | ✅ |
-| 通义千问 | ✅ | 🙅‍♂️ | ✅ |
-| 智谱 AI | ✅ | 🙅‍♂️ | ✅ |
-| Groq | ✅ | 🙅‍♂️ | ✅ |
-| NewApi | ✅ | ✅ | ✅ |
-
-### 密钥输入格式
-
-支持多种输入格式：
-```
-sk-1234567890abcdef
-sk-1234567890abcdef, sk-abcdef1234567890
-sk-1234567890abcdef;sk-abcdef1234567890
-```
-
-### 结果分类
-
-- **有效** - 密钥有效且余额充足
-- **低额** - 密钥有效但余额低于设定阈值
-- **零额** - 密钥有效但余额为零
-- **无额** - 密钥有效但配额已用完
-- **限流** - 密钥有效但当前受到频率限制
-- **无效** - 密钥无效或已过期
-- **重复** - 输入列表中的重复密钥
-
-## ⚙️ 配置说明
-
-### 高级设置
-
-- **最低余额阈值** - 设置低额密钥的判断标准
-- **并发请求数** - 控制后端同时进行的请求数量（1-20）
-- **检测区域** - 选择不同地区的服务器节点
-
-### 安全特性
-
-- **CORS 保护** - 严格的跨域访问控制
-- **URL 验证** - 防止 SSRF 攻击
-- **UA 随机化** - 随机 User-Agent 避免检测
-- **请求频率控制** - 内置限流机制
-
-## 📁 项目结构
+A single Cloudflare Worker serves the Vue 3 frontend as static assets *and* hosts the checking backend — there is no separate server process to run.
 
 ```
-llm-api-key-checker/
-├── src/                          # Cloudflare Workers 后端
-│   ├── index.js                  # 主入口文件，路由处理
-│   ├── checkers.js               # 密钥验证核心逻辑
-│   ├── websocket_handler.js      # WebSocket 会话及任务管理
-│   ├── model_fetchers.js         # 模型列表获取
-│   └── utils/
-│       ├── fetcher.js            # HTTP 请求工具
-│       ├── security.js           # 安全验证
-│       ├── userAgent.js          # UA 随机化
-│       └── cors.js               # CORS 处理
+Browser (Vue 3 + Pinia + IndexedDB)
+  │
+  ├── HTTP POST /models   fetch available models for a key
+  └── WS      /check      stream key-check results
+       │
+       ▼
+Cloudflare Worker (src/index.js)
+  ├── TaskManager          worker-pool, up to 20 concurrent in-flight checks
+  ├── Provider strategies  openai · openai_responses · anthropic · gemini · tavily
+  └── RegionalFetcher (DO) optional outbound proxy tied to a region
+```
+
+### Frontend
+
+Five Pinia stores split the state cleanly: `config` (current provider, region, input), `checker` (WebSocket lifecycle and batch scheduling), `results` (categorized result buckets), `keyManager` (the persistent vault), and `ui` (modals, toasts, theme).
+
+A few details worth calling out:
+
+- Result lists use `vue-virtual-scroller` so tens of thousands of rows scroll smoothly
+- Incoming results are buffered through a 100 ms window before being flushed to the store, which keeps the DOM quiet during heavy runs
+- Large `.txt` imports are parsed in 10,000-line chunks via `setTimeout(0)` so the UI never freezes
+- The vault lives entirely in IndexedDB (`idb` wrapper). Nothing syncs to any server unless you explicitly export
+
+### Backend
+
+One WebSocket connection is reused across many batches of 500 keys. The client ships a `start` command with a batch, the server streams back individual `result` messages plus a final `batch_done`, and the client then ships the next batch on the same socket. This avoids the per-batch connection overhead that a naive design would incur.
+
+Per-provider checking strategies live in `src/checkers.js`. Adding a new provider usually means registering a strategy, touching `model_fetchers.js`, and adding an entry to `config/providers.json`.
+
+Safety-critical bits:
+
+- **SSRF protection** rejects private, loopback, link-local, and CGNAT addresses before any outbound request is made
+- **User-Agent and Accept-Language rotation** on every outbound call (can be disabled via env vars)
+- **In-memory rate limiting**: 10 WebSocket connections/minute and 30 `/models` calls/minute per IP
+- **CORS whitelist** driven by `ALLOWED_ORIGINS`, with wildcard subdomain support
+
+## Getting started
+
+Requirements: Node 18+, a Cloudflare account, and `wrangler` (installed via `npm`).
+
+```bash
+git clone https://github.com/Tan35/api-check.git
+cd api-check
+npm install
+```
+
+Edit `wrangler.toml` and set `ALLOWED_ORIGINS` to the domain you'll serve from:
+
+```toml
+[vars]
+ALLOWED_ORIGINS = "[\"https://your-domain.com\"]"
+ENABLE_UA_RANDOMIZATION = "true"
+ENABLE_ACCEPT_LANGUAGE_RANDOMIZATION = "true"
+```
+
+Run locally:
+
+```bash
+npm run dev           # Vite dev server, frontend only
+npm run dev:wrangler  # Wrangler dev, backend + built assets
+npm run dev:full      # build frontend, then run Wrangler
+```
+
+Deploy to Cloudflare:
+
+```bash
+npm run deploy
+```
+
+## Using it
+
+The app has two tabs: **Checker** and **Key**.
+
+**Checker** is for one-off batch validation. Paste keys (comma, semicolon, or newline separated), or drop a `.txt` file. Pick a provider, tweak the model or base URL if needed, and start. Results land in six tabs — Valid, Low balance, Zero balance, Rate limited, Invalid, Duplicate — and can be copied or exported per category.
+
+**Key** is the persistent vault. Keys added here survive page reloads and can be:
+
+- searched by token, alias, provider, or tag
+- filtered by provider and status, sorted by any column
+- tested individually without running a whole batch
+- exported to JSON and re-imported on another device
+
+When a Checker run touches a key that's already in the vault, its status and balance are updated automatically, and a balance snapshot is appended to the history.
+
+## Configuration
+
+**`config/providers.json`** — the provider catalog. Each entry specifies:
+
+| Field                          | Purpose                                                      |
+| ------------------------------ | ------------------------------------------------------------ |
+| `apiStyle`                     | Which request strategy to use (`openai`, `anthropic`, `gemini`, `openai_responses`, `tavily`) |
+| `defaultBase` / `defaultModel` | Defaults shown in the UI                                     |
+| `hasBalance`                   | Whether balance lookup is supported                          |
+| `balanceEndpoint`              | Custom endpoint for balance queries, when applicable         |
+
+**`config/regions.json`** — the region catalog for Durable Object egress.
+
+**`wrangler.toml`** — Worker-level config:
+
+| Variable                               | Default  | Purpose                                           |
+| -------------------------------------- | -------- | ------------------------------------------------- |
+| `ALLOWED_ORIGINS`                      | —        | JSON array of allowed CORS origins (wildcards OK) |
+| `ENABLE_UA_RANDOMIZATION`              | `"true"` | Rotate User-Agent per outbound request            |
+| `ENABLE_ACCEPT_LANGUAGE_RANDOMIZATION` | `"true"` | Rotate Accept-Language per outbound request       |
+
+## Project layout
+
+```
+├── src/                      Cloudflare Worker
+│   ├── index.js              routing + static asset fallback
+│   ├── checkers.js           per-provider validation strategies
+│   ├── model_fetchers.js     model-list fetchers
+│   ├── websocket_handler.js  TaskManager, Durable Object, worker pool
+│   └── utils/                cors · fetcher · rateLimit · security · url · userAgent
 ├── frontend/
-│   ├── src/
-│   │   ├── main.js               # 应用入口
-│   │   ├── App.vue               # 根组件
-│   │   ├── api.js                # API 调用封装
-│   │   ├── assets/
-│   │   │   └── main.css          # 全局样式
-│   │   ├── stores/
-│   │   │   ├── config.js         # 配置状态
-│   │   │   ├── results.js        # 结果状态
-│   │   │   ├── checker.js        # 检测状态
-│   │   │   └── ui.js             # UI 状态
-│   │   └── components/
-│   │       ├── modals/
-│   │       └── ...               # 其他组件
-│   ├── dist/
-│   └── package.json              # 前端依赖
-├── wrangler.toml                 # Cloudflare 配置
-└── package.json                  # 项目依赖
+│   └── src/
+│       ├── App.vue
+│       ├── stores/           5 Pinia stores
+│       ├── components/       modals, key cards, selectors, panels
+│       ├── db/keyStore.js    IndexedDB wrapper (idb)
+│       ├── utils/keyParser.js
+│       └── i18n.js           three-language dictionary
+├── config/
+│   ├── providers.json        24 providers
+│   └── regions.json          9 regions
+├── types/                    ambient .d.ts declarations
+└── wrangler.toml
 ```
 
-## 🔧 开发指南
+## A note on keys and safety
 
-### 本地开发
+This tool is designed for validating keys you own. Keys never touch persistent storage on the server side — the Worker proxies requests to the upstream provider and nothing else. The local vault is confined to IndexedDB on the device where it was created.
 
-1. **启动前端开发服务器**
-   ```bash
-   npm run dev
-   ```
+If you deploy this publicly, keep `ALLOWED_ORIGINS` tight and consider placing Cloudflare Access in front of the Worker. The built-in rate limiter is best-effort (per isolate, not global) and is not a substitute for proper access control.
 
-2. **启动后端模拟**
-   ```bash
-   npx wrangler dev
-   ```
+## Contributing
 
-### 添加新的服务商
+Pull requests welcome. Two small conventions:
 
-1. 在 `src/checkers.js` 中添加新的检查器策略
-2. 在 `src/model_fetchers.js` 中添加模型获取逻辑
-3. 在 `config/providers.json` 中更新服务商配置
+- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `refactor:` …)
+- Keep the existing JSDoc comment style when touching `.js` files — it's what drives the hover tooltips in editors
 
-### 自定义样式
+Adding a new provider is usually a three-file change:
 
-- 修改 `frontend/src/assets/main.css` 中的 CSS 变量
-- 所有样式都使用 CSS 自定义属性，便于主题定制
+1. Pick an `apiStyle` in `src/checkers.js` (or add a new one if the provider is exotic)
+2. Add a model-list fetcher in `src/model_fetchers.js` if the provider has a non-standard `/models` endpoint
+3. Register it in `config/providers.json`
 
-## 🤝 贡献指南
+## License
 
-我们欢迎任何形式的贡献！
-
-1. **Fork** 本项目
-2. **创建** 特性分支 (`git checkout -b feature/AmazingFeature`)
-3. **提交** 更改 (`git commit -m 'feat: Add some AmazingFeature'`)
-4. **推送** 分支 (`git push origin feature/AmazingFeature`)
-5. **创建** Pull Request
-
-### 开发规范
-
-- 代码已进行全面注释和格式化，请保持一致
-- 提交信息使用 [Conventional Commits](https://www.conventionalcommits.org/) 格式
-- 确保所有测试通过后再提交 PR
-
-## 📝 更新日志
-
-### v2.0.0
-- 全新 Vue 3 + Composition API 架构
-- 将核心检测逻辑从 SSE 迁移至 WebSocket，实现后端集中任务管理
-- 支持区域代理
-- 全新的响应式 UI 设计
-- 支持更多 LLM 提供商
-- 新增暂停、继续、停止检测任务的功能
-- 优化模型获取逻辑，支持遍历多个 Key 尝试获取
-- 完善的移动端适配
-
-### v1.0.0
-- 初始版本发布
-- 基础密钥检测功能
-- 支持 OpenAI 和 Anthropic
-
-## 🛡️ 安全说明
-
-- 本工具仅用于验证自己拥有的 API 密钥
-- 请勿用于非法用途或未经授权的密钥检测
-- 所有检测数据仅在当地处理，不会上传到第三方服务器
-- 建议在本地环境中使用，避免在公共场所使用
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
-
-## 🙏 致谢
-
-- [Vue.js](https://vuejs.org/) - 渐进式 JavaScript 框架
-- [Cloudflare Workers](https://workers.cloudflare.com/) - 无服务器边缘计算平台
-- [Pinia](https://pinia.vuejs.org/) - Vue.js 状态管理库
-- [Vite](https://vitejs.dev/) - 下一代前端构建工具
-
-## 📞 联系我们
-
-- 🐛 **问题反馈**: [GitHub Issues](https://github.com/ssfun/llm-api-key-checker/issues)
-- 💬 **功能建议**: [GitHub Discussions](https://github.com/ssfun/llm-api-key-checker/discussions)
-
----
-
-⭐ 如果这个项目对您有帮助，请考虑给我们一个 Star！
+MIT. See [LICENSE](LICENSE) for the full text.
