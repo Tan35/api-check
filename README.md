@@ -4,7 +4,7 @@
 ![Cloudflare Workers](https://img.shields.io/badge/Cloudflare%20Workers-F38020?style=flat-square&logo=cloudflare&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/Tan35/api-check)
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/Tan35/KeyNest)
 
 A self-hosted tool for validating LLM API keys in bulk and keeping track of them over time. Paste a list of keys, pick a provider, hit start, and get back a categorized report — valid, invalid, rate-limited, low balance, zero balance, duplicates — with real-time progress. Keys worth keeping can be dropped into a local vault where you can tag them, re-test them on demand, and see their balance history.
 
